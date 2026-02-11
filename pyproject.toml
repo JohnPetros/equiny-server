@@ -1,0 +1,161 @@
+[project]
+name = "equiny"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.18.4",
+    "faker>=40.4.0",
+    "fastapi[standard]>=0.128.7",
+    "httpx>=0.28.1",
+    "psycopg[binary]>=3.2.0",
+    "pytest>=9.0.2",
+    "python-dotenv>=1.0.0",
+    "sqlalchemy>=2.0.46",
+]
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.41.0",
+    "pyright>=1.1.408",
+    "pytest>=9.0.2",
+    "ruff>=0.15.0",
+]
+
+[project.scripts]
+dev = "main:main"
+
+
+[tool.poe.tasks."db:migrate"]
+cmd = "alembic revision --autogenerate -m \"${message}\""
+args = [{ name = "message", positional = true }]
+
+[tool.poe.tasks."db:upgrade"]
+cmd = "alembic upgrade ${target}"
+args = [{ name = "target", positional = true, default = "head" }]
+
+[tool.poe.tasks."db:downgrade"]
+cmd = "alembic downgrade ${target}"
+args = [{ name = "target", positional = true, default = "-1" }]
+
+[tool.poe.tasks."db:sync"]
+cmd = "alembic stamp head"
+
+[tool.poe.tasks."db:current"]
+cmd = "alembic current"
+
+[tool.poe.tasks.test]
+cmd = "pytest -v"
+
+[tool.poe.tasks.typecheck]
+cmd = "pyright src"
+
+[tool.poe.tasks.codecheck]
+cmd = "ruff check --fix src && ruff format --check src"
+
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+fix = true
+show-fixes = true
+indent-width = 4
+exclude = ["venv", ".venv", "env", ".env", "node_modules", "__pycache__"]
+
+[tool.ruff.lint]
+select = [
+    "ASYNC",
+    "A",
+    "ANN",
+    "B",
+    "BLE",
+    "C4",
+    "C90",
+    "COM",
+    "E",
+    "EM",
+    "ERA",
+    "EXE",
+    "F",
+    "FBT",
+    "FIX",
+    "I",
+    "ICN",
+    "ISC",
+    "Q",
+    "RET",
+    "RSE",
+    "S",
+    "SIM",
+    "SLF",
+    "T10",
+    "T20",
+    "TC",
+    "TD",
+    "TID",
+    "TRY",
+    "UP",
+    "W",
+    "YTT",
+    "RUF",
+    "N",
+]
+ignore = [
+    "T201",
+    "COM812",
+    "ANN201",
+    "I001",
+    "Q000",
+    "RUF022",
+    "TRY003",
+    "EM102",
+    "E501",
+    "A002",
+    "EM101",
+]
+
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN201", "S101"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.ruff.lint.isort]
+# Ensina ao Ruff qual é o pacote principal do seu projeto.
+# Deve ser o mesmo nome da pasta dentro de 'src/'.
+known-first-party = ["equiny"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+pythonVersion = "3.13"
+include = ["src", 'tests']
+exclude = [
+    "**/venv",
+    "**/.venv",
+    "**/env",
+    "**/.env",
+    "**/node_modules",
+    "**/__pycache__",
+]
+venv = ".venv"
+venvPath = "."
+executionEnvironments = [{ root = "src" }]
+
+[tool.pytest.ini_options]
+addopts = "-s --color=yes --tb=short"
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
