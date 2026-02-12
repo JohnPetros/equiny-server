@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import TYPE_CHECKING
 
 from equiny.core.shared.domain.decorators import entity
@@ -7,7 +8,7 @@ if TYPE_CHECKING:
 
 
 @entity
-class Entity:
+class Entity(ABC):
     id: 'Id'
 
     def __eq__(self, other: object) -> bool:

@@ -1,13 +1,12 @@
 from http import HTTPStatus
-from typing import Annotated
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
-from equiny.database.sqlalchemy.sqlalchemy import Sqlalchemy
+from equiny.core.profiling.interfaces.repositories import HorsesRepository
+from equiny.pipes.auth_pipe import AuthPipe
 from equiny.validation.profiling import HorseSchema
 from equiny.core.profiling.domain.entities.dtos import HorseDto
 from equiny.core.profiling.use_cases import CreateHorseUseCase
-from equiny.database.sqlalchemy.repositories import SqlalchemyHorsesRepository
+from equiny.pipes.database_pipe import DatabasePipe
 
 
 class CreateHorseController:
@@ -17,11 +16,11 @@ class CreateHorseController:
             '/',
             status_code=HTTPStatus.CREATED,
             response_model=HorseDto,
+            dependencies=[Depends(AuthPipe.verify_jwt)],
         )
-        def _(
+        async def _(
             body: HorseSchema,
-            sqlalchemy: Annotated[Session, Depends(Sqlalchemy.get_request_session)],
+            repository: HorsesRepository = Depends(DatabasePipe.get_horses_repository),
         ) -> HorseDto:
-            repository = SqlalchemyHorsesRepository(sqlalchemy)
             use_case = CreateHorseUseCase(repository)
             return use_case.execute(body.to_dto())

@@ -13,9 +13,9 @@ class Horse(Entity):
     birth: HorseBirth
     breed: Breed
 
-    @staticmethod
-    def create(dto: HorseDto) -> 'Horse':
-        return Horse(
+    @classmethod
+    def create(cls, dto: HorseDto) -> 'Horse':
+        return cls(
             id=Id.create(dto.id),
             name=Name.create(dto.name),
             birth=HorseBirth.create(dto.birth_month, dto.birth_year),

@@ -1,4 +1,4 @@
 from pydantic import Field
+from typing import Annotated
 
-
-name_schema = Field(min_length=3, max_length=100)
+NameSchema = Annotated[str, Field(min_length=3, max_length=100)]

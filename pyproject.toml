@@ -9,9 +9,13 @@ dependencies = [
     "faker>=40.4.0",
     "fastapi[standard]>=0.128.7",
     "httpx>=0.28.1",
+    "inngest>=0.5.15",
     "psycopg[binary]>=3.2.0",
+    "pwdlib[argon2]>=0.3.0",
+    "pyjwt>=2.11.0",
     "pytest>=9.0.2",
     "python-dotenv>=1.0.0",
+    "python-jose[cryptography]>=3.5.0",
     "sqlalchemy>=2.0.46",
 ]
 
@@ -114,6 +118,9 @@ ignore = [
     "E501",
     "A002",
     "EM101",
+    "F821",
+    "ANN205",
+    "B008",
 ]
 
 
@@ -150,6 +157,9 @@ executionEnvironments = [{ root = "src" }]
 addopts = "-s --color=yes --tb=short"
 pythonpath = [".", "src"]
 testpaths = ["tests"]
+filterwarnings = [
+    "ignore::pydantic.warnings.PydanticDeprecatedSince20:inngest.*",
+]
 
 [build-system]
 requires = ["setuptools", "wheel"]

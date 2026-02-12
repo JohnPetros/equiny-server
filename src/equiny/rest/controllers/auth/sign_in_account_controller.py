@@ -4,10 +4,11 @@ from pydantic import BaseModel
 
 from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
 from equiny.core.auth.use_cases.sign_in_account_use_case import SignInAccountUseCase
+from equiny.validation.shared import EmailSchema
 
 
 class Body(BaseModel):
-    email: str
+    email: EmailSchema
     password: str
 
 
@@ -17,6 +18,6 @@ class SignInAccountController:
         @router.post(
             '/sign-in', status_code=HTTPStatus.CREATED, response_model=AccountDto
         )
-        def _(body: Body) -> AccountDto:
+        async def _(body: Body) -> AccountDto:
             use_case = SignInAccountUseCase()
             return use_case.execute(body.email, body.password)

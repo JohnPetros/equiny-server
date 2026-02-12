@@ -5,7 +5,9 @@ from fastapi.testclient import TestClient
 
 
 class TestCreateHorseController:
-    def test_should_create_horse_and_return_payload(self, client: TestClient) -> None:
+    def test_should_create_horse_and_return_payload(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
         response = client.post(
             '/profiling/horses',
             json={
@@ -14,6 +16,7 @@ class TestCreateHorseController:
                 'birth_year': 2020,
                 'breed': 'arabe',
             },
+            headers=auth_headers,
         )
 
         assert response.status_code == 201
@@ -27,7 +30,10 @@ class TestCreateHorseController:
 
     @pytest.mark.parametrize('birth_month', [0, 13])
     def test_should_return_422_when_birth_month_is_invalid(
-        self, client: TestClient, birth_month: int
+        self,
+        client: TestClient,
+        birth_month: int,
+        auth_headers: dict[str, str],
     ) -> None:
         response = client.post(
             '/profiling/horses',
@@ -37,12 +43,13 @@ class TestCreateHorseController:
                 'birth_year': 2020,
                 'breed': 'arabe',
             },
+            headers=auth_headers,
         )
 
         assert response.status_code == 422
 
     def test_should_return_422_when_birth_year_is_in_the_future(
-        self, client: TestClient
+        self, client: TestClient, auth_headers: dict[str, str]
     ) -> None:
         response = client.post(
             '/profiling/horses',
@@ -52,11 +59,14 @@ class TestCreateHorseController:
                 'birth_year': datetime.now().year + 1,
                 'breed': 'arabe',
             },
+            headers=auth_headers,
         )
 
         assert response.status_code == 422
 
-    def test_should_return_422_when_breed_is_invalid(self, client: TestClient) -> None:
+    def test_should_return_422_when_breed_is_invalid(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
         response = client.post(
             '/profiling/horses',
             json={
@@ -65,11 +75,14 @@ class TestCreateHorseController:
                 'birth_year': 2020,
                 'breed': 'invalid breed',
             },
+            headers=auth_headers,
         )
 
         assert response.status_code == 422
 
-    def test_should_return_422_when_name_is_too_short(self, client: TestClient) -> None:
+    def test_should_return_422_when_name_is_too_short(
+        self, client: TestClient, auth_headers: dict[str, str]
+    ) -> None:
         response = client.post(
             '/profiling/horses',
             json={
@@ -78,6 +91,7 @@ class TestCreateHorseController:
                 'birth_year': 2020,
                 'breed': 'arabe',
             },
+            headers=auth_headers,
         )
 
         assert response.status_code == 422

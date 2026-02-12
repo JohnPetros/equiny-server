@@ -5,8 +5,10 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from equiny.database.sqlalchemy.models.horse_model import HorseModel
+from equiny.database.sqlalchemy.models.auth.account_model import AccountModel
 from equiny.database.sqlalchemy.models.model import Model
+from equiny.database.sqlalchemy.models.profiling.horse_model import HorseModel
+from equiny.database.sqlalchemy.models.profiling.owner_model import OwnerModel
 from equiny.database.sqlalchemy.sqlalchemy import DATABASE_URL
 
 # this is the Alembic Config object, which provides
@@ -21,7 +23,9 @@ if config.config_file_name is not None:
 target_metadata = Model.metadata
 
 # Import all models so they are registered in metadata.
+_ = AccountModel
 _ = HorseModel
+_ = OwnerModel
 
 config.set_main_option('sqlalchemy.url', DATABASE_URL)
 

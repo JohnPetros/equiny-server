@@ -3,9 +3,9 @@ from uvicorn import run
 
 load_dotenv()
 
-from equiny.app import create_app  # noqa: E402
+from equiny.app import FastAPIApp  # noqa: E402
 
-app = create_app()
+app = FastAPIApp.register()
 
 
 def main() -> None:

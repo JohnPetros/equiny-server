@@ -1,13 +1,17 @@
 import pytest
 from fastapi.testclient import TestClient
+from pytest_mock import MockerFixture
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
+from unittest.mock import Mock
 from uuid import uuid4
 
-from equiny.app import create_app
+from equiny.app import FastAPIApp
 from equiny.constants import ENV
 from equiny.database.sqlalchemy.models.model import Model
 from equiny.database.sqlalchemy.sqlalchemy import Sqlalchemy
+from equiny.providers.jwt import JoseJwtProvider
+from equiny.pubsub.inngest.inngest_pubsub import InngestPubSub
 
 TEST_DATABASE_URL = (
     ENV.DATABASE_URL.replace('postgresql://', 'postgresql+psycopg://', 1)
@@ -54,6 +58,13 @@ def override_sqlalchemy_session_for_tests():
 
 
 @pytest.fixture
-def client() -> TestClient:
-    app = create_app()
+def auth_headers() -> dict[str, str]:
+    token = JoseJwtProvider().encode('test-user')
+    return {'Authorization': f'Bearer {token}'}
+
+
+@pytest.fixture
+def client(mocker: MockerFixture) -> TestClient:
+    mocker.patch.object(InngestPubSub, 'register', return_value=Mock())
+    app = FastAPIApp.register()
     return TestClient(app)

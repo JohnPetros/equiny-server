@@ -1,4 +1,5 @@
 from .create_horse_use_case import CreateHorseUseCase
+from .create_owner_use_case import CreateOwnerUseCase
 from .get_horse_use_case import GetHorseUseCase
 
-__all__ = ['CreateHorseUseCase', 'GetHorseUseCase']
+__all__ = ['CreateHorseUseCase', 'CreateOwnerUseCase', 'GetHorseUseCase']

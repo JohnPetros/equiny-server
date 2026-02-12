@@ -24,14 +24,21 @@ Exemplo real:
 
 ### Setup compartilhado via fixture
 
-Para testes REST, prefira usar fixture `client: TestClient` definido em
+Para testes REST, prefira usar as fixtures `client: TestClient` e
+`auth_headers: dict[str, str]` (para rotas autenticadas) definidas em
 `tests/conftest.py`.
 
 Padrao atual:
 
 ```python
-def test_should_create_horse_and_return_payload(self, client: TestClient) -> None:
-    response = client.post('/profiling/horses', json={...})
+def test_should_create_horse_and_return_payload(
+    self, client: TestClient, auth_headers: dict[str, str]
+) -> None:
+    response = client.post(
+        '/profiling/horses',
+        json={...},
+        headers=auth_headers,
+    )
 ```
 
 ### Formato Arrange / Act / Assert
@@ -157,7 +164,7 @@ especificos (ou parametrizados) por regra.
 
 1. Arquivo no caminho correto: `tests/rest/controllers/<modulo>/`.
 2. Nome do arquivo e da classe seguindo convencao.
-3. Uso de `client: TestClient` como fixture de entrada.
+3. Uso de `client: TestClient` e `auth_headers` (se autenticado) como fixtures.
 4. Cenario de sucesso com assert de `status_code` e payload.
 5. Cenario de erro de validacao com `status_code` apropriado (`422`).
 6. Parametrizacao para variacoes da mesma regra, quando aplicavel.
