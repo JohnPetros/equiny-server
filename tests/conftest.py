@@ -16,7 +16,7 @@ TEST_DATABASE_URL = (
 )
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='session')
 def override_sqlalchemy_session_for_tests():
     if not TEST_DATABASE_URL.startswith('postgresql'):
         raise RuntimeError('Tests require a PostgreSQL DATABASE_URL.')
