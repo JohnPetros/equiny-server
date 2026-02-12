@@ -1,7 +1,4 @@
 from equiny.core.profiling.domain.entities.horse import Horse
-from equiny.core.profiling.interfaces.repositories import (
-    HorsesRepository,
-)
 from equiny.database.sqlalchemy.mappers.horsers_mapper import HorsesMapper
 from equiny.database.sqlalchemy.repositories.sqlalchemy_repository import (
     SqlalchemyRepository,
@@ -9,7 +6,7 @@ from equiny.database.sqlalchemy.repositories.sqlalchemy_repository import (
 from equiny.database.sqlalchemy.models.horse_model import HorseModel
 
 
-class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
+class SqlalchemyHorsesRepository(SqlalchemyRepository):
     def add(self, horse: Horse) -> None:
         horse_model = HorsesMapper.to_model(horse)
         self.sqlalchemy.add(horse_model)
