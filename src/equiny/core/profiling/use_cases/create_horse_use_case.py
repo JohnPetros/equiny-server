@@ -1,6 +1,5 @@
 from equiny.core.profiling.domain.entities.horse import Horse
 from equiny.core.profiling.domain.entities.dtos import HorseDto
-
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 
 
