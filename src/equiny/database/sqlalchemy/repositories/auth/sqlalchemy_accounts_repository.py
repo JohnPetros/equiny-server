@@ -16,6 +16,16 @@ class SqlalchemyAccountsRepository(SqlalchemyRepository, AccountsRepository):
         account_model = AccountsMapper.to_model(account)
         self.sqlalchemy.add(account_model)
 
+    def find_by_email(self, email: str) -> Account | None:
+        account_model = (
+            self.sqlalchemy.query(AccountModel)
+            .filter(AccountModel.email == email)
+            .first()
+        )
+        if account_model is None:
+            return None
+        return AccountsMapper.to_entity(account_model)
+
     def find_by_id(self, id: str) -> Account | None:
         account_model = (
             self.sqlalchemy.query(AccountModel).filter(AccountModel.id == id).first()
