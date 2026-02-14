@@ -1,3 +1,7 @@
+---
+description: Revisar codigo com foco em corretude, arquitetura e qualidade
+---
+
 # Prompt: Revisar codigo (equiny-server)
 
 Objetivo: revisar mudancas no `equiny-server` com foco em corretude, aderencia as

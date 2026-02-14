@@ -1,0 +1,1 @@
+https://raw.githubusercontent.com/JohnPetros/equiny/refs/heads/main/documentation/features/auth/sign-up-screen.md

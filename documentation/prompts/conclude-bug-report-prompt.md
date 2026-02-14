@@ -1,4 +1,8 @@
-# Prompt: Commit Bug Report
+---
+description: Concluir bug report com validacao final e consolidacao da correcao
+---
+
+# Prompt: Concluir Bug Report
 
 **Objetivo:**
 Finalizar e consolidar a correção de um erro reportado, garantindo que o bug foi devidamente mitigado, que novos testes foram adicionados (se aplicável) e que a solução respeita a arquitetura do projeto.

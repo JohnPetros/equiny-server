@@ -1,3 +1,7 @@
+---
+description: Corrigir bug com planejamento, implementacao iterativa e validacoes
+---
+
 # Prompt: Corrigir bug (equiny-server)
 
 Objetivo: ler o bug report, planejar a correcao e implementar as mudancas

@@ -1,3 +1,7 @@
+---
+description: Atualizar overview do projeto com funcionalidades, status e links
+---
+
 # Prompt: Atualização de Overview
 
 **Objetivo:**

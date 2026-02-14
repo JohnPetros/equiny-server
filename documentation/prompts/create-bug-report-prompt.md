@@ -1,3 +1,7 @@
+---
+description: Criar bug report estruturado a partir de um relato inicial
+---
+
 # Prompt: Criar Bug Report
 
 **Objetivo:**
@@ -64,4 +68,3 @@ Liste código legado ou refatorações de limpeza necessárias (se houver).
 - **[Camada]**: 
 [Nome do Componente] - [Responsabilidade]
 [Nome do Componente] - [Responsabilidade]
-
