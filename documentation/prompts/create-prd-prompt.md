@@ -62,22 +62,22 @@ _(Repita para todos os requisitos)_
 
 _Liste as regras lógicas e comportamentais (Backend/Lógica)._
 
-- [ ] **[Nome da Regra]:** Descrição detalhada do comportamento, validações,
+- **[Nome da Regra]:** Descrição detalhada do comportamento, validações,
       condições, gatilhos e cálculos.
-- [ ] **[Nome da Regra]:** Descrição detalhada...
+- **[Nome da Regra]:** Descrição detalhada...
 
 ##### Regras de UI/UX (se houver)
 
 _Especifique aspectos visuais e de interação (Frontend)._
 
-- [ ] **[Elemento Visual]:** Especificação (Cores, Tipografia, Estados).
-- [ ] **Responsividade:** Comportamento em mobile/desktop.
-- [ ] **Acessibilidade:** Regras de contraste e navegação por teclado.
-- [ ] **Feedback:** Mensagens de erro, sucesso e estados de loading.
-- [ ] **Performance:** (Tempo de carregamento, resposta).
-- [ ] **Segurança:** (Autenticação, proteção de dados).
-- [ ] **Confiabilidade:** (Tratamento de erros, fallbacks).
-- [ ] **Compatibilidade:** (Navegadores, dispositivos).
+- **[Elemento Visual]:** Especificação (Cores, Tipografia, Estados).
+- **Responsividade:** Comportamento em mobile/desktop.
+- **Acessibilidade:** Regras de contraste e navegação por teclado.
+- **Feedback:** Mensagens de erro, sucesso e estados de loading.
+- **Performance:** (Tempo de carregamento, resposta).
+- **Segurança:** (Autenticação, proteção de dados).
+- **Confiabilidade:** (Tratamento de erros, fallbacks).
+- **Compatibilidade:** (Navegadores, dispositivos).
 
 ### 3. Fluxo de Usuário (User Flow)
 

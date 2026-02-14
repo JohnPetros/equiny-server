@@ -1,106 +1,88 @@
-# Prompt: Implementar Spec
+# Prompt: Implementar spec (equiny-server)
 
-**Objetivo:** Executar o plano de implementação técnica de forma iterativa,
-organizada e validada, garantindo qualidade e integração contínua.
+Objetivo: executar uma spec tecnica de forma iterativa e validada no `equiny-server`,
+mantendo os limites arquiteturais (Clean + Hexagonal) e a qualidade do codigo.
 
-**Entrada:**
+Entrada:
 
-- Documento de Spec técnica aprovado/finalizado.
+- Spec tecnica aprovada/finalizada (requisitos + criterio de aceite + mudancas esperadas).
 
-**Diretrizes de Execução:**
+---
 
-## REGRA MESTRA (NÃO IGNORE)
+## Regra mestra (nao ignore)
 
-Antes de gerar qualquer linha de código ou resposta técnica, você deve executar
-o seguinte algoritmo mental:
+Antes de escrever codigo:
 
-1. **Classificar:** Qual é a natureza da tarefa? (ex: UI, Banco de Dados, RPC,
-   Testes).
-2. **Consultar o Índice:** Olhe para o arquivo `# Diretrizes do Projeto`
-   (index).
-3. **Verificar Contexto:** O arquivo específico indicado no índice está
-   carregado no meu contexto atual?
-   - [SIM] -> Prossiga e cite qual regra específica você está aplicando.
-   - [NÃO] -> PARE IMEDIATAMENTE. Solicite ao usuário: "Por favor, adicione o
-     arquivo [caminho_do_arquivo] ao contexto para que eu possa seguir as
-     diretrizes de [Nome da Camada]."
+1) Classifique a mudanca (ex.: `core`/regra de negocio, `database`/persistencia,
+   `rest`/contrato HTTP, `tests`, tooling).
+2) Consulte o indice: `documentation/rules/rules.md`.
+3) Leia os documentos acionados pelo tipo de mudanca e aplique as regras.
 
-## PROIBIÇÕES
+Proibicoes:
 
-- NUNCA assuma padrões de arquitetura genéricos (ex: Clean Arch padrão, MVC
-  padrão) sem ler o arquivo de diretriz específico do projeto.
-- NUNCA gere código baseado apenas no resumo do arquivo de índice.
+- Nao assumir padrao generico (Clean/MVC) sem seguir as regras do repo.
+- Nao implementar "do seu jeito" quando ja existir convencao/proximo exemplo nos testes.
 
-1. **Validação de Diretrizes e Arquitetura:** Antes de iniciar a implementação,
-   certifique-se de que compreende as diretrizes (de acordo com a spec) e a
-   estrutura do projeto:
-   - **Padronização de Código:**
-     `documentation/guidelines/code-conventions-guidelines.md`
-   - **Diretrizes por Camada:**
-     - **Core (Domínio):** `documentation/guidelines/core-package-guideines.md`
-     - **UI (Widgets & Design):**
-       `documentation/guidelines/ui-layer-guidelines.md`
-     - **REST (Integrações HTTP):**
-       `documentation/guidelines/rest-layer-guidelines.md`
-     - **RPC (Server Actions):**
-       `documentation/guidelines/rpc-layer-guidelines.md`
-     - **Queue (Background Jobs):**
-       `documentation/guidelines/queue-layer-guidelines.md`
-     - **Database (Persistência):**
-       `documentation/guidelines/database-guidelines.md`
-   - **Padrões de Testes:** `documentation/guidelines/unit-tests-guidelines.md`
+---
 
-2. **Decomposição Atômica:**
-   - Divida o plano macro em micro-tarefas atômicas.
-   - Cada tarefa deve resultar em um código compilável e funcional isoladamente.
+## Diretrizes de execucao
 
-3. **Ordem de Execução (Bottom-Up):** Implemente as tarefas seguindo
-   rigorosamente a hierarquia de dependências:
-   1. **Core:** DTOs, Entidades e Interfaces.
-   2. **Drivers/Infra:** Implementações de repositórios e gateways (ex:
-      Supabase, Inngest).
-   3. **API Layers:** Implementações de Actions (RPC) ou Controllers (REST).
-   4. **Interface de Usuário:** Widgets e Páginas.
-   - **Regra:** Nunca implemente um componente consumidor (ex: Widget/Page)
-     antes de implementar a lógica/dados que ele consome.
+### 1) Validacao de arquitetura (o que ler)
 
-4. **Ciclo de Qualidade e Verificação (Por Tarefa):** Ao finalizar a codificação
-   de _cada micro-tarefa_, execute os passos de validação ANTES de passar para a
-   próxima:
-   - **Formatação e Lint:** Execute `npm run codecheck` para garantir
-     conformidade e formatação.
-   - **Typecheck:** Execute `npm run typecheck` para garantir que o código seja
-     válido com relação a tipagem.
-   - **Testes:** Execute `npm run test` para validar a lógica implementada
-   - **Contexto de Monorepo:** O comando deve ser executado **dentro do
-     diretório da aplicação ou pacote específico** (onde reside o
-     `package.json`, ex: `apps/web` ou `packages/core`), e não na raiz do
-     workspace.
-   - **Critério de Aceite:** Corrija imediatamente quaisquer erros do linter ou
-     testes falhando. Não avance com código "quebrado".
+- Arquitetura geral: `documentation/architecture.md`
+- Regras por camada:
+  - `documentation/rules/core-layer-rules.md`
+  - `documentation/rules/database-rules.md`
+  - `documentation/rules/rest-layer-rules.md`
+- Padrao de codigo/organizacao: `documentation/rules/code-conventions-rules.md`
+- Testes (indice + docs especializadas):
+  - `documentation/rules/testing-rules.md`
+  - `documentation/rules/use-cases-testing-rules.md` (quando for `core`)
+  - `documentation/rules/controllers-testing-rules.md` (quando for `rest`)
 
-5. **Uso de Ferramentas Auxiliares:**
-   - **MCP Serena**: utilize o MCP do Serena para facilitar sua busca pelo
-     projeto.
-   - **MCP Context7:** Caso tenha dúvidas sobre como usar uma biblioteca
-     específica (ex: `shadcn/ui`, `radix-ui`, `inngest`, `supabase`), utilize o
-     MCP do Context7 para obter documentação e exemplos de uso.
+### 2) Decomposicao atomica
 
-6. **Planejamento e Tarefas:**
-   - Caso tenha sido realizado o planejamento e a definição de tarefas prévias,
-     leve-as em consideração durante a implementação.
+- Quebre o plano em micro-tarefas que gerem codigo funcional a cada passo.
+- Evite PRs gigantes: prefira progresso incremental com testes acompanhando.
 
-7. **Consistência de Padrões:**
-   - **Camada UI:**
-     - Todo widget deve seguir a estrutura de Widget: `Index` (.tsx), `View`
-       (.tsx) e `Hook` (.ts).
-     - Evite lógica de negócio na View.
-     - Prefira dividir o widget em widgets menores para melhorar a reutilização
-       e a manutenção do código.
-     - Se precisar criar um widget interno, siga a estrutura de Widget: `Index`
-       (.tsx), `View` (.tsx) e `Hook` (.ts) também
-     - Funções dentro de hooks devem usar a notação function em vez de arrow
-       functions, exceto em casos específicos como useCallback.
-     - **Importante:** Utilize `Tailwind CSS` e primitivos do `Radix UI` (ou
-       componentes `shadcn` existentes), evitando estilos inline ou bibliotecas
-       não aprovadas como Material UI.
+### 3) Ordem de execucao (bottom-up)
+
+Implemente respeitando dependencia apontando para dentro:
+
+1) `core`: entidades/structures/DTOs, erros de dominio, interfaces (ports), use cases.
+2) `database`: models/mappers/repositorios SQLAlchemy (implementando ports).
+3) `rest`: routers/controllers + validacao (Pydantic) + injecao de dependencia.
+4) Ajustes de wiring (app/DI/middlewares), se necessario.
+
+Regra: nao implemente um consumidor (ex.: controller) antes da logica (use case)
+e do contrato (ports/DTOs) que ele consome.
+
+### 4) Ciclo de qualidade por micro-tarefa
+
+Ao finalizar cada micro-tarefa, rode validacoes antes de seguir:
+
+- Lint/format: `uv run poe codecheck`
+- Typecheck: `uv run poe typecheck`
+- Testes: `uv run poe test`
+
+Criterio de aceite: corrija imediatamente falhas de lint/type/tests; nao avance
+com o repo quebrado.
+
+### 5) Ferramentas auxiliares
+
+- Use Serena para buscar arquivos/simbolos rapidamente quando estiver explorando o repo.
+- Use Context7 quando precisar de docs/exemplos atualizados de uma biblioteca especifica.
+
+### 6) Consistencia e limites
+
+- `core` deve ser Python puro: sem FastAPI, SQLAlchemy, sessao, SQL, env var, HTTP.
+- `rest` deve ser fino: valida/adapta/delega; sem regra de negocio complexa.
+- `database` implementa persistencia/mapeamento; sem regra de negocio.
+
+---
+
+## Saida esperada
+
+- Implementacao completa da spec com testes relevantes.
+- Mudancas organizadas por camada (estrutura do repo preservada).
+- Comandos de verificacao executados e passando.

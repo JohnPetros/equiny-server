@@ -1,31 +1,45 @@
-# Prompt: Atualizar documento de arquitetura
+# Prompt: Atualizar documento de arquitetura (equiny-server)
 
-**Objetivo:**
-Manter atualizado o documento de arquitetura do projeto (`documentation/architecture.md`), garantindo que ele reflita fielmente as decisões estruturais, padrões de design, tecnologias adotadas e a organização do código.
+Objetivo: manter `documentation/architecture.md` sincronizado com a realidade do
+`equiny-server` (Clean Architecture + Hexagonal/Ports and Adapters), incluindo
+camadas, responsabilidades, stack e estrutura de diretorios.
 
-**Entradas:**
-1.  Documentos de Requisitos de Produto (PRDs) e Especificações Técnicas (Specs).
-    *   *Nota:* todos os arquivos de Spec possuem a extensão `-spec.md`.
-2.  Documentos de Diretrizes (Guidelines).
-    *   Exemplo: `documentation/*-guidelines.md` (como `ui-layer-guidelines.md`, `core-layer-guidelines.md`, etc.).
-3.  Alterações significativas no código fonte (novas camadas, refatorações, introdução de pacotes).
-4.  O arquivo atual `documentation/architecture.md`.
+Entradas:
 
-**Diretrizes de Execução:**
+1) PRDs/Specs relevantes (quando existirem) e decisoes tecnicas recentes.
+2) Regras do projeto (substitui "guidelines"):
+   - indice: `documentation/rules/rules.md`
+   - por camada: `documentation/rules/*-rules.md`
+3) Mudancas significativas no codigo (novas camadas, refactors, novos modulos).
+4) O arquivo atual: `documentation/architecture.md`.
 
-1.  **Análise de Impacto:**
-    *   **PRDs/Specs:** Avalie se introduzem novos domínios, componentes ou necessidades tecnológicas.
-    *   **Guidelines:** Verifique se novas diretrizes alteram padrões arquiteturais existentes (ex: nova forma de tratar erros, nova estrutura de pastas obrigatória).
-    *   **Código:** Verifique se as mudanças no código respeitam os limites definidos na arquitetura atual ou se exigem uma atualização da documentação (evolução da arquitetura).
+Diretrizes de execucao:
 
-2.  **Atualização de Seções Críticas:**
-    *   **Visão Geral e Diagramas:** Atualize os diagramas ASCII se houver mudanças no fluxo de dados ou relação entre camadas.
-    *   **Módulos de Domínio:** Adicione novos módulos ou atualize os DTOs listados na tabela de contextos delimitados.
-    *   **Stack Tecnológica:** Mantenha as versões das dependências atualizadas conforme o `pubspec.yaml` e documente novas bibliotecas chave.
-    *   **Camadas (UI, Core, Rest, Drivers):** Reflita mudanças na estrutura de pastas ou responsabilidades de cada camada. Se novos padrões forem adotados (ex: mudou de MVP para MVVM), atualize as explicações e exemplos de código.
-    *   **Estrutura de Diretórios:** Mantenha a árvore de diretórios no final do documento sincronizada com a realidade do projeto.
+1) Analise de impacto
 
-3.  **Validação de Consistência:**
-    *   Garanta que os exemplos de código no documento de arquitetura compilem ou sejam sintaticamente corretos e representativos do código real.
-    *   Verifique se as "Armadilhas a Evitar" ainda são relevantes ou se novas lições aprendidas devem ser adicionadas.
+- Produto: o PRD pode introduzir novos contextos/modulos (ex.: `matching`, `messaging`, `discovery`).
+- Regras: verifique se novas regras mudam limites arquiteturais ou convencoes.
+- Codigo: confirme se a estrutura real segue os limites (dependencia aponta para dentro).
 
+2) Atualizacao das secoes criticas em `documentation/architecture.md`
+
+- Visao geral: reafirme Clean/Hex e descreva o por que da separacao.
+- Stack: mantenha alinhado ao `pyproject.toml` (Python/FastAPI/SQLAlchemy/uv/pytest/ruff/pyright/poe).
+- Estrutura de diretorios: sincronize com `src/equiny/**` (core/database/rest/routers/validation/middlewares).
+- Camadas e responsabilidades:
+  - `core`: entidades, use cases, ports, erros de dominio; sem FastAPI/SQLAlchemy/HTTP/env.
+  - `database`: models/mappers/repositorios; sem regra de negocio.
+  - `rest`/`routers`: contrato HTTP, validacao, adaptacao; controller fino.
+  - `validation`: DTOs/Pydantic; contrato de entrada/saida.
+- Fluxo de request: atualize se houver novo middleware, DI ou alteracao no ciclo transacional.
+- Inversao de dependencia: mostre como ports sao definidos no `core` e implementados em `database` e injetados em `rest`.
+
+3) Validacao de consistencia
+
+- Exemplos e nomes: devem refletir o codigo real do repo (nomes de pacotes, pastas, comandos).
+- Diagramas ASCII: atualize apenas quando houver mudanca relevante (sem especular).
+- Nao introduza camadas inexistentes (ex.: UI) no `equiny-server`.
+
+Saida esperada:
+
+- `documentation/architecture.md` atualizado, com mudancas rastreaveis (o que mudou e por que).

@@ -72,7 +72,7 @@ class CreateHorseController:
     @staticmethod
     def handle(router: APIRouter) -> None:
         @router.post(...)
-        async def _(
+        def _(
             body: Schema,
             repository: InterfaceRepository = Depends(DatabasePipe.get_repository)
         ):
@@ -104,7 +104,7 @@ O fluxo tipico em um controller e:
 - Arquivos em `snake_case` refletindo a acao: `create_horse_controller.py`.
 - Classes em `PascalCase` com sufixo `Controller`: `CreateHorseController`.
 - Metodo de entrada padrao: `handle(router: APIRouter)`.
-- Funcao de rota interna: `async def _(...)`.
+- Funcao de rota interna: `def _(...)`.
 
 ## Regras de integracao com outras camadas da aplicacao
 

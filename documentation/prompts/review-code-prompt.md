@@ -1,52 +1,48 @@
-# Prompt: Revisar código
+# Prompt: Revisar codigo (equiny-server)
 
-**Objetivo:** Realizar uma revisão técnica rigorosa da base de código para
-assegurar conformidade com os padrões do projeto, identificar bugs latentes e
-garantir a qualidade através de ferramentas de lint e formatação.
+Objetivo: revisar mudancas no `equiny-server` com foco em corretude, aderencia as
+regras do repo e qualidade (lint/format, typecheck e testes).
 
-**Entrada:**
+Entrada:
 
-- **Contexto:** Spec que acabou de ser implementada (opcional).
-- **Alvo:** Todo o projeto ou caminhos específicos fornecidos.
+- Contexto: spec implementada (opcional) e/ou descricao do que mudou.
+- Alvo: caminhos especificos ou o projeto inteiro.
 
-**Diretrizes de Execução:**
+Diretrizes de execucao:
 
-1. **Verificação de Spec e Lógica:**
-   - **Conformidade:** Verifique se a spec foi implementada corretamente,
-     respeitando todos os requisitos definidos.
-   - **Escaneamento Manual:** Procure por erros de digitação, erros de lógica,
-     problemas de nomenclatura e erros de sintaxe óbvios.
+1) Verificacao de spec e logica
 
-2. **Análise de Qualidade Estática:**
-   - **Diagnóstico:** Execute `npm run codecheck` para identificar problemas de
-     formatação e lint e depois `npm run typecheck` para verificar tipagem e
-     corrigir erros de tipo.
-   - **Priorização:** Examine a severidade dos problemas reportados, priorizando
-     erros que impeçam o build.
+- Confirme que os requisitos e criterios de aceite foram atendidos.
+- Revise manualmente:
+  - bugs latentes (edge cases, validacao, erros de dominio)
+  - nomes e responsabilidades por camada (`core`/`database`/`rest`)
+  - limites arquiteturais (dependencias apontando para dentro)
 
-3. **Refatoração e Alinhamento com Protocolos:**
-   - **Manual:** Corrija manualmente os problemas persistentes do codecheck não
-     pôde resolver.
-   - **Diretrizes:** Siga rigorosamente os padrões de projeto conforme
-     documentado em:
-   - **Convenções de codificação:**
-     [code-conventions-guidelines.md](../guidelines/code-conventions-guidelines.md)
-     - **Arquitetura:** [architecture.md](../architecture.md)
-     - **Core:**
-       [core-package-guideines.md](../guidelines/core-package-guideines.md)
-     - **REST:**
-       [rest-layer-guidelines.md](../guidelines/rest-layer-guidelines.md)
-     - **UI:** [ui-later-guidelines.md](../guidelines/ui-later-guidelines.md) e
-       [web-application-guidelines.md](../guidelines/web-application-guidelines.md)
-     - **Testes:**
-       [unit-tests-guidelines.md](../guidelines/unit-tests-guidelines.md)
-   - **Padrões:** Garanta o uso correto do **Widget Pattern** (View/Index/Hook),
-     **Zudtand** para estado global e **Inngest** para filas.
+2) Qualidade estatica (comandos do repo)
 
-4. **Validação Final:**
-   - **Testes:** Execute `npm run test` para validar que as alterações não
-     impactaram o comportamento funcional. Lembre-se de executar no diretório
-     correto do monorepo.
+- Lint/format: `uv run poe codecheck` (ruff)
+- Typecheck: `uv run poe typecheck` (pyright)
+- Priorize falhas que quebram build/execucao (type errors, import cycles, lint blocking).
 
-**Critério de Sucesso:** A revisão é considerada concluída quando o Biome não
-retornar erros e todos os testes automatizados relevantes passarem.
+3) Alinhamento com regras do projeto (leitura progressiva)
+
+- Indice: `documentation/rules/rules.md`
+- Arquitetura: `documentation/architecture.md`
+- Por camada (quando aplicavel):
+  - `documentation/rules/core-layer-rules.md`
+  - `documentation/rules/database-rules.md`
+  - `documentation/rules/rest-layer-rules.md`
+- Testes:
+  - `documentation/rules/testing-rules.md`
+  - `documentation/rules/use-cases-testing-rules.md`
+  - `documentation/rules/controllers-testing-rules.md`
+
+4) Validacao final
+
+- Testes: `uv run poe test`
+- Se tocar em controllers/endpoints, garanta que testes REST continuam passando.
+
+Criterio de sucesso:
+
+- `uv run poe codecheck`, `uv run poe typecheck` e `uv run poe test` passam.
+- Revisao confirma aderencia a arquitetura (Clean/Hex) e consistencia de padroes.

@@ -103,7 +103,7 @@ from equiny.pipes.auth_pipe import AuthPipe
     '/',
     dependencies=[Depends(AuthPipe.verify_jwt)],
 )
-async def _( ... ):
+def _( ... ):
     ...
 ```
 

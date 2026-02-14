@@ -1,66 +1,89 @@
-# Prompt: Criar testes 🧪
+# Prompt: Criar testes (equiny-server)
 
-**Objetivo:** Orientar a criação de testes unitários e de integração padronizados e eficientes, garantindo a integridade da lógica de negócios, a orquestração correta dos handlers e a fidelidade funcional dos componentes de UI.
+Objetivo: orientar a criacao de testes consistentes para o `equiny-server`, cobrindo
+regra de negocio (`core`) e contrato HTTP (`rest`) sem acoplar a infraestrutura no lugar errado.
 
-**Entrada:**
+Entrada:
 
-- **Código Fonte:** Arquivo a ser testado (`Entity`, `Structure`, `Use Case`, `Controller`, `Action`, `Tool`, `Hook` ou `Widget`).
-
----
-
-## 📋 Diretrizes de Execução
-
-### 1. Adesão às Normas do Projeto
-
-Identifique o tipo de código que está sendo testado e leia e siga a diretriz correspondente em `documentation/guidelines/`: 
-
-- **Objetos de Domínio:** [domain-objects-testing-guidelines.md](./documentation/guidelines/domain-objects-testing-guidelines.md)
-- **Casos de Uso:** [use-cases-testing-guidelines.md](./documentation/guidelines/use-cases-testing-guidelines.md)
-- **Handlers (REST, RPC, AI):** [handlers-testing-guidelines.md](./documentation/guidelines/handlers-testing-guidelines.md)
-- **Widgets (UI):** [widget-tests-guidelines.md](./documentation/guidelines/widget-tests-guidelines.md)
-
-### 2. Estrutura e Nomenclatura 📁
-
-- **Localização:** Crie os testes **co-localizados** em uma subpasta `tests/` dentro do diretório do arquivo original.
-- **Extensão:**
-  - Lógica e Handlers: `.test.ts`
-  - Componentes (Widgets, Pages): `.test.tsx`
-- **Exemplo:**
-  - Original: `src/auth/actions/SignInAction.ts`
-  - Teste: `src/auth/actions/tests/SignInAction.test.ts`
-
-### 3. Stack de Testes 🛠️
-
-- **Runner:** Jest
-- **Mocking:** `ts-jest-mocker` (Use `mock<Interface>()` e `Mock<Interface>`)
-- **Fakers:** `@faker-js/faker` via classes estáticas em `domain/entities/fakers/`
-- **React:** `@testing-library/react` e `@testing-library/user-event`
-
-### 4. Preparação de Dados (Fakers)
-
-- **Uso de Fakers:** Utilize sempre as classes `Faker` (ex: `UsersFaker.fake()`) para instanciar Entidades, DTOs e Estruturas.
-- **Ação Pró-ativa:** Se o `Faker` necessário não existir, **crie-o primeiro** seguindo o padrão do domínio.
-
-### 5. Estratégia por Tipo de Teste 🎯
-
-- **Domain Objects:** Foco em validações de regras no construtor/factory e métodos de comportamento.
-- **Use Cases:** Teste 100% da lógica de negócio, cobrindo "Happy Path" e todas as exceções de domínio.
-- **Handlers:** Foco na extração de dados do contexto (`Http`, `Call`, `Mcp`), orquestração do Caso de Uso/Serviço e formatação da resposta.
-- **Widgets:**
-  - Teste **Hooks** e **Views** separadamente utilizando as funções auxiliares `Hook()` e `View()`.
-  - Para **Formulários complexos**, realize o teste de integração no **Widget (Index)**.
-
-### 6. Qualidade e Clean Code
-
-- **Arrange-Act-Assert:** Estruture os testes claramente nestas 3 fases (Não adicione comentários, uma quebra de linha já é o suficiente).
-- **Isolamento:** Use `beforeEach` para reiniciar mocks e garantir que cada `it` seja independente.
-- **Asserções Específicas:** Prefira `toHaveBeenCalledWith` com valores exatos ou `expect.objectContaining`.
+- Codigo fonte a ser testado (use case em `src/equiny/core/**`, controller/rota em `src/equiny/rest/**`/`src/equiny/routers/**`, ou estruturas de apoio).
 
 ---
 
-## 🚀 Workflow Sugerido
+## Diretrizes de execucao
 
-1. **🔍 Setup:** Crie a pasta `tests/` e o arquivo `<Nome>.test.ts(x)`.
-2. **🎭 Mocking:** Identifique as interfaces de dependência e instancie os mocks.
-3. **🛠️ Implementação:** Comece pelo caminho de sucesso e depois cubra os cenários de erro/exceção.
-4. **✅ Validação:** Execute o teste no escopo correto do monorepo (ex: `npm run test -- caminho/do/arquivo`).
+### 1) Aderencia as regras do projeto (leitura progressiva)
+
+- Sempre comece por `documentation/rules/testing-rules.md`.
+- Se for use case (`core`): leia `documentation/rules/use-cases-testing-rules.md`.
+- Se for controller (`rest`): leia `documentation/rules/controllers-testing-rules.md`.
+
+### 2) Estrutura e nomenclatura
+
+- Testes nao sao co-localizados no codigo fonte; ficam em `tests/`.
+- Use cases (core):
+  - caminho: `tests/core/<contexto>/use_cases/`
+  - arquivo: `test_<nome_use_case>.py`
+  - classe: `Test<UseCaseName>`
+  - metodo: `test_should_<resultado>_when_<condicao>`
+- Controllers (rest):
+  - caminho: `tests/rest/controllers/<contexto>/`
+  - arquivo: `test_<nome_controller>.py`
+  - classe: `Test<ControllerName>`
+  - metodo: `test_should_<resultado>_when_<condicao>`
+
+### 3) Stack de testes
+
+- Runner/framework: `pytest`
+- Execucao padrao: `uv run poe test` (usa `pytest -s -x -vv`)
+- Mocking:
+  - preferencia: `unittest.mock.create_autospec(<Interface>, instance=True)` (use cases)
+  - fixture util: `mocker` (pytest-mock), quando fizer sentido
+- REST client: `fastapi.testclient.TestClient` via fixture `client`
+
+### 4) Preparacao de dados (fakers)
+
+- Reaproveite massa de teste em `tests/fakers/**`.
+- Prefira dados explicitamente configurados quando forem parte da regra (evite aleatoriedade em asserts).
+
+### 5) Estrategia por tipo de teste
+
+- Use case (core):
+  - foco: comportamento de negocio do metodo `execute(...)`
+  - mocke apenas ports/repositorios (sem FastAPI, sem SQLAlchemy)
+  - cubra no minimo um caminho feliz e um caminho de erro (excecao de dominio)
+  - valide retorno + interacoes (ex.: `assert_called_once_with`)
+- Controller (rest):
+  - foco: contrato HTTP (rota/verbo, `status_code`, payload, validacao `422`)
+  - exercite o app com `TestClient` usando fixtures `client` e `auth_headers` (quando autenticado)
+  - evite acoplar a detalhes internos do use case
+
+### 6) Regras do repo que impactam testes REST
+
+- `tests/conftest.py` cria schema isolado no Postgres por sessao de testes e sobrescreve `Sqlalchemy.get_session`.
+- Testes REST exigem `ENV.DATABASE_URL` apontando para PostgreSQL.
+- Side effects externos: fixture `client` faz patch de `InngestPubSub.register` para evitar efeitos colaterais.
+
+### 7) Qualidade
+
+- Use Arrange / Act / Assert com separacao por linha em branco (sem comentarios).
+- Cada teste deve ser independente (nao depender de ordem/estado de outro teste).
+- Assert seja objetivo: valide campos chave e o contrato observavel.
+
+---
+
+## Workflow sugerido
+
+1) Escolha o tipo: use case (`core`) ou controller (`rest`) e leia as regras correspondentes.
+2) Crie o arquivo de teste no caminho correto em `tests/`.
+3) Escreva primeiro o caminho feliz, depois erro(s)/validacao.
+4) Rode localmente:
+
+```bash
+uv run poe test
+```
+
+Ou apenas um arquivo:
+
+```bash
+uv run pytest -q tests/rest/controllers/profiling/test_create_horse_controller.py
+```

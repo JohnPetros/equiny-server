@@ -1,40 +1,41 @@
-# Prompt: Conclude Spec
+# Prompt: Concluir spec (equiny-server)
 
-**Objetivo:** Finalizar e consolidar a implementação de uma Spec técnica,
-garantindo que o código esteja polido, documentado, validado e pronto para a
-criação de um Pull Request.
+Objetivo: finalizar e consolidar a implementacao de uma spec tecnica no
+`equiny-server`, garantindo codigo polido, validado e pronto para PR.
 
-**Entrada:**
+Entrada:
 
-- **Spec Técnica:** O documento que guiou a implementação
-  (`documentation/features/.../specs/...`).
-- **Código Implementado:** As alterações realizadas nas camadas UI, Core, Rest e
-  Drivers.
+- Spec tecnica que guiou a implementacao.
+- Codigo implementado (mudancas em `core`, `database`, `rest`, `validation`, etc.).
 
-**Diretrizes de Execução:**
+Diretrizes de execucao:
 
-1. **Validação de Qualidade Final:**
-   - **Análise Estática e Formatação:** Execute `npm run codecheck` em todo o
-     projeto para garantir que não existam warnings ou erros remanescentes.
-   - **Testes Unitários:** Execute `npm run test` para validar que todos os
-     testes (novos e existentes) estão passando.
+1) Validacao final de qualidade (comandos do repo)
 
-2. **Verificação de Requisitos:**
-   - Compare o código final com cada seção da Spec (O que deve ser
-     criado/modificado).
-   - Certifique-se de que todos os componentes descritos foram implementados
-     conforme planejado.
+- Lint/format: `uv run poe codecheck`
+- Typecheck: `uv run poe typecheck`
+- Testes: `uv run poe test`
 
-3. **Atualização da Documentação e Visualização:**
-   - Refine o documento da Spec original para refletir decisões de design de
-     última hora ou mudanças de caminho.
-   - **PRD:** Atualize o PRD associado a spec com as mudanças implementadas.
-     Verifique se os itens foram concluídos e marque-os como concluídos.
+2) Verificacao de requisitos
 
-4. **Atualização do Status da Spec:**
-   - Atualize o status da Spec para "concluído".
-   - Atualize a data da última atualização.
+- Compare o codigo final com os requisitos/criterios de aceite da spec.
+- Garanta que limites arquiteturais foram respeitados:
+  - `core` puro (sem FastAPI/SQLAlchemy/HTTP/env)
+  - `database` apenas persistencia/mapeamento
+  - `rest` valida/adapta/delega (controller fino)
 
-5. **Geração de Resumo Final:**
-   - Forneça um resumo técnico do que foi concluído para facilitar a criação do
-     PR subsequente.
+3) Atualizacao de documentacao
+
+- Se a implementacao mudou decisoes da spec, atualize a propria spec com o que foi decidido.
+- Se houver mudanca arquitetural relevante (nova camada/padrao/fluxo), atualize `documentation/architecture.md`.
+- Se a mudanca introduz regras novas/ajustes de padrao, atualize `documentation/rules/*.md`.
+
+4) Status da spec
+
+- Marque a spec como concluida e atualize a data de ultima atualizacao (se o documento usar esse campo).
+
+5) Resumo final para PR
+
+- Liste o que foi entregue (por camada/modulo).
+- Destaque mudancas de contrato (HTTP/DTOs), migracoes e riscos.
+- Inclua comandos rodados e o resultado (passando).

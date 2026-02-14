@@ -1,63 +1,59 @@
-# Prompt: Fix Bug
+# Prompt: Corrigir bug (equiny-server)
 
-**Objetivo Principal**
-Ler o bug report, planejar a correção e implementar as mudanças necessárias para resolver o problema identificado, garantindo a qualidade do código.
+Objetivo: ler o bug report, planejar a correcao e implementar as mudancas
+necessarias no `equiny-server`, garantindo qualidade (lint/type/tests) e
+respeito aos limites arquiteturais.
 
-**Entradas**
-*   **Bug Report:** Documento detalhado descrevendo o problema, causas raízes e plano de correção sugerido.
+Entradas:
 
-**Diretrizes de Execução**
+- Bug report (descricao, como reproduzir, comportamento esperado vs atual, possivel causa raiz).
 
-1.  **Análise e Planejamento**
-    *   Revise cuidadosamente o Bug Report fornecido.
-    *   Entenda o contexto do erro, os impactos técnicos e as decisões de design envolvidas.
-    *   Elabore ou refine o plano de correção, assegurando conformidade com as diretrizes de arquitetura de cada camada (Core, UI, Drivers, REST).
+Diretrizes de execucao:
 
-2.  **Decomposição de Tarefas**
-    *   Divida o plano de correção em micro-tarefas atômicas e gerenciáveis.
-    *   Cada tarefa deve ter um escopo claro e resultar em um código compilável.
+1) Analise e planejamento
 
-3.  **Implementação Iterativa**
-    *   Execute a implementação de cada micro-tarefa sequencialmente.
-    *   Siga rigorosamente as convenções de código e arquitetura do projeto.
+- Reproduza o bug (quando possivel) e identifique o ponto exato de falha.
+- Classifique a mudanca por camada (`core`, `database`, `rest`, `validation`, `tests`).
+- Consulte regras acionadas pelo tipo de mudanca em `documentation/rules/rules.md`.
 
-4.  **Ciclo de Qualidade e Verificação (Por Tarefa)**
-    *   Ao finalizar a codificação de *cada micro-tarefa*, execute os passos de validação **ANTES** de passar para a próxima:
-        *   **Formatação e Lint:** Execute `npx biome check --apply .` para formatar e corrigir problemas automaticamente.
-        *   **Análise Estática:** Execute `npx biome check .` para garantir que não há erros.
-        *   **Testes:** Execute `npm run test -- <caminho>` (no diretório correto do monorepo) para validar.
-    *   **Critério de Aceite:** Não avance com código que apresente erros de linter ou falhas de compilação.
+2) Decomposicao
 
-5.  **Revisão Final**
+- Divida em micro-tarefas pequenas que mantenham o repo rodando a cada passo.
+- Priorize primeiro: teste que reproduz (ou scenario minimo), depois a correcao.
 
-    A revisão final é a etapa crítica que garante a qualidade e integridade da solução antes da entrega. Deve ser realizada **somente após** a conclusão de todas as micro-tarefas.
+3) Implementacao iterativa
 
-    ##### 5.1 Checklist de Validação
+- Aplique a correcao respeitando a arquitetura:
+  - `core` puro: sem FastAPI/SQLAlchemy/HTTP/env
+  - `database`: persistencia/mapeamento; sem regra de negocio
+  - `rest`: contrato HTTP e adaptacao; controller fino
 
-    Execute as verificações abaixo para assegurar que o bug foi corrigido corretamente:
+4) Ciclo de qualidade por micro-tarefa
 
-    | # | Verificação | Critério de Aceite |
-    |---|-------------|-------------------|
-    | 1 | **Completude** | Todos os requisitos do Bug Report foram implementados? |
-    | 2 | **Funcionalidade** | O bug original não ocorre mais nos cenários de teste? |
-    | 3 | **Regressão** | Testes existentes continuam passando (sem quebras)? |
-    | 4 | **Efeitos Colaterais** | Nenhum comportamento inesperado foi introduzido? |
-    | 5 | **Código** | Formatação, lint e análise estática estão aprovadas? |
+Ao finalizar cada micro-tarefa, rode validacoes antes de seguir:
 
-    ##### 5.2 Procedimento de Validação
+- Lint/format: `uv run poe codecheck`
+- Typecheck: `uv run poe typecheck`
+- Testes: `uv run poe test` (ou subset primeiro, quando fizer sentido)
 
-    1. **Leitura Recontextualizada**
-       *   Releia o Bug Report na íntegra para garantir que nenhum requisito foi omitido.
+Criterio: nao avance com lint/type/test quebrados.
 
-    2. **Execução de Testes de Aceitação**
-       *   Execute o teste que reproduzia o bug original.
-       *   Confirme que o teste agora passa (comportamento esperado).
+5) Revisao final
 
-    3. **Análise de Impacto**
-       *   Revise os arquivos modificados além da área direta do bug.
-       *   Identifique possíveis dependências quebradas ou comportamentos alterados.
+Checklist:
 
-    4. **Execução da Suite Completa**
-       *   Execute todos os testes do módulo afetado: `npm run test -- <caminho-do-modulo>`
+| # | Verificacao | Criterio de aceite |
+|---|------------|--------------------|
+| 1 | Completude | Requisitos do bug report atendidos |
+| 2 | Funcionalidade | Bug nao ocorre mais no cenario de reproducao |
+| 3 | Regressao | Suite relevante continua passando |
+| 4 | Efeitos colaterais | Nenhuma mudanca inesperada de comportamento |
+| 5 | Qualidade | `uv run poe codecheck`, `uv run poe typecheck`, `uv run poe test` passam |
 
-    > ⚠️ **IMPORTANTE:** Se qualquer item do checklist falhar, retorne à fase de **Implementação Iterativa** e corrija antes de prosseguir.
+Procedimento:
+
+1) Releia o bug report e confirme que nada ficou faltando.
+2) Rode o(s) teste(s) que cobriam/reproduziam o bug e confirme que agora passam.
+3) Rode a suite completa: `uv run poe test`.
+
+Se qualquer item falhar, volte para a etapa 3 e ajuste antes de concluir.

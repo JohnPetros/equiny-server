@@ -1,28 +1,38 @@
-# Fix Side Effect Skill
+# Prompt: Corrigir side effects (equiny-server)
 
-**Objetivo:**
-Identificar e corrigir regressões ou erros de compilação (efeitos colaterais) resultantes de alterações manuais no código-fonte. O foco é restabelecer a integridade do projeto, atualizando dependências e validando testes.
+Objetivo: identificar e corrigir regressao, erro de import, erro de lint/type ou
+falha de testes causada por alteracoes manuais, restabelecendo a integridade do
+`equiny-server`.
 
-**Entrada:**
-*   Caminho do arquivo ou diretório onde ocorreram as edições manuais.
+Entrada:
 
-**Diretrizes de Execução:**
+- Caminho(s) do arquivo/diretorio alterado(s) ou erro observado (stack trace/log).
 
-1.  **Diagnóstico Estático:**
-    *   Utilize `npx biome check .` para varrer o projeto em busca de erros de linting ou compilação gerados pela alteração.
-    *   Priorize a correção de erros de sintaxe e contratos de interface quebrados.
+Diretrizes de execucao:
 
-2.  **Correção de Dependências:**
-    *   Atualize todos os arquivos que dependem do código modificado (imports, chamadas de função, instâncias de classe).
-    *   **Responsabilidade:** Cabe ao agente garantir que a refatoração se propague corretamente por toda a base de código.
+1) Diagnostico estatico
 
-3.  **Validação de Testes:**
-    *   **Verificação:** Caso a alteração tenha impactado a lógica de negócios ou a estrutura de classes, os testes correspondentes **devem** ser atualizados.
-    *   **Execução:** Utilize `npm run test -- <caminho>` (no diretório correto do monorepo) para rodar os testes afetados.
-    *   **Critério de Sucesso:** A tarefa só está concluída quando não houver erros de análise estática e os testes estiverem passando (verde).
+- Rode lint/format: `uv run poe codecheck` (ruff)
+- Rode typecheck: `uv run poe typecheck` (pyright)
+- Priorize:
+  - erros de sintaxe/import
+  - contracts quebrados (assinaturas/ports)
+  - type errors que impedem execucao
 
-4.  **Sincronização de Documentação (Spec e PRD):**
-    *   **Verificação:** Verifique se as alterações no código divergem do que está documentado no **PRD** ou nos **Specs** da feature correspondente (localizados em `documentation/features/`).
-    *   **Atualização:** Caso o comportamento do sistema tenha mudado em relação às definições originais, atualize os documentos relevantes para garantir que a documentação reflita com precisão o estado atual do projeto.
+2) Propagacao de mudanca
+
+- Atualize todos os pontos impactados (imports, chamadas, tipos, DTOs, contratos de interface).
+- Se a mudanca afetar um port do `core`, confirme que implementacoes em `database` ainda aderem ao contrato.
+
+3) Validacao com testes
+
+- Rode testes: `uv run poe test`.
+- Se o impacto for localizado, rode um subconjunto primeiro e depois o suite completo.
+- Criterio de sucesso: sem falhas em lint/type e testes verdes.
+
+4) Sincronizacao de documentacao
+
+- Se o comportamento mudou em relacao ao esperado, atualize a spec/PRD relevante (quando existir) e/ou regras em `documentation/rules/*.md`.
+- Se a mudanca for arquitetural (nova camada/fluxo), atualize `documentation/architecture.md`.
 
   
