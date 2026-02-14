@@ -1,27 +1,26 @@
-from fastapi import Depends, Request
+from fastapi import Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
 from equiny.core.shared.domain.errors.auth_error import AuthError
 from equiny.pipes import ProvidersPipe
 
+bearer_scheme = HTTPBearer(auto_error=False)
+
 
 class AuthPipe:
     @staticmethod
     def verify_jwt(
-        request: Request,
+        credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
         jwt_provider: JwtProvider = Depends(ProvidersPipe.get_jwt_provider),
     ) -> dict[str, str]:
-        auth_header = request.headers.get('Authorization')
-
-        if not auth_header:
+        if credentials is None:
             raise AuthError('Cabeçalho de autorização não encontrado')
 
-        parts = auth_header.split()
+        if credentials.scheme.lower() != 'bearer':
+            raise AuthError('Authorization inválido. Use: Bearer <token>')
 
-        if len(parts) != 2 or parts[0].lower() != 'bearer':
-            raise AuthError('Authorization header inválido. Use: Bearer <token>')
-
-        token = parts[1].strip()
+        token = (credentials.credentials or '').strip()
         if not token:
             raise AuthError('Jwt não encontrado')
 

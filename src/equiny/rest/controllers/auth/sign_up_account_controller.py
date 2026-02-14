@@ -3,7 +3,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
-from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
 from equiny.core.auth.interfaces.repositories.accounts_repository import (
     AccountsRepository,
 )
@@ -24,7 +23,6 @@ repository = Annotated[
     AccountsRepository, Depends(DatabasePipe.get_accounts_repository)
 ]
 hash_provider = Annotated[HashProvider, Depends(ProvidersPipe.get_hash_provider)]
-jwt_provider = Annotated[JwtProvider, Depends(ProvidersPipe.get_jwt_provider)]
 broker = Annotated[Broker, Depends(PubSubPipe.get_broker)]
 
 
@@ -38,17 +36,15 @@ class SignUpAccountController:
             body: BodySchema,
             repository: repository,
             hash_provider: hash_provider,
-            jwt_provider: jwt_provider,
             broker: broker,
         ) -> AccountDto:
             use_case = SignUpAccountUseCase(
                 repository=repository,
                 hash_provider=hash_provider,
-                jwt_provider=jwt_provider,
                 broker=broker,
             )
             return use_case.execute(
-                body.owner_name,
                 body.account_email,
                 body.account_password,
+                body.owner_name,
             )
