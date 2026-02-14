@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
@@ -7,6 +8,9 @@ from equiny.validation.profiling import HorseSchema
 from equiny.core.profiling.domain.entities.dtos import HorseDto
 from equiny.core.profiling.use_cases import CreateHorseUseCase
 from equiny.pipes.database_pipe import DatabasePipe
+
+
+repository = Annotated[HorsesRepository, Depends(DatabasePipe.get_horses_repository)]
 
 
 class CreateHorseController:
@@ -18,7 +22,7 @@ class CreateHorseController:
             response_model=HorseDto,
             dependencies=[Depends(AuthPipe.verify_jwt)],
         )
-        async def _(
+        def _(
             body: HorseSchema,
             repository: HorsesRepository = Depends(DatabasePipe.get_horses_repository),
         ) -> HorseDto:

@@ -9,7 +9,7 @@ class HandleSqlalchemySessionMiddleware:
     @staticmethod
     def handle(app: FastAPI) -> None:
         @app.middleware('http')
-        async def _(
+        def _(
             request: Request, call_next: Callable[[Request], Awaitable[Response]]
         ) -> Response:
             sqlalchemy_session = Sqlalchemy.get_session()
