@@ -21,7 +21,7 @@ class CreateOwnerJob:
             fn_id='profiling/create.owner.job',
             trigger=TriggerEvent(event=AccountCreatedEvent.name),
         )
-        async def _(context: Context) -> None:
+        def _(context: Context) -> None:
             payload = PayloadSchema.model_validate(context.event.data)
             await context.step.run(
                 'Create owner',
@@ -31,7 +31,7 @@ class CreateOwnerJob:
         return _
 
     @staticmethod
-    async def create_owner(payload: PayloadSchema) -> None:
+    def create_owner(payload: PayloadSchema) -> None:
         repository = SqlalchemyOwnersRepository(Sqlalchemy.get_session())
         use_case = CreateOwnerUseCase(repository)
         use_case.execute(
