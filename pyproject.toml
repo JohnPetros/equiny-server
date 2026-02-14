@@ -11,9 +11,11 @@ dependencies = [
     "httpx>=0.28.1",
     "inngest>=0.5.15",
     "psycopg[binary]>=3.2.0",
+    "pydantic-settings>=2.6.0",
     "pwdlib[argon2]>=0.3.0",
     "pyjwt>=2.11.0",
     "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
     "python-dotenv>=1.0.0",
     "python-jose[cryptography]>=3.5.0",
     "sqlalchemy>=2.0.46",
@@ -51,7 +53,7 @@ cmd = "alembic stamp head"
 cmd = "alembic current"
 
 [tool.poe.tasks.test]
-cmd = "pytest -v"
+cmd = "pytest -s -x -vv"
 
 [tool.poe.tasks.typecheck]
 cmd = "pyright src"
