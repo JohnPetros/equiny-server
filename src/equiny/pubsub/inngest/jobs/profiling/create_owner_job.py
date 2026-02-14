@@ -1,27 +1,39 @@
-from inngest import Inngest, Context, TriggerEvent
+from typing import Annotated
+
+
 from pydantic import BaseModel
+from fastapi import Depends
+from inngest import Inngest, Context, TriggerEvent
+
 
 from equiny.core.auth.domain.events import AccountCreatedEvent
+from equiny.core.profiling.interfaces.repositories.owners_repository import (
+    OwnersRepository,
+)
 from equiny.core.profiling.use_cases import CreateOwnerUseCase
-from equiny.database.sqlalchemy.sqlalchemy import Sqlalchemy
-from equiny.database.sqlalchemy.repositories.profiling import SqlalchemyOwnersRepository
+from equiny.pipes.database_pipe import DatabasePipe
 from equiny.validation.shared import NameSchema, IdSchema, EmailSchema
+from equiny.pubsub.inngest.jobs.job import Job
+from equiny.database.sqlalchemy.repositories.profiling import SqlalchemyOwnersRepository
 
 
 class PayloadSchema(BaseModel):
     owner_name: NameSchema
-    owner_email: EmailSchema
+    account_email: EmailSchema
     account_id: IdSchema
 
 
-class CreateOwnerJob:
+repository = Annotated[OwnersRepository, Depends(DatabasePipe.get_owners_repository)]
+
+
+class CreateOwnerJob(Job):
     @staticmethod
     def handle(inngest: Inngest):
         @inngest.create_function(
             fn_id='profiling/create.owner.job',
             trigger=TriggerEvent(event=AccountCreatedEvent.name),
         )
-        def _(context: Context) -> None:
+        async def _(context: Context) -> None:
             payload = PayloadSchema.model_validate(context.event.data)
             await context.step.run(
                 'Create owner',
@@ -31,11 +43,12 @@ class CreateOwnerJob:
         return _
 
     @staticmethod
-    def create_owner(payload: PayloadSchema) -> None:
-        repository = SqlalchemyOwnersRepository(Sqlalchemy.get_session())
-        use_case = CreateOwnerUseCase(repository)
-        use_case.execute(
-            account_id=payload.account_id,
-            owner_name=payload.owner_name,
-            owner_email=payload.owner_email,
-        )
+    async def create_owner(payload: PayloadSchema) -> None:
+        with Job.sqlalchemy_session() as sqlalchemy:
+            repository = SqlalchemyOwnersRepository(sqlalchemy)
+            use_case = CreateOwnerUseCase(repository)
+            use_case.execute(
+                account_id=payload.account_id,
+                owner_name=payload.owner_name,
+                owner_email=payload.account_email,
+            )
