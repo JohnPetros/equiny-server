@@ -1,5 +1,4 @@
 import pytest
-from typing import cast
 from unittest.mock import Mock, create_autospec
 
 from equiny.core.profiling.domain.errors import HorseNotFoundError
@@ -15,9 +14,7 @@ class TestGetHorseUseCase:
     @pytest.fixture(autouse=True)
     def setup_tests(self) -> None:
         self.repository_mock = create_autospec(HorsesRepository, instance=True)
-        self.use_case = GetHorseUseCase(
-            repository=cast('HorsesRepository', self.repository_mock)
-        )
+        self.use_case = GetHorseUseCase(repository=self.repository_mock)
 
     def test_should_return_horse_dto_when_horse_exists(self) -> None:
         horse = HorsesFaker.fake()

@@ -52,7 +52,7 @@ def override_sqlalchemy_session_for_tests():
                 schema_translate_map={None: schema_name}
             )
             Model.metadata.drop_all(bind=schema_connection)
-            connection.execute(text(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE'))
+            # connection.execute(text(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE'))
 
         engine.dispose()
 
