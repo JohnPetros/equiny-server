@@ -33,6 +33,11 @@ dev = [
 [project.scripts]
 dev = "main:main"
 
+[tool.poe.tasks."dev"]
+cmd = "uv run dev"
+
+[tool.poe.tasks."pubsub"]
+cmd = "npx --ignore-scripts=false inngest-cli@latest dev -u http://localhost:8080/api/inngest"
 
 [tool.poe.tasks."db:migrate"]
 cmd = "alembic revision --autogenerate -m \"${message}\""
