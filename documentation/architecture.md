@@ -122,7 +122,7 @@ Define os contratos de dados para entrada e saída da API (Data Transfer Objects
     -   Recebe entidades/DTOs de domínio.
     -   Aplica regras de negócio.
     -   Interage com **Repositórios** (interfaces) para buscar/salvar dados.
-6.  **Repository Impl (`database`):**
+6.  **Repository Implementation (`database`):**
     -   O repositório concreto (injetado) usa o SQLAlchemy.
     -   Converte Entidades de Domínio para Modelos do SQLAlchemy (via Mappers).
     -   Executa queries no banco de dados.
