@@ -177,6 +177,7 @@ pyrightconfig.json
 .agents
 .windsurf
 .codex
+.claude
 .opencode
 .cursor
 .gemini
