@@ -1,6 +1,9 @@
 from equiny.core.profiling.domain.entities.horse import Horse
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.database.sqlalchemy.mappers.profiling.horses_mapper import HorsesMapper
+from equiny.database.sqlalchemy.mappers.profiling.horse_images_mapper import (
+    HorseImagesMapper,
+)
 from equiny.database.sqlalchemy.repositories.sqlalchemy_repository import (
     SqlalchemyRepository,
 )
@@ -22,4 +25,6 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
             return None
         return HorsesMapper.to_entity(horse_model)
 
-    def add_many_images(self, horse_id: Id, images_dtos: list[Image]) -> None: ...
+    def add_many_images(self, horse_id: Id, images: list[Image]) -> None:
+        image_models = HorseImagesMapper.to_models(images, horse_id)
+        self.sqlalchemy.add_all(image_models)
