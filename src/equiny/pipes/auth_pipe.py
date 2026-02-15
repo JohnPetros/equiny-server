@@ -18,7 +18,7 @@ class AuthPipe:
             raise AuthError('Cabeçalho de autorização não encontrado')
 
         if credentials.scheme.lower() != 'bearer':
-            raise AuthError('Authorization inválido. Use: Bearer <token>')
+            raise AuthError('Autorização inválida. Use: Bearer <token>')
 
         token = (credentials.credentials or '').strip()
         if not token:

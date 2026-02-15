@@ -7,8 +7,7 @@ from equiny.core.auth.interfaces.repositories.accounts_repository import (
 )
 from equiny.core.auth.use_cases.sign_in_account_use_case import SignInAccountUseCase
 from equiny.validation.shared import Schema, EmailSchema
-from equiny.core.shared.interfaces.broker import Broker
-from equiny.pipes import DatabasePipe, PubSubPipe, ProvidersPipe
+from equiny.pipes import DatabasePipe, ProvidersPipe
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
 from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
 
@@ -27,7 +26,6 @@ repository = Annotated[
 ]
 hash_provider = Annotated[HashProvider, Depends(ProvidersPipe.get_hash_provider)]
 jwt_provider = Annotated[JwtProvider, Depends(ProvidersPipe.get_jwt_provider)]
-broker = Annotated[Broker, Depends(PubSubPipe.get_broker)]
 
 
 class SignInAccountController:

@@ -1,17 +1,9 @@
-from typing import Annotated
-
-
 from pydantic import BaseModel
-from fastapi import Depends
 from inngest import Inngest, Context, TriggerEvent
 
 
 from equiny.core.auth.domain.events import AccountCreatedEvent
-from equiny.core.profiling.interfaces.repositories.owners_repository import (
-    OwnersRepository,
-)
 from equiny.core.profiling.use_cases import CreateOwnerUseCase
-from equiny.pipes.database_pipe import DatabasePipe
 from equiny.validation.shared import NameSchema, IdSchema, EmailSchema
 from equiny.pubsub.inngest.jobs.job import Job
 from equiny.database.sqlalchemy.repositories.profiling import SqlalchemyOwnersRepository
@@ -21,9 +13,6 @@ class PayloadSchema(BaseModel):
     owner_name: NameSchema
     account_email: EmailSchema
     account_id: IdSchema
-
-
-repository = Annotated[OwnersRepository, Depends(DatabasePipe.get_owners_repository)]
 
 
 class CreateOwnerJob(Job):
@@ -43,7 +32,7 @@ class CreateOwnerJob(Job):
         return _
 
     @staticmethod
-    async def create_owner(payload: PayloadSchema) -> None:
+    def create_owner(payload: PayloadSchema) -> None:
         with Job.sqlalchemy_session() as sqlalchemy:
             repository = SqlalchemyOwnersRepository(sqlalchemy)
             use_case = CreateOwnerUseCase(repository)
