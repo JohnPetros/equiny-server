@@ -19,6 +19,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "python-jose[cryptography]>=3.5.0",
     "sqlalchemy>=2.0.46",
+    "supabase>=2.28.0",
 ]
 
 [dependency-groups]
@@ -56,6 +57,9 @@ cmd = "alembic stamp head"
 
 [tool.poe.tasks."db:current"]
 cmd = "alembic current"
+
+[tool.poe.tasks."db:seed"]
+cmd = "uv run python -c \"from equiny.database.seed import seed; seed()\""
 
 [tool.poe.tasks.test]
 cmd = "pytest -s -x -vv"
