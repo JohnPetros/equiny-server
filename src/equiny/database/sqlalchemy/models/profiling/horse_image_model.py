@@ -1,7 +1,11 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
+from typing import TYPE_CHECKING
 
 from equiny.database.sqlalchemy.models.model import Model
+
+if TYPE_CHECKING:
+    from equiny.database.sqlalchemy.models.profiling.horse_model import HorseModel
 
 
 class HorseImageModel(Model):
@@ -16,4 +20,7 @@ class HorseImageModel(Model):
     name: Mapped[str]
     position: Mapped[int]
 
-    horse: Mapped['HorseModel'] = relationship(back_populates='images')
+    horse: Mapped['HorseModel'] = relationship(
+        'HorseModel',
+        back_populates='images',
+    )

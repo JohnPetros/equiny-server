@@ -9,7 +9,7 @@ class HorseImagesMapper:
     @staticmethod
     def to_model(image: Image, horse_id: Id, position: int) -> HorseImageModel:
         return HorseImageModel(
-            id=str(Id.generate()),
+            id=Id.create().value,
             horse_id=str(horse_id),
             key=image.key.value,
             name=image.name.value,
