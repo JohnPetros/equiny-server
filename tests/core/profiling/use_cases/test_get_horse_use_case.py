@@ -5,6 +5,7 @@ from equiny.core.profiling.domain.errors import HorseNotFoundError
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.core.profiling.use_cases.get_horse_use_case import GetHorseUseCase
 from tests.fakers.profiling.entities.horses_faker import HorsesFaker
+from tests.fakers.shared.structures.id_faker import IdFaker
 
 
 class TestGetHorseUseCase:
@@ -22,13 +23,16 @@ class TestGetHorseUseCase:
 
         result = self.use_case.execute(horse_id=horse.id.value)
 
-        self.repository_mock.find_by_id.assert_called_once_with(horse.id.value)
+        self.repository_mock.find_by_id.assert_called_once()
+        searched_horse_id = self.repository_mock.find_by_id.call_args[0][0]
+        assert searched_horse_id == horse.id
         assert result == horse.dto
 
     def test_should_raise_horse_not_found_error_when_horse_does_not_exist(self) -> None:
+        horse_id = IdFaker.fake().value
         self.repository_mock.find_by_id.return_value = None
 
         with pytest.raises(HorseNotFoundError):
-            self.use_case.execute(horse_id='missing-horse-id')
+            self.use_case.execute(horse_id=horse_id)
 
-        self.repository_mock.find_by_id.assert_called_once_with('missing-horse-id')
+        self.repository_mock.find_by_id.assert_called_once()

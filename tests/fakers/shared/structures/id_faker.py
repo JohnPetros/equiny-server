@@ -1,11 +1,3 @@
-from faker import Faker
+from equiny.fakers.shared.structures.id_faker import IdFaker
 
-from equiny.core.shared.domain.structures.id import Id
-
-
-class IdFaker:
-    _faker = Faker()
-
-    @staticmethod
-    def fake() -> Id:
-        return Id.create(IdFaker._faker.uuid4())
+__all__ = ['IdFaker']
