@@ -125,6 +125,8 @@ Passo a passo claro para o revisor validar:
 
 ⚠️ Não usar GitHub MCP. ⚠️ Não usar APIs MCP. Usar exclusivamente **gh**.
 
+> Repositorio: https://github.com/JohnPetros/equiny-server
+
 Comando padrão:
 
 ```
