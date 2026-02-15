@@ -9,7 +9,7 @@ from equiny.core.auth.interfaces.repositories.accounts_repository import (
 from equiny.core.shared.interfaces.broker import Broker
 from equiny.pipes import DatabasePipe, PubSubPipe, ProvidersPipe
 from equiny.validation.shared import EmailSchema, NameSchema, Schema
-from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from equiny.core.auth.domain.entities.dtos import AccountDto
 from equiny.core.auth.use_cases.sign_up_account_use_case import SignUpAccountUseCase
 
 
