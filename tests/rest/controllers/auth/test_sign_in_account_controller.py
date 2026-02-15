@@ -39,3 +39,27 @@ class TestSignInAccountController:
         )
 
         assert response.status_code == 422
+        assert response.json()['detail'][0]['type'] == 'value_error'
+
+    def test_should_return_401_when_password_is_invalid(
+        self, client: TestClient
+    ) -> None:
+        client.post(
+            '/auth/sign-up',
+            json={
+                'owner_name': 'John Owner',
+                'account_email': 'signin-wrong-password@example.com',
+                'account_password': 'plain-password',
+            },
+        )
+
+        response = client.post(
+            '/auth/sign-in',
+            json={
+                'email': 'signin-wrong-password@example.com',
+                'password': 'wrong-password',
+            },
+        )
+
+        assert response.status_code == 401
+        assert response.json()['message'] == 'Credenciais inválidas'

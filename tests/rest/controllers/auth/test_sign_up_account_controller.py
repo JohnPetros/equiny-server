@@ -22,7 +22,7 @@ class TestSignUpAccountController:
         data = response.json()
         assert data['id']
         assert data['email'] == account_email
-        assert data['password'] != 'plain-password'
+        assert 'password' not in data
 
     def test_should_return_422_when_owner_name_is_too_short(
         self, client: TestClient
@@ -52,4 +52,4 @@ class TestSignUpAccountController:
         response = client.post('/auth/sign-up', json=payload)
 
         assert response.status_code == 409
-        assert response.json()['message'] == f'Email {account_email} already in use'
+        assert response.json()['message'] == f'Email {account_email} já está em uso'

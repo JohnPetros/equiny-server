@@ -1,5 +1,6 @@
+from unittest.mock import Mock, call, create_autospec
+
 import pytest
-from unittest.mock import Mock, create_autospec
 
 from equiny.core.auth.domain.errors.email_already_in_use_error import (
     EmailAlreadyInUseError,
@@ -38,7 +39,7 @@ class TestSignUpAccountUseCase:
     def test_should_create_account_and_publish_event_when_input_is_valid(self) -> None:
         result = self.use_case.execute(
             account_email='owner@example.com',
-            account_password='plain-password',
+            account_password='plain-password',  # noqa: S106
             owner_name='John Owner',
         )
 
@@ -50,23 +51,30 @@ class TestSignUpAccountUseCase:
         captured_account = self.repository_mock.add.call_args[0][0]
         published_event = self.broker_mock.publish.call_args[0][0]
 
-        assert result == captured_account.dto
+        assert result.id == captured_account.id.value
         assert result.email == 'owner@example.com'
-        assert result.password == 'hashed-password'
+        assert not hasattr(result, 'password')
         assert published_event.name == 'auth/account.created'
         assert published_event.payload['account_id'] == result.id
         assert published_event.payload['owner_name'] == 'John Owner'
+
+        self.repository_mock.assert_has_calls(
+            [
+                call.find_by_email('owner@example.com'),
+                call.add(captured_account),
+            ]
+        )
 
     def test_should_raise_validation_error_when_email_is_invalid(self) -> None:
         with pytest.raises(ValidationError):
             self.use_case.execute(
                 account_email='invalid-email',
-                account_password='plain-password',
+                account_password='plain-password',  # noqa: S106
                 owner_name='John Owner',
             )
 
         self.hash_provider_mock.generate.assert_called_once_with('plain-password')
-        self.repository_mock.find_by_email.assert_not_called()
+        self.repository_mock.find_by_email.assert_called_once_with('invalid-email')
         self.repository_mock.add.assert_not_called()
         self.broker_mock.publish.assert_not_called()
 
@@ -76,11 +84,11 @@ class TestSignUpAccountUseCase:
         with pytest.raises(EmailAlreadyInUseError) as exc_info:
             self.use_case.execute(
                 account_email='existing@example.com',
-                account_password='plain-password',
+                account_password='plain-password',  # noqa: S106
                 owner_name='John Owner',
             )
 
-        assert exc_info.value.message == 'Email existing@example.com already in use'
+        assert exc_info.value.message == 'Email existing@example.com já está em uso'
         self.repository_mock.find_by_email.assert_called_once_with(
             'existing@example.com'
         )
