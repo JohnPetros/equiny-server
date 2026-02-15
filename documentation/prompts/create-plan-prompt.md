@@ -23,12 +23,13 @@
 
 3. **Ordem de execucao (bottom-up)**
    - Defina as tarefas seguindo rigorosamente a hierarquia de dependencias, nesta ordem:
-     1. **Core**: `DTOs`, Entidades e Interfaces.
-     2. **Drivers/Infra**: implementacoes de Repositories e Gateways (ex: `Supabase`, `Inngest`).
-     3. **API layer**: Actions (`RPC`) ou Controllers (`REST`).
-     4. **UI**: Widgets e Paginas.
+     1. **Core**: DTOs, structures, Entidades, Interfaces e Use Cases.
+     2. **Drivers/Infra**: implementacoes de Repositories, Providers e PubSub.
+     3. **API layer**: Middlewares, Pipes, Schemas, Controllers e Routers.
 
 > ⚠️ **Regra** Se uma tarefa exige outra (ex: um Controller depende de um Use Case), a tarefa dependente deve aparecer depois e referenciar explicitamente a dependencia.
+
+> ⚠️ **Regra** Não leia desnecessariamente os arquivos especificados na `spec`, pois a spec já foi validada.
 
 ## Saida esperada
 
