@@ -7,7 +7,7 @@ OUT_DIRS=(
   ".opencode/commands"
 )
 
-# Garante que existem prompts
+# Ensures prompt files exist
 shopt -s nullglob
 PROMPTS=( "$PROMPTS_DIR"/*.md )
 if (( ${#PROMPTS[@]} == 0 )); then
@@ -15,28 +15,28 @@ if (( ${#PROMPTS[@]} == 0 )); then
   exit 1
 fi
 
-# Cria pastas de saída
+# Creates output directories
 for dir in "${OUT_DIRS[@]}"; do
   mkdir -p "$dir"
 done
 
-# Função: tenta criar symlink; se não der, copia
+# Function: try symlink; fallback to copy
 link_or_copy() {
   local src="$1"
   local dest="$2"
 
-  # Caminho relativo do dest -> src (assumindo repo root)
-  # dest fica em .cursor/commands ou .opencode/commands (2 níveis)
+  # Relative path from destination to source (repo root)
+  # destination is in .cursor/commands or .opencode/commands (2 levels)
   local rel_src="../../$src"
 
-  # Remove arquivo antigo (ou symlink) pra não dar conflito
+  # Remove old file (or symlink) to avoid conflicts
   rm -f "$dest"
 
-  # Tenta symlink (Linux/macOS/Git Bash). Se falhar, copia.
+  # Try symlink (Linux/macOS/Git Bash). If it fails, copy.
   if ln -s "$rel_src" "$dest" 2>/dev/null; then
     echo "linked:  $dest -> $rel_src"
   else
-    # Fallback: copia conteúdo
+    # Fallback: copy file content
     {
       echo "<!-- Auto-generated from $src (symlink not available) -->"
       echo
@@ -50,7 +50,7 @@ for src in "${PROMPTS[@]}"; do
   filename="$(basename "$src")"
   name="${filename%.md}"
 
-  # Remove "-prompt" do final (se existir)
+  # Remove trailing "-prompt" (if present)
   if [[ "$name" == *-prompt ]]; then
     name="${name%-prompt}"
   fi
