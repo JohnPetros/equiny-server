@@ -18,9 +18,9 @@ class BreedValue(Enum):
 class Breed(Structure):
     value: BreedValue
 
-    @staticmethod
-    def create_as_arabe() -> 'Breed':
-        return Breed(BreedValue.ARABE)
+    @classmethod
+    def create_as_arabe(cls) -> 'Breed':
+        return cls(BreedValue.ARABE)
 
     @property
     def is_arabe(self) -> bool:
