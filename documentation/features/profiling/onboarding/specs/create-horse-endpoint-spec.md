@@ -1,6 +1,6 @@
 ---
 title: Endpoint de criacao de cavalo no onboarding
-status: em progresso
+status: concluido
 last_updated_at: 2026-02-15
 ---
 

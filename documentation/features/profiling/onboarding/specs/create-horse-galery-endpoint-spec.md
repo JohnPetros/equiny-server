@@ -1,12 +1,12 @@
 ---
 title: Endpoint para criar galeria de imagens do cavalo no onboarding
-status: em progresso
+status: concluido
 last_updated_at: 2026-02-15
 ---
 
 ## 1. Objetivo
 
-Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/galery` para vincular ao cavalo uma lista ordenada de imagens ja enviadas no fluxo de upload do onboarding. A entrega fecha o fluxo `REST` -> `Core` -> `Database` para persistencia da galeria, reutilizando `CreateHorseGalaryUseCase`, validando o payload e gravando metadados (`key`, `name`, `position`) em tabela dedicada, sem inserir regra de negocio no `controller`.
+Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/gallery` para vincular ao cavalo uma lista ordenada de imagens ja enviadas no fluxo de upload do onboarding. A entrega fecha o fluxo `REST` -> `Core` -> `Database` para persistencia da galeria, reutilizando `CreateHorseGalleryUseCase`, validando o payload e gravando metadados (`key`, `name`, `position`) em tabela dedicada, sem inserir regra de negocio no `controller`.
 
 ## 2. Escopo
 
@@ -15,7 +15,7 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/galery` para 
 - Criar `Schema` de entrada para lista ordenada de imagens (min 1, max 9).
 - Criar endpoint/controller e registrar no `HorsesRouter`.
 - Criar persistencia de imagens (`Model`, `Mapper`, `migration`) e implementar `add_many_images(...)`.
-- Retornar `GalaryDto` com as imagens na mesma ordem recebida.
+- Retornar `GalleryDto` com as imagens na mesma ordem recebida.
 
 ### 2.2 Out-of-scope
 
@@ -29,7 +29,7 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/galery` para 
 
 - O endpoint exige `JWT` (via `Depends(AuthPipe.verify_jwt)`).
 - Recebe `horse_id` (path param) e body com `images[]`.
-- Retorna `HTTP 201` com `GalaryDto`.
+- Retorna `HTTP 201` com `GalleryDto`.
 - Retorna `HTTP 404` quando `horse_id` nao existir (via `HorseNotFoundError`).
 
 ### 3.2 Nao funcionais
@@ -47,12 +47,12 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/galery` para 
 
 ### 5.1 Core (`src/equiny/core/`)
 
-- **`CreateHorseGalaryUseCase`** (`src/equiny/core/profiling/use_cases/create_horse_galary_use_case.py`) - valida existencia do cavalo e delega persistencia.
+- **`CreateHorseGalleryUseCase`** (`src/equiny/core/profiling/use_cases/create_horse_gallery_use_case.py`) - valida existencia do cavalo e delega persistencia.
 - **`HorsesRepository`** (`src/equiny/core/profiling/interfaces/repositories/horsers_repository.py`) - contrato contem `add_many_images(...)`.
-- **`Galery`** (`src/equiny/core/profiling/domain/structures/galery.py`) - estrutura de dominio que preserva ordem.
+- **`Gallery`** (`src/equiny/core/profiling/domain/structures/gallery.py`) - estrutura de dominio que preserva ordem.
 - **`Image`** (`src/equiny/core/profiling/domain/structures/image.py`) - estrutura com `key` e `name`.
 - **`ImageDto`** (`src/equiny/core/profiling/domain/structures/dtos/image_dto.py`) - contrato recebido da borda.
-- **`GalaryDto`** (`src/equiny/core/profiling/domain/structures/dtos/galary_dto.py`) - contrato de resposta.
+- **`GalleryDto`** (`src/equiny/core/profiling/domain/structures/dtos/gallery_dto.py`) - contrato de resposta.
 - **`HorseNotFoundError`** (`src/equiny/core/profiling/domain/errors/horse_not_found_error.py`) - erro de dominio para `404`.
 
 ### 5.2 REST/Controllers e Routers
@@ -82,20 +82,19 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/galery` para 
 
 ### 6.1 REST (Controllers)
 
-- **Arquivo:** `src/equiny/rest/controllers/profiling/create_horse_galary_controller.py`
-  - **Controller:** `CreateHorseGalaryController`
-  - **Rota (relativa):** `POST /{horse_id}/galery`
+- **Arquivo:** `src/equiny/rest/controllers/profiling/create_horse_gallery_controller.py`
+  - **Controller:** `CreateHorseGalleryController`
+  - **Rota (relativa):** `POST /{horse_id}/gallery`
   - **`status_code`:** `HTTPStatus.CREATED`
-  - **`response_model`:** `GalaryDto`
+  - **`response_model`:** `GalleryDto`
   - **Dependencias:** `Depends(DatabasePipe.get_horses_repository)` e `Depends(AuthPipe.verify_jwt)`
 
 ### 6.2 Validation
 
-- **Arquivo:** `src/equiny/validation/profiling/create_horse_galary_schema.py`
-  - **Schema:** `CreateHorseGalarySchema`
+- **Arquivo:** `src/equiny/validation/profiling/galery_schema.py`
+  - **Schema:** `ImageSchema` (reutilizado no body local do controller)
   - **Campos:** `images: list[ImageSchema]` (min 1, max 9)
-  - **Validacao:** impedir duplicidade de `key`
-  - **Conversao:** `to_dtos() -> list[ImageDto]`
+  - **Observacao:** a validacao de duplicidade de `key` ficou fora desta entrega
 
 ### 6.3 Database (SQLAlchemy)
 
@@ -114,8 +113,8 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/galery` para 
 
 ## 7. O que deve ser modificado
 
-- **Arquivo:** `src/equiny/core/profiling/use_cases/create_horse_galary_use_case.py`
-  - **Mudanca:** retornar `GalaryDto` apos persistir.
+- **Arquivo:** `src/equiny/core/profiling/use_cases/create_horse_gallery_use_case.py`
+  - **Mudanca:** retornar `GalleryDto` apos persistir.
   - **Justificativa:** contrato de resposta explicito.
   - **Impacto:** `core`
   - **Compatibilidade:** nao quebrando
@@ -127,19 +126,19 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/galery` para 
   - **Compatibilidade:** quebrando (contrato de interface)
 
 - **Arquivo:** `src/equiny/rest/controllers/profiling/__init__.py`
-  - **Mudanca:** exportar `CreateHorseGalaryController`.
+  - **Mudanca:** exportar `CreateHorseGalleryController`.
   - **Justificativa:** padrao de exports.
   - **Impacto:** `rest`
   - **Compatibilidade:** nao quebrando
 
 - **Arquivo:** `src/equiny/routers/profiling/horses_router.py`
-  - **Mudanca:** registrar `CreateHorseGalaryController.handle(router)`.
+  - **Mudanca:** registrar `CreateHorseGalleryController.handle(router)`.
   - **Justificativa:** expor endpoint.
   - **Impacto:** `routers`
   - **Compatibilidade:** nao quebrando
 
 - **Arquivo:** `src/equiny/validation/profiling/__init__.py`
-  - **Mudanca:** exportar `CreateHorseGalarySchema`.
+  - **Mudanca:** exportar `ImageSchema`.
   - **Justificativa:** padrao de exports.
   - **Impacto:** `validation`
   - **Compatibilidade:** nao quebrando
@@ -176,7 +175,7 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/galery` para 
 
 ## 8. O que deve ser removido
 
-- Nao ha remocoes previstas; o escopo e aditivo para concluir o fluxo de galeria.
+- Foram removidos os artefatos antigos com typo `galery/galary` no `core` e no `rest`.
 
 ## 9. Fluxo e diagramas
 
@@ -184,26 +183,26 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/galery` para 
 
 ```text
 Mobile App
-  -> POST /profiling/horses/{horse_id}/galery
+  -> POST /profiling/horses/{horse_id}/gallery
      Authorization: Bearer <jwt>
      body: images[{ key, name }]
-  -> CreateHorseGalaryController
-       -> valida horse_id + payload (CreateHorseGalarySchema)
+  -> CreateHorseGalleryController
+       -> valida horse_id + payload (BodySchema + ImageSchema)
        -> converte para ImageDto[]
-  -> CreateHorseGalaryUseCase
+  -> CreateHorseGalleryUseCase
        -> repository.find_by_id(horse_id)
-       -> Galery.create(images)
-       -> repository.add_many_images(horse_id, galery.images)
+       -> Gallery.create(images)
+       -> repository.add_many_images(horse_id, gallery.images)
   -> SqlalchemyHorsesRepository
        -> HorseImagesMapper.to_models(...)
        -> INSERT horse_images
-  <- HTTP 201 (GalaryDto)
+  <- HTTP 201 (GalleryDto)
 ```
 
 ### 9.2 Layout (ASCII - contrato do endpoint)
 
 ```text
-POST /profiling/horses/{horse_id}/galery
+POST /profiling/horses/{horse_id}/gallery
 
 request:
 {
@@ -227,6 +226,6 @@ response 201:
 - `src/equiny/rest/controllers/profiling/create_horse_controller.py`
 - `src/equiny/rest/controllers/profiling/fetch_horse_controller.py`
 - `src/equiny/routers/profiling/horses_router.py`
-- `src/equiny/core/profiling/use_cases/create_horse_galary_use_case.py`
+- `src/equiny/core/profiling/use_cases/create_horse_gallery_use_case.py`
 - `src/equiny/database/sqlalchemy/repositories/profiling/sqlalchemy_horsers_repository.py`
 - `documentation/features/profiling/onboarding/specs/upload-image-files-spec.md`
