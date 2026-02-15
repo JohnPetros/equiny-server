@@ -19,3 +19,13 @@ class SqlalchemyOwnersRepository(SqlalchemyRepository, OwnersRepository):
         if owner_model is None:
             return None
         return OwnersMapper.to_entity(owner_model)
+
+    def find_by_account_id(self, account_id: str) -> Owner | None:
+        owner_model = (
+            self.sqlalchemy.query(OwnerModel)
+            .filter(OwnerModel.account_id == account_id)
+            .first()
+        )
+        if owner_model is None:
+            return None
+        return OwnersMapper.to_entity(owner_model)
