@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from equiny.rest.controllers.profiling import (
     CreateHorseController,
+    CreateHorseGalaryController,
     FetchHorseController,
 )
 
@@ -12,6 +13,7 @@ class HorsesRouter:
         router = APIRouter(prefix='/horses')
 
         CreateHorseController.handle(router)
+        CreateHorseGalaryController.handle(router)
         FetchHorseController.handle(router)
 
         return router
