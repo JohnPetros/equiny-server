@@ -1,3 +1,7 @@
+---
+description: Criar spec tecnica detalhada para implementacao orientada por camadas
+---
+
 # Prompt: Criar Spec
 
 **Objetivo:** Detalhar a implementação técnica de uma feature, fix ou
@@ -160,3 +164,6 @@ sem ambiguidades.
    - **Referências:** Links para arquivos similares na codebase para servir de
      exemplo.
    ---
+
+4. Regras:
+  - Não inclua testes automatizados na spec

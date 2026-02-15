@@ -1,3 +1,7 @@
+---
+description: Fazer commits no código
+---
+
 # Prompt: Fazer Commits no Código
 
 **Objetivo Principal**

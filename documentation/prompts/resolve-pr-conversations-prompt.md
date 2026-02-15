@@ -1,3 +1,7 @@
+---
+description: Resolver comentarios de PR com implementacao e validacao das correcoes
+---
+
 # Prompt: Resolver conversas de PR 
 
 **Objetivo Principal**

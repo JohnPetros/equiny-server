@@ -9,7 +9,7 @@ class HandleInngestClientMiddleware:
     @staticmethod
     def handle(app: FastAPI, inngest: Inngest) -> None:
         @app.middleware('http')
-        def _(
+        async def _(
             request: Request, call_next: Callable[[Request], Awaitable[Response]]
         ) -> Response:
             request.state.inngest_client = inngest

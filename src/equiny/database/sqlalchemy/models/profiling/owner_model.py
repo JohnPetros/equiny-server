@@ -1,5 +1,12 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import TYPE_CHECKING
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from equiny.database.sqlalchemy.models.model import Model
+
+if TYPE_CHECKING:
+    from equiny.database.sqlalchemy.models.auth.account_model import AccountModel
 
 
 class OwnerModel(Model):
@@ -8,4 +15,6 @@ class OwnerModel(Model):
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     email: Mapped[str]
-    account_id: Mapped[str]
+    account_id: Mapped[str] = mapped_column(ForeignKey('accounts.id'))
+
+    account: Mapped['AccountModel'] = relationship(back_populates='owners')

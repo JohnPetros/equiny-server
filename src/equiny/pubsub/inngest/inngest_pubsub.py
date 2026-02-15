@@ -19,8 +19,8 @@ class InngestPubSub:
         fast_api.serve(
             app,
             inngest,
-            [
-                *InngestPubSub.register_profiling_jobs(inngest),
+            functions=[
+                CreateOwnerJob.handle(inngest),
             ],
         )
 

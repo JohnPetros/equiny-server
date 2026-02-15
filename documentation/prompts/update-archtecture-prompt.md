@@ -1,3 +1,7 @@
+---
+description: Atualizar documento de arquitetura conforme mudancas reais do servidor
+---
+
 # Prompt: Atualizar documento de arquitetura (equiny-server)
 
 Objetivo: manter `documentation/architecture.md` sincronizado com a realidade do

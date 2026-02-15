@@ -17,5 +17,13 @@ services:
       timeout: 5s
       retries: 10
 
+  inngest:
+    image: inngest/inngest:v0.27.0
+    command: "inngest dev -u http://localhost:8080/api/inngest"
+    ports:
+      - "8288:8288"
+    depends_on:
+      - postgres
+
 volumes:
   equiny_postgres_data:

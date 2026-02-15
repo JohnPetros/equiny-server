@@ -1,3 +1,7 @@
+---
+description: Refinar documentos tecnicos em Markdown com clareza e padronizacao
+---
+
 # Prompt: Refinar Documento (PRD/Spec/MD)
 
 **Objetivo Principal** Atuar como um Technical Writer Sênior para revisar,

@@ -1,3 +1,7 @@
+---
+description: Criar testes para core e rest seguindo regras do repositorio
+---
+
 # Prompt: Criar testes (equiny-server)
 
 Objetivo: orientar a criacao de testes consistentes para o `equiny-server`, cobrindo

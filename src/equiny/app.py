@@ -1,6 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.requests import Request
+from fastapi.responses import JSONResponse
 
+from equiny.core.shared.domain.errors import (
+    AppError,
+    AuthError,
+    ConflictError,
+    ForbiddenError,
+    NotFoundError,
+    RateLimitError,
+    UnauthorizedError,
+    ValidationError,
+)
 from equiny.routers.auth import AuthRouter
 from equiny.routers.docs import DocsRouter
 from equiny.routers.profiling import ProfilingRouter
@@ -8,6 +20,7 @@ from equiny.rest.middlewares import (
     HandleSqlalchemySessionMiddleware,
     HandleInngestClientMiddleware,
 )
+
 from equiny.pubsub.inngest.inngest_pubsub import InngestPubSub
 
 
@@ -19,6 +32,7 @@ class FastAPIApp:
             redoc_url=None,
         )
 
+        app.add_exception_handler(AppError, FastAPIApp.handle_exception)
         app.add_middleware(
             CORSMiddleware,
             allow_credentials=True,
@@ -36,3 +50,41 @@ class FastAPIApp:
         app.include_router(ProfilingRouter.register())
 
         return app
+
+    @staticmethod
+    def handle_exception(request: Request, exception: AppError) -> JSONResponse:
+        _ = request
+        if isinstance(exception, ValidationError):
+            return JSONResponse(
+                status_code=400,
+                content={'title': exception.title, 'message': exception.message},
+            )
+        if isinstance(exception, (UnauthorizedError, AuthError)):
+            return JSONResponse(
+                status_code=401,
+                content={'title': exception.title, 'message': exception.message},
+            )
+        if isinstance(exception, ForbiddenError):
+            return JSONResponse(
+                status_code=403,
+                content={'title': exception.title, 'message': exception.message},
+            )
+        if isinstance(exception, NotFoundError):
+            return JSONResponse(
+                status_code=404,
+                content={'title': exception.title, 'message': exception.message},
+            )
+        if isinstance(exception, ConflictError):
+            return JSONResponse(
+                status_code=409,
+                content={'title': exception.title, 'message': exception.message},
+            )
+        if isinstance(exception, RateLimitError):
+            return JSONResponse(
+                status_code=429,
+                content={'title': exception.title, 'message': exception.message},
+            )
+        return JSONResponse(
+            status_code=500,
+            content={'title': exception.title, 'message': exception.message},
+        )

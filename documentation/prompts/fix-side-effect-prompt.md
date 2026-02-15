@@ -1,3 +1,7 @@
+---
+description: Corrigir efeitos colaterais de mudancas com diagnostico e validacao
+---
+
 # Prompt: Corrigir side effects (equiny-server)
 
 Objetivo: identificar e corrigir regressao, erro de import, erro de lint/type ou

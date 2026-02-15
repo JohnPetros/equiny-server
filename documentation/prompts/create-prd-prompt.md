@@ -1,3 +1,7 @@
+---
+description: Criar PRD com discovery, clarificacao e estrutura funcional padronizada
+---
+
 # Prompt: Criar PRD
 
 **Objetivo:** Padronizar a criação de Product Requirements Documents (PRDs),
