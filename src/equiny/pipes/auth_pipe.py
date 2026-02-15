@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
 from equiny.core.shared.domain.errors.auth_error import AuthError
-from equiny.pipes import ProvidersPipe
+from equiny.pipes.providers_pipe import ProvidersPipe
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
