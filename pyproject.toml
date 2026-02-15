@@ -68,7 +68,7 @@ cmd = "pytest -s -x -vv"
 cmd = "pyright src"
 
 [tool.poe.tasks.codecheck]
-cmd = "ruff check --fix src && ruff format --check src"
+shell = "ruff check --fix src && ruff format --check src"
 
 
 [tool.ruff]
