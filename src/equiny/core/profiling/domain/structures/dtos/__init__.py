@@ -1,5 +1,5 @@
 from .location_dto import LocationDto
 from .image_dto import ImageDto
-from .galary_dto import GalaryDto
+from .gallery_dto import GalleryDto
 
-__all__ = ['LocationDto', 'ImageDto', 'GalaryDto']
+__all__ = ['LocationDto', 'ImageDto', 'GalleryDto']

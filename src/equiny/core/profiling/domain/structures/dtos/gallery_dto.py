@@ -3,5 +3,5 @@ from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
 
 
 @dto
-class GalaryDto:
+class GalleryDto:
     images: list[ImageDto]
