@@ -18,6 +18,7 @@ class HorsesMapper:
             name=horse_model.name,
             birth_month=horse_model.birth_month,
             birth_year=horse_model.birth_year,
+            height=horse_model.height,
             breed=horse_model.breed.value,
             sex=horse_model.sex.value,
             location=LocationDto(
@@ -34,6 +35,7 @@ class HorsesMapper:
             name=horse_dto.name,
             birth_month=horse_dto.birth_month,
             birth_year=horse_dto.birth_year,
+            height=horse_dto.height,
             breed=BreedValue(horse_dto.breed),
             sex=SexValue(horse_dto.sex),
             location_city=horse_dto.location.city,

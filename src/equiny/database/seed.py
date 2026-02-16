@@ -63,6 +63,7 @@ def seed() -> None:
         owner = OwnersFaker.fake(
             account_id=account.id.value,
             email=account.email.value,
+            has_completed_onboarding=False,
         )
         owners_repository.add(owner)
 

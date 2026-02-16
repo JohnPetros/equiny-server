@@ -17,6 +17,7 @@ class OwnerModel(Model):
     name: Mapped[str]
     email: Mapped[str]
     account_id: Mapped[str] = mapped_column(ForeignKey('accounts.id'))
+    has_completed_onboarding: Mapped[bool] = mapped_column(default=False)
 
     account: Mapped['AccountModel'] = relationship(back_populates='owners')
     horses: Mapped[list['HorseModel']] = relationship(back_populates='owner')

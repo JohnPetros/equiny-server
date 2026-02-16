@@ -15,6 +15,7 @@ class OwnersMapper:
             name=owner_model.name,
             email=owner_model.email,
             account_id=owner_model.account_id,
+            has_completed_onboarding=False,
         )
 
     @staticmethod
@@ -24,4 +25,5 @@ class OwnersMapper:
             name=owner.name.value,
             email=owner.email.value,
             account_id=owner.account_id.value,
+            has_completed_onboarding=owner.has_completed_onboarding.value,
         )

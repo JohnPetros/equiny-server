@@ -20,6 +20,7 @@ class HorseModel(Model):
     name: Mapped[str]
     birth_month: Mapped[int]
     birth_year: Mapped[int]
+    height: Mapped[float]
     breed: Mapped[BreedValue]
     sex: Mapped[SexValue]
     location_city: Mapped[str]
