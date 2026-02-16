@@ -21,6 +21,7 @@ class HorsesMapper:
             height=horse_model.height,
             breed=horse_model.breed.value,
             sex=horse_model.sex.value,
+            is_active=horse_model.is_active,
             location=LocationDto(
                 city=horse_model.location_city,
                 state=horse_model.location_state,
@@ -38,6 +39,7 @@ class HorsesMapper:
             height=horse_dto.height,
             breed=BreedValue(horse_dto.breed),
             sex=SexValue(horse_dto.sex),
+            is_active=horse_dto.is_active,
             location_city=horse_dto.location.city,
             location_state=horse_dto.location.state,
         )

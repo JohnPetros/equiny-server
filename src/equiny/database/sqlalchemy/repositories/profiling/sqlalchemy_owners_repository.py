@@ -14,6 +14,10 @@ class SqlalchemyOwnersRepository(SqlalchemyRepository, OwnersRepository):
         owner_model = OwnersMapper.to_model(owner)
         self.sqlalchemy.add(owner_model)
 
+    def add_many(self, owners: list[Owner]) -> None:
+        owner_models = [OwnersMapper.to_model(owner) for owner in owners]
+        self.sqlalchemy.add_all(owner_models)
+
     def find_by_id(self, owner_id: Id) -> Owner | None:
         owner_model = (
             self.sqlalchemy.query(OwnerModel)

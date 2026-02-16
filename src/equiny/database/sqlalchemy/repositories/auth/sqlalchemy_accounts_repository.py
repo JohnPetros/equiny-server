@@ -16,6 +16,10 @@ class SqlalchemyAccountsRepository(SqlalchemyRepository, AccountsRepository):
         account_model = AccountsMapper.to_model(account)
         self.sqlalchemy.add(account_model)
 
+    def add_many(self, accounts: list[Account]) -> None:
+        account_models = [AccountsMapper.to_model(account) for account in accounts]
+        self.sqlalchemy.add_all(account_models)
+
     def find_by_email(self, email: str) -> Account | None:
         account_model = (
             self.sqlalchemy.query(AccountModel)

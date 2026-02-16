@@ -1,4 +1,6 @@
 from equiny.core.profiling.domain.structures.image import Image
+from equiny.core.profiling.domain.structures.gallery import Gallery
+from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
 from equiny.database.sqlalchemy.models.profiling.horse_image_model import (
     HorseImageModel,
 )
@@ -25,3 +27,18 @@ class HorseImagesMapper:
             HorseImagesMapper.to_model(image, horse_id, position)
             for position, image in enumerate(images)
         ]
+
+    @staticmethod
+    def to_entity(model: HorseImageModel) -> Image:
+        return Image.create(
+            ImageDto(
+                key=model.key,
+                name=model.name,
+            )
+        )
+
+    @staticmethod
+    def to_gallery(models: list[HorseImageModel]) -> Gallery:
+        sorted_models = sorted(models, key=lambda m: m.position)
+        images = [HorseImagesMapper.to_entity(model) for model in sorted_models]
+        return Gallery(images=images)

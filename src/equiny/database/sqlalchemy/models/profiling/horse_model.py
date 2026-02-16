@@ -30,6 +30,7 @@ class HorseModel(Model):
         nullable=True,
         default=None,
     )
+    is_active: Mapped[bool] = mapped_column(default=True)
 
     owner: Mapped['OwnerModel | None'] = relationship(back_populates='horses')
     images: Mapped[list['HorseImageModel']] = relationship(
