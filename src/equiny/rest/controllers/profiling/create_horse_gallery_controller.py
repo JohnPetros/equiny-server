@@ -1,23 +1,18 @@
 from http import HTTPStatus
-from pydantic import BaseModel, Field
 from fastapi import APIRouter, Depends
 
+from equiny.core.profiling.domain.entities.owner import Owner
 from equiny.core.profiling.domain.structures.dtos import GalleryDto
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
-from equiny.core.profiling.interfaces.repositories import HorsesRepository
+from equiny.core.profiling.interfaces.repositories import (
+    HorsesRepository,
+    OwnersRepository,
+)
 from equiny.core.profiling.use_cases.create_horse_gallery_use_case import (
     CreateHorseGalleryUseCase,
 )
-from equiny.pipes.auth_pipe import AuthPipe
 from equiny.pipes.database_pipe import DatabasePipe
-from equiny.validation.profiling.galery_schema import ImageSchema
-
-
-class BodySchema(BaseModel):
-    images: list[ImageSchema] = Field(min_length=1, max_length=9)
-
-    def to_dtos(self) -> list[ImageDto]:
-        return [ImageDto(key=image.key, name=image.name) for image in self.images]
+from equiny.pipes.profiling_pipe import ProfilingPipe
+from equiny.validation.profiling.gallery_schema import GallerySchema
 
 
 class CreateHorseGalleryController:
@@ -26,13 +21,18 @@ class CreateHorseGalleryController:
         @router.post(
             '/{horse_id}/gallery',
             status_code=HTTPStatus.CREATED,
-            response_model=GalleryDto,
-            dependencies=[Depends(AuthPipe.verify_jwt)],
+            response_model=GallerySchema,
         )
         def _(
+            body: GallerySchema,
             horse_id: str,
-            body: BodySchema,
-            repository: HorsesRepository = Depends(DatabasePipe.get_horses_repository),
+            owner: Owner = Depends(ProfilingPipe.get_owner),
+            horses_repository: HorsesRepository = Depends(
+                DatabasePipe.get_horses_repository
+            ),
+            owners_repository: OwnersRepository = Depends(
+                DatabasePipe.get_owners_repository
+            ),
         ) -> GalleryDto:
-            use_case = CreateHorseGalleryUseCase(repository)
-            return use_case.execute(horse_id, body.to_dtos())
+            use_case = CreateHorseGalleryUseCase(horses_repository, owners_repository)
+            return use_case.execute(horse_id, owner.id.value, body.to_dto().images)
