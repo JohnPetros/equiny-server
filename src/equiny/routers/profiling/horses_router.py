@@ -5,6 +5,7 @@ from equiny.rest.controllers.profiling import (
     CreateHorseGalleryController,
     FetchHorseController,
     FetchHorseGalleryController,
+    ToggleHorseActivationController,
     UpdateHorseController,
     UpdateHorseGalleryController,
 )
@@ -19,6 +20,7 @@ class HorsesRouter:
         CreateHorseGalleryController.handle(router)
         UpdateHorseController.handle(router)
         UpdateHorseGalleryController.handle(router)
+        ToggleHorseActivationController.handle(router)
         FetchHorseController.handle(router)
         FetchHorseGalleryController.handle(router)
 
