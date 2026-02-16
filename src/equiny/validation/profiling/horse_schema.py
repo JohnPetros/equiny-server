@@ -18,6 +18,7 @@ class HorseSchema(BaseModel):
     breed: BreedValue
     sex: SexValue
     location: LocationSchema
+    is_active: bool = False
 
     def to_dto(self) -> HorseDto:
         return HorseDto(
@@ -28,4 +29,5 @@ class HorseSchema(BaseModel):
             breed=self.breed.value,
             sex=self.sex.value,
             location=self.location.to_dto(),
+            is_active=self.is_active,
         )
