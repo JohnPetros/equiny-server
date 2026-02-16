@@ -51,6 +51,14 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
             return None
         return HorsesMapper.to_entity(horse_model)
 
+    def find_many_by_owner(self, owner_id: Id) -> list[Horse]:
+        horse_models = (
+            self.sqlalchemy.query(HorseModel)
+            .filter(HorseModel.owner_id == owner_id.value)
+            .all()
+        )
+        return [HorsesMapper.to_entity(horse_model) for horse_model in horse_models]
+
     def add_many_images(self, horse_id: Id, images: list[Image]) -> None:
         image_models = HorseImagesMapper.to_models(images, horse_id)
         self.sqlalchemy.add_all(image_models)
