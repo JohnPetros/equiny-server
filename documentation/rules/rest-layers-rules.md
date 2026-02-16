@@ -1,6 +1,6 @@
 # Regras da camada REST
 
-## Visao geral e modulos da camada
+## Visao geral e modulos da 
 
 A camada `src/equiny/rest/` atua como o adaptador de entrada (Driver Adapter) da aplicacao.
 Ela e responsavel por expor a interface HTTP, receber requisicoes, validar entradas,

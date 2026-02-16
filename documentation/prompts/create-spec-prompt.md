@@ -181,7 +181,7 @@ last_updated_at: <data da ultima atualizacao>
 - **Arquivo:** `src/equiny/...`
   - **Mudanca:** ...
   - **Justificativa:** ...
-  - **Impacto:** `core` | `database` | `rest` | `routers` | `validation` | `pipes/middlewares`
+  - **Camada:** `core` | `database` | `rest` | `routers` | `validation` | `pipes/middlewares`
 
 # 8. O que deve ser removido
 
