@@ -32,7 +32,7 @@ class CreateOwnerJob(Job):
         return _
 
     @staticmethod
-    def create_owner(payload: PayloadSchema) -> None:
+    async def create_owner(payload: PayloadSchema) -> None:
         with Job.sqlalchemy_session() as sqlalchemy:
             repository = SqlalchemyOwnersRepository(sqlalchemy)
             use_case = CreateOwnerUseCase(repository)

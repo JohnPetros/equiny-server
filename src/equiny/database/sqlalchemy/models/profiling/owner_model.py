@@ -7,6 +7,7 @@ from equiny.database.sqlalchemy.models.model import Model
 
 if TYPE_CHECKING:
     from equiny.database.sqlalchemy.models.auth.account_model import AccountModel
+    from equiny.database.sqlalchemy.models.profiling.horse_model import HorseModel
 
 
 class OwnerModel(Model):
@@ -16,5 +17,7 @@ class OwnerModel(Model):
     name: Mapped[str]
     email: Mapped[str]
     account_id: Mapped[str] = mapped_column(ForeignKey('accounts.id'))
+    has_completed_onboarding: Mapped[bool] = mapped_column(default=False)
 
     account: Mapped['AccountModel'] = relationship(back_populates='owners')
+    horses: Mapped[list['HorseModel']] = relationship(back_populates='owner')

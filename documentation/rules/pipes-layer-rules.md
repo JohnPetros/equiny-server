@@ -16,6 +16,7 @@ src/equiny/pipes/
   database_pipe.py
   providers_pipe.py
   pubsub_pipe.py
+  storage_pipe.py
   __init__.py
 ```
 
@@ -25,6 +26,7 @@ Responsabilidade por modulo:
 - `database_pipe.py`: entrega repositorios SQLAlchemy usando a sessao da request.
 - `pubsub_pipe.py`: entrega `Broker` usando o client Inngest da request.
 - `auth_pipe.py`: dependencies reutilizaveis de autenticacao (guards).
+- `storage_pipe.py`: valida e transforma arquivos de entrada (`UploadFile`) em DTOs do dominio (`FileDto`).
 
 ## Principios fundamentais
 
@@ -80,6 +82,34 @@ Padrao atual:
 
 Regra: expor para o controller a interface do Core (`Broker`), nao o SDK.
 
+### StoragePipe (Validacao de entrada)
+
+`StoragePipe` centraliza validacao e transformacao de arquivos de upload:
+
+- `StoragePipe.get_image_files(files: list[UploadFile]) -> list[FileDto]`
+
+Comportamento:
+
+- Valida se todos os arquivos possuem `Content-Type` iniciando com `image/`.
+- Retorna HTTP 415 (UNSUPPORTED_MEDIA_TYPE) imediatamente para arquivos invalidos.
+- Converte `UploadFile` (FastAPI) para `FileDto` (dominio) preservando nome, dados e content-type.
+
+Padrao de uso no controller:
+
+```python
+from fastapi import Depends
+from equiny.pipes.storage_pipe import StoragePipe
+
+@router.post('/images/upload')
+def _(
+    files_dto: list[FileDto] = Depends(StoragePipe.get_image_files),
+):
+    ...
+```
+
+Regra: pipes de validacao de entrada devem falhar rapido (fail-fast) na borda REST,
+retornando codigos HTTP apropriados antes de chegar ao controller ou use case.
+
 ### AuthPipe (guards)
 
 `AuthPipe` expoe dependencies reutilizaveis para proteger endpoints.
@@ -112,7 +142,7 @@ acessar repositorios nem carregar conta/usuario (isso vira um Pipe dedicado quan
 
 ## Exportacao do pacote
 
-`src/equiny/pipes/__init__.py` exporta `DatabasePipe`, `PubSubPipe` e `ProvidersPipe` via `__all__`.
+`src/equiny/pipes/__init__.py` exporta `DatabasePipe`, `PubSubPipe`, `ProvidersPipe` e `StoragePipe` via `__all__`.
 `AuthPipe` e importado diretamente do modulo `equiny.pipes.auth_pipe`.
 
 ## Integracao com outras camadas

@@ -13,6 +13,7 @@ class CreateOwnerUseCase:
                 name=owner_name,
                 email=owner_email,
                 account_id=account_id,
+                has_completed_onboarding=False,
             )
         )
         self.repository.add(owner)

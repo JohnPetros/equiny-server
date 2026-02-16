@@ -16,6 +16,7 @@ from equiny.core.shared.domain.errors import (
 from equiny.routers.auth import AuthRouter
 from equiny.routers.docs import DocsRouter
 from equiny.routers.profiling import ProfilingRouter
+from equiny.routers.storage import StorageRouter
 from equiny.rest.middlewares import (
     HandleSqlalchemySessionMiddleware,
     HandleInngestClientMiddleware,
@@ -48,43 +49,44 @@ class FastAPIApp:
         app.include_router(AuthRouter.register())
         app.include_router(DocsRouter.register())
         app.include_router(ProfilingRouter.register())
+        app.include_router(StorageRouter.register())
 
         return app
 
     @staticmethod
-    def handle_exception(request: Request, exception: AppError) -> JSONResponse:
-        _ = request
-        if isinstance(exception, ValidationError):
-            return JSONResponse(
-                status_code=400,
-                content={'title': exception.title, 'message': exception.message},
-            )
-        if isinstance(exception, (UnauthorizedError, AuthError)):
-            return JSONResponse(
-                status_code=401,
-                content={'title': exception.title, 'message': exception.message},
-            )
-        if isinstance(exception, ForbiddenError):
-            return JSONResponse(
-                status_code=403,
-                content={'title': exception.title, 'message': exception.message},
-            )
-        if isinstance(exception, NotFoundError):
-            return JSONResponse(
-                status_code=404,
-                content={'title': exception.title, 'message': exception.message},
-            )
-        if isinstance(exception, ConflictError):
-            return JSONResponse(
-                status_code=409,
-                content={'title': exception.title, 'message': exception.message},
-            )
-        if isinstance(exception, RateLimitError):
-            return JSONResponse(
-                status_code=429,
-                content={'title': exception.title, 'message': exception.message},
-            )
+    def handle_exception(_: Request, exception: Exception) -> JSONResponse:
+        if isinstance(exception, AppError):
+            if isinstance(exception, ValidationError):
+                return JSONResponse(
+                    status_code=400,
+                    content={'title': exception.title, 'message': exception.message},
+                )
+            if isinstance(exception, (UnauthorizedError, AuthError)):
+                return JSONResponse(
+                    status_code=401,
+                    content={'title': exception.title, 'message': exception.message},
+                )
+            if isinstance(exception, ForbiddenError):
+                return JSONResponse(
+                    status_code=403,
+                    content={'title': exception.title, 'message': exception.message},
+                )
+            if isinstance(exception, NotFoundError):
+                return JSONResponse(
+                    status_code=404,
+                    content={'title': exception.title, 'message': exception.message},
+                )
+            if isinstance(exception, ConflictError):
+                return JSONResponse(
+                    status_code=409,
+                    content={'title': exception.title, 'message': exception.message},
+                )
+            if isinstance(exception, RateLimitError):
+                return JSONResponse(
+                    status_code=429,
+                    content={'title': exception.title, 'message': exception.message},
+                )
         return JSONResponse(
             status_code=500,
-            content={'title': exception.title, 'message': exception.message},
+            content={'title': 'Erro interno do servidor', 'message': str(exception)},
         )

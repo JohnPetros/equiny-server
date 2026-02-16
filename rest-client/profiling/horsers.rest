@@ -1,0 +1,16 @@
+@URL = http://localhost:8080/profiling/horses
+
+POST {{URL}}
+Content-Type: application/json
+
+{
+  "name": "Mr. Cavalo",
+  "birth_month": 1,
+  "birth_year": 2018,
+  "breed": "quarto de milha",
+  "sex": "male",
+  "location": {
+    "state": "SP",
+    "city": "São Paulo"
+  }
+}
