@@ -6,21 +6,33 @@ from equiny.core.profiling.interfaces.repositories.horsers_repository import (
     HorsesRepository,
 )
 from equiny.core.profiling.domain.structures.gallery import Gallery
+from equiny.core.profiling.interfaces.repositories.owners_repository import (
+    OwnersRepository,
+)
 from equiny.core.shared.domain.structures.id import Id
+from equiny.core.shared.domain.structures.logical import Logical
 
 
 class CreateHorseGalleryUseCase:
-    def __init__(self, repository: HorsesRepository) -> None:
-        self.repository = repository
+    def __init__(
+        self, horsers_repository: HorsesRepository, owners_repository: OwnersRepository
+    ) -> None:
+        self.horsers_repository = horsers_repository
+        self.owners_repository = owners_repository
 
-    def execute(self, horse_id: str, images: list[ImageDto]) -> GalleryDto:
-        horse = self._find_horse(Id.create(horse_id))
+    def execute(
+        self, horse_id: str, owner_id: str, images: list[ImageDto]
+    ) -> GalleryDto:
+        horse = self._find_horse(Id.create(horse_id), Id.create(owner_id))
         gallery = Gallery.create(images)
-        self.repository.add_many_images(horse.id, gallery.images)
+        self.horsers_repository.add_many_images(horse.id, gallery.images)
+        self.owners_repository.update_has_completed_onboarding(
+            Id.create(owner_id), Logical.create_true()
+        )
         return gallery.dto
 
-    def _find_horse(self, horse_id: Id) -> Horse:
-        horse = self.repository.find_by_id(horse_id)
+    def _find_horse(self, horse_id: Id, owner_id: Id) -> Horse:
+        horse = self.horsers_repository.find_by_id_and_owner_id(horse_id, owner_id)
         if horse is None:
             raise HorseNotFoundError
         return horse
