@@ -3,24 +3,23 @@ from fastapi import APIRouter, Depends
 
 from equiny.core.profiling.domain.entities.owner import Owner
 from equiny.core.profiling.domain.structures.dtos import GalleryDto
-from equiny.core.profiling.interfaces.repositories import (
-    HorsesRepository,
-    OwnersRepository,
+from equiny.core.profiling.interfaces.repositories import HorsesRepository
+from equiny.core.profiling.use_cases.update_horse_gallery_use_case import (
+    UpdateHorseGalleryUseCase,
 )
-from equiny.core.profiling.use_cases.create_horse_gallery_use_case import (
-    CreateHorseGalleryUseCase,
-)
+from equiny.core.shared.interfaces.broker import Broker
 from equiny.pipes.database_pipe import DatabasePipe
 from equiny.pipes.profiling_pipe import ProfilingPipe
+from equiny.pipes.pubsub_pipe import PubSubPipe
 from equiny.validation.profiling.gallery_schema import GallerySchema
 
 
-class CreateHorseGalleryController:
+class UpdateHorseGalleryController:
     @staticmethod
     def handle(router: APIRouter) -> None:
-        @router.post(
+        @router.put(
             '/{horse_id}/gallery',
-            status_code=HTTPStatus.CREATED,
+            status_code=HTTPStatus.OK,
             response_model=GallerySchema,
         )
         def _(
@@ -30,9 +29,7 @@ class CreateHorseGalleryController:
             horses_repository: HorsesRepository = Depends(
                 DatabasePipe.get_horses_repository
             ),
-            owners_repository: OwnersRepository = Depends(
-                DatabasePipe.get_owners_repository
-            ),
+            broker: Broker = Depends(PubSubPipe.get_broker),
         ) -> GalleryDto:
-            use_case = CreateHorseGalleryUseCase(horses_repository, owners_repository)
-            return use_case.execute(horse_id, owner.id.value, body.to_dto())
+            use_case = UpdateHorseGalleryUseCase(horses_repository, broker)
+            return use_case.execute(owner.id.value, horse_id, body.to_dto())

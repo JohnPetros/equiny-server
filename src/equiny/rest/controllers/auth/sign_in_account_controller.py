@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from typing import Annotated
 from fastapi import APIRouter, Depends
+from pydantic import AliasChoices, Field
 
 from equiny.core.auth.interfaces.repositories.accounts_repository import (
     AccountsRepository,
@@ -13,8 +14,8 @@ from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
 
 
 class BodySchema(Schema):
-    email: EmailSchema
-    password: str
+    email: EmailSchema = Field(validation_alias=AliasChoices('email', 'account_email'))
+    password: str = Field(validation_alias=AliasChoices('password', 'account_password'))
 
 
 class ResponseSchema(Schema):
