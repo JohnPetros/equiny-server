@@ -7,7 +7,7 @@ class Logical(Structure):
     value: bool
 
     @classmethod
-    def create(cls, *, value: bool) -> 'Logical':
+    def create(cls, value: bool) -> 'Logical':
         return cls(value=value)
 
     @classmethod

@@ -12,3 +12,4 @@ class HorseDto:
     sex: str
     height: float
     location: LocationDto
+    is_active: bool

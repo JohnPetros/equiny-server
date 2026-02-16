@@ -8,6 +8,7 @@ from equiny.core.profiling.domain.structures.sex import Sex
 from equiny.core.shared.domain.structures.id import Id
 from equiny.core.shared.domain.structures.name import Name
 from equiny.core.shared.domain.structures.decimal import Decimal
+from equiny.core.shared.domain.structures.logical import Logical
 
 
 @entity
@@ -18,6 +19,7 @@ class Horse(Entity):
     height: Decimal
     sex: Sex
     location: Location
+    is_active: Logical
 
     @classmethod
     def create(cls, dto: HorseDto) -> 'Horse':
@@ -29,6 +31,7 @@ class Horse(Entity):
             height=Decimal.create(dto.height),
             sex=Sex.create(dto.sex),
             location=Location.create(dto.location),
+            is_active=Logical.create(dto.is_active),
         )
 
     @property
@@ -42,4 +45,5 @@ class Horse(Entity):
             breed=self.breed.dto,
             sex=self.sex.dto,
             location=self.location.dto,
+            is_active=self.is_active.value,
         )
