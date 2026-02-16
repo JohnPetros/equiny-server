@@ -12,8 +12,21 @@ class HorsesFaker:
     _faker = Faker()
 
     @staticmethod
-    def fake() -> Horse:
-        return Horse.create(HorsesFaker.fake_dto())
+    def fake(
+        name: str | None = None,
+        birth_month: int | None = None,
+        birth_year: int | None = None,
+        height: float | None = None,
+        breed: str | None = None,
+        sex: str | None = None,
+        location: LocationDto | None = None,
+        is_active: bool | None = None,
+    ) -> Horse:
+        return Horse.create(
+            HorsesFaker.fake_dto(
+                name, birth_month, birth_year, height, breed, sex, location, is_active
+            )
+        )
 
     @staticmethod
     def fake_dto(
@@ -24,6 +37,7 @@ class HorsesFaker:
         breed: str | None = None,
         sex: str | None = None,
         location: LocationDto | None = None,
+        is_active: bool | None = None,
     ) -> HorseDto:
         horse_breeds = [
             'quarto de milha',
@@ -45,6 +59,7 @@ class HorsesFaker:
             breed=breed or HorsesFaker._faker.random_element(elements=horse_breeds),
             location=location or LocationFaker.fake_dto(),
             sex=sex or SexFaker.fake_dto(),
+            is_active=True if is_active is None else is_active,
         )
 
     @staticmethod
