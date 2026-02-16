@@ -9,7 +9,7 @@ from equiny.constants import ENV
 
 
 class SupabaseFileStorageProvider:
-    _BUCKET = 'equiny'
+    _BUCKET = ENV.SUPABASE_STORAGE_BUCKET
 
     def __init__(self) -> None:
         self.client = create_client(ENV.SUPABASE_URL, ENV.SUPABASE_KEY)
