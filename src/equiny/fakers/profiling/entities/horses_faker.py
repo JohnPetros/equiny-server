@@ -20,21 +20,19 @@ class HorsesFaker:
         name: str | None = None,
         birth_month: int | None = None,
         birth_year: int | None = None,
+        height: float | None = None,
         breed: str | None = None,
         sex: str | None = None,
         location: LocationDto | None = None,
     ) -> HorseDto:
         horse_breeds = [
-            'Arabian',
-            'Thoroughbred',
-            'Quarter Horse',
-            'Appaloosa',
-            'Andalusian',
-            'Morgan',
-            'Mustang',
-            'Paint Horse',
-            'Friesian',
-            'Clydesdale',
+            'quarto de milha',
+            'mangalarga marchador',
+            'criolo',
+            'puro sangue inglês',
+            'arabe',
+            'campolina',
+            'outra',
         ]
 
         return HorseDto(
@@ -42,6 +40,8 @@ class HorsesFaker:
             name=name or HorsesFaker._faker.first_name(),
             birth_month=birth_month or HorsesFaker._faker.random_int(min=1, max=12),
             birth_year=birth_year or HorsesFaker._faker.random_int(min=2000, max=2024),
+            height=height
+            or HorsesFaker._faker.pyfloat(min_value=0, max_value=3, right_digits=2),
             breed=breed or HorsesFaker._faker.random_element(elements=horse_breeds),
             location=location or LocationFaker.fake_dto(),
             sex=sex or SexFaker.fake_dto(),

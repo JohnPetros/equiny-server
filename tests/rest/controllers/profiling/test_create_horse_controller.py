@@ -57,6 +57,7 @@ class TestCreateHorseController:
                 'name': 'Test Horse',
                 'birth_month': 1,
                 'birth_year': 2020,
+                'height': 1.62,
                 'breed': 'arabe',
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
@@ -71,6 +72,7 @@ class TestCreateHorseController:
         assert data['name'] == 'Test Horse'
         assert data['birth_month'] == 1
         assert data['birth_year'] == 2020
+        assert data['height'] == 1.62
         assert data['breed'] == 'arabe'
         assert data['sex'] == 'male'
         assert data['location'] == {'city': 'Sao Paulo', 'state': 'SP'}
@@ -87,6 +89,7 @@ class TestCreateHorseController:
                 'name': 'Test Horse',
                 'birth_month': birth_month,
                 'birth_year': 2020,
+                'height': 1.62,
                 'breed': 'arabe',
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
@@ -105,6 +108,7 @@ class TestCreateHorseController:
                 'name': 'Test Horse',
                 'birth_month': 1,
                 'birth_year': datetime.now().year + 1,
+                'height': 1.62,
                 'breed': 'arabe',
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
@@ -121,6 +125,7 @@ class TestCreateHorseController:
                 'name': 'Test Horse',
                 'birth_month': 1,
                 'birth_year': 2020,
+                'height': 1.62,
                 'breed': 'invalid breed',
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
@@ -137,6 +142,7 @@ class TestCreateHorseController:
                 'name': 'AB',
                 'birth_month': 1,
                 'birth_year': 2020,
+                'height': 1.62,
                 'breed': 'arabe',
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
