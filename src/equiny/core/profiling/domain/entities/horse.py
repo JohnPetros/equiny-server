@@ -7,6 +7,7 @@ from equiny.core.profiling.domain.structures.horse_birth import HorseBirth
 from equiny.core.profiling.domain.structures.sex import Sex
 from equiny.core.shared.domain.structures.id import Id
 from equiny.core.shared.domain.structures.name import Name
+from equiny.core.shared.domain.structures.decimal import Decimal
 
 
 @entity
@@ -14,6 +15,7 @@ class Horse(Entity):
     name: Name
     birth: HorseBirth
     breed: Breed
+    height: Decimal
     sex: Sex
     location: Location
 
@@ -23,7 +25,8 @@ class Horse(Entity):
             id=Id.create(dto.id),
             name=Name.create(dto.name),
             birth=HorseBirth.create(dto.birth_month, dto.birth_year),
-            breed=Breed.create_as_arabe(),
+            breed=Breed.create(dto.breed),
+            height=Decimal.create(dto.height),
             sex=Sex.create(dto.sex),
             location=Location.create(dto.location),
         )
@@ -35,6 +38,7 @@ class Horse(Entity):
             name=self.name.value,
             birth_month=self.birth.month,
             birth_year=self.birth.year,
+            height=self.height.value,
             breed=self.breed.dto,
             sex=self.sex.dto,
             location=self.location.dto,

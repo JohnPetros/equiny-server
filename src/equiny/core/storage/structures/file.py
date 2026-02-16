@@ -16,7 +16,7 @@ class File(Structure):
     def create(cls, dto: FileDto) -> 'File':
         return cls(
             name=Text.create(dto.name),
-            folder=FileStorageFolder.create_as_images(),
+            folder=FileStorageFolder.create(dto.folder),
             data=dto.data,
             content_type=dto.content_type,
         )

@@ -2,6 +2,7 @@ from enum import Enum
 
 from equiny.core.shared.domain.decorators import structure
 from equiny.core.shared.domain.abstracts import Structure
+from equiny.core.shared.domain.errors import ValidationError
 
 
 class BreedValue(Enum):
@@ -17,6 +18,13 @@ class BreedValue(Enum):
 @structure
 class Breed(Structure):
     value: BreedValue
+
+    @classmethod
+    def create(cls, value: str) -> 'Breed':
+        try:
+            return cls(BreedValue(value))
+        except ValueError as error:
+            raise ValidationError(f'Raca invalida: {value}') from error
 
     @classmethod
     def create_as_arabe(cls) -> 'Breed':

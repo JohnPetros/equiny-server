@@ -10,4 +10,5 @@ class HorseDto:
     birth_year: int
     breed: str
     sex: str
+    height: float
     location: LocationDto

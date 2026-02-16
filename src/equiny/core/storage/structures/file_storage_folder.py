@@ -2,6 +2,7 @@ from enum import Enum
 
 from equiny.core.shared.domain.abstracts.structure import Structure
 from equiny.core.shared.domain.decorators import structure
+from equiny.core.shared.domain.errors import ValidationError
 
 
 class FileStorageFolderValue(Enum):
@@ -13,8 +14,11 @@ class FileStorageFolder(Structure):
     value: FileStorageFolderValue
 
     @classmethod
-    def create(cls, value: FileStorageFolderValue) -> 'FileStorageFolder':
-        return cls(value=value)
+    def create(cls, value: str) -> 'FileStorageFolder':
+        try:
+            return cls(value=FileStorageFolderValue(value))
+        except ValueError as error:
+            raise ValidationError(f'Pasta de storage invalida: {value}') from error
 
     @classmethod
     def create_as_images(cls) -> 'FileStorageFolder':
