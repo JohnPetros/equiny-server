@@ -13,7 +13,8 @@ current_year = datetime.now().year
 class HorseSchema(BaseModel):
     name: NameSchema
     birth_month: int = Field(ge=1, le=12)
-    birth_year: int = Field(ge=current_year - 20, le=current_year)
+    birth_year: int = Field(ge=1900, le=current_year)
+    height: float = Field(ge=0)
     breed: BreedValue
     sex: SexValue
     location: LocationSchema
@@ -23,6 +24,7 @@ class HorseSchema(BaseModel):
             name=self.name,
             birth_month=self.birth_month,
             birth_year=self.birth_year,
+            height=self.height,
             breed=self.breed.value,
             sex=self.sex.value,
             location=self.location.to_dto(),
