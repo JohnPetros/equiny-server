@@ -34,6 +34,9 @@ class Horse(Entity):
             is_active=Logical.create(dto.is_active),
         )
 
+    def toggle_activation(self) -> None:
+        self.is_active = self.is_active.invert()
+
     @property
     def dto(self) -> HorseDto:
         return HorseDto(

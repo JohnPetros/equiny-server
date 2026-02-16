@@ -17,3 +17,6 @@ class Logical(Structure):
     @classmethod
     def create_false(cls) -> 'Logical':
         return cls(value=False)
+
+    def invert(self) -> 'Logical':
+        return Logical(value=not self.value)
