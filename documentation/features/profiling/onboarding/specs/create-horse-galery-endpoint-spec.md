@@ -1,7 +1,7 @@
 ---
 title: Endpoint para criar galeria de imagens do cavalo no onboarding
 status: concluido
-last_updated_at: 2026-02-15
+last_updated_at: 2026-02-16
 ---
 
 ## 1. Objetivo
@@ -31,6 +31,7 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/gallery` para
 - Recebe `horse_id` (path param) e body com `images[]`.
 - Retorna `HTTP 201` com `GalleryDto`.
 - Retorna `HTTP 404` quando `horse_id` nao existir (via `HorseNotFoundError`).
+- Retorna `HTTP 404` quando `horse_id` nao pertencer ao owner autenticado.
 
 ### 3.2 Nao funcionais
 
@@ -48,7 +49,7 @@ Entregar o endpoint autenticado `POST /profiling/horses/{horse_id}/gallery` para
 ### 5.1 Core (`src/equiny/core/`)
 
 - **`CreateHorseGalleryUseCase`** (`src/equiny/core/profiling/use_cases/create_horse_gallery_use_case.py`) - valida existencia do cavalo e delega persistencia.
-- **`HorsesRepository`** (`src/equiny/core/profiling/interfaces/repositories/horsers_repository.py`) - contrato contem `add_many_images(...)`.
+- **`HorsesRepository`** (`src/equiny/core/profiling/interfaces/repositories/horsers_repository.py`) - contrato contem `find_by_id_and_owner_id(...)` e `add_many_images(...)`.
 - **`Gallery`** (`src/equiny/core/profiling/domain/structures/gallery.py`) - estrutura de dominio que preserva ordem.
 - **`Image`** (`src/equiny/core/profiling/domain/structures/image.py`) - estrutura com `key` e `name`.
 - **`ImageDto`** (`src/equiny/core/profiling/domain/structures/dtos/image_dto.py`) - contrato recebido da borda.

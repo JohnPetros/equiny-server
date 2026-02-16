@@ -1,7 +1,7 @@
 ---
 title: Endpoint de criacao de cavalo no onboarding
 status: concluido
-last_updated_at: 2026-02-15
+last_updated_at: 2026-02-16
 ---
 
 ## 1. Objetivo
@@ -41,6 +41,7 @@ Entregar o endpoint autenticado `POST /profiling/horses` consistente com o onboa
 - `sex` aceita apenas valores suportados pelo dominio (ex: `male` e `female`).
 - `location` e obrigatoria e deve conter `city` e `state`.
 - `breed` deve ser mapeavel para `BreedValue` (erro de validacao caso invalida).
+- `birth_year` deve estar entre `1900` e o ano corrente.
 
 ## 5. O que ja existe (inventario)
 

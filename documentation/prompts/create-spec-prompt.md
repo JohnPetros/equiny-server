@@ -109,7 +109,7 @@ last_updated_at: <data da ultima atualizacao>
   - **Dependencias:** ...
   - **Observacoes:** ...
 
-## 6.1.2 Interfaces (Ports)
+## 6.1.2 Interfaces
 - **Arquivo:** `src/equiny/core/<context>/interfaces/...`
   - **Interface:** `...Repository`
   - **Metodos:** `...`
@@ -129,7 +129,7 @@ last_updated_at: <data da ultima atualizacao>
   - **Campos:** ...
   - **`to_dto()`**: `-> <Dto>`
 
-## 6.3 Database (SQLAlchemy)
+## 6.3 Database
 
 ## 6.3.1 Models
 - **Arquivo:** `src/equiny/database/sqlalchemy/models/...`
@@ -152,13 +152,15 @@ last_updated_at: <data da ultima atualizacao>
 - **Mudanca de schema:** <descrever>
 - **Nova migration:** `alembic/versions/<...>.py`
 
-## 6.4 Pipes (DI)
+## 6.4 Pipes
 - **Arquivo:** `src/equiny/pipes/..._pipe.py`
   - **Pipe:** `*Pipe`
   - **Fornece:** `Repository` | `Provider` | `Broker`
   - **Origem:** `request.state` | singleton
 
-## 6.5 REST (Controllers)
+## 6.5 REST 
+
+### 6.5.1 Controllers
 - **Arquivo:** `src/equiny/rest/controllers/...`
   - **Controller:** `*Controller`
   - **Rota (relativa):** `/<path>`
@@ -180,7 +182,6 @@ last_updated_at: <data da ultima atualizacao>
   - **Mudanca:** ...
   - **Justificativa:** ...
   - **Impacto:** `core` | `database` | `rest` | `routers` | `validation` | `pipes/middlewares`
-  - **Compatibilidade:** quebrando | nao quebrando
 
 # 8. O que deve ser removido
 
