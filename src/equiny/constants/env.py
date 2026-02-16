@@ -9,7 +9,7 @@ class Env(BaseSettings):
     JWT_SECRET: str
     SUPABASE_URL: str
     SUPABASE_KEY: str
-    SUPABASE_STORAGE_BUCKET: str = 'images'
+    SUPABASE_STORAGE_BUCKET: str
 
     model_config = SettingsConfigDict(
         env_file='.env',
