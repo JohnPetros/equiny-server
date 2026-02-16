@@ -1,5 +1,10 @@
 @URL = http://localhost:8080/profiling/owners
 
+### Get Owner
+GET {{URL}}/me
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
 ### Get Owner Horses
 GET {{URL}}/me/horses
 Content-Type: application/json
