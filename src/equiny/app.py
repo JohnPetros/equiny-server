@@ -15,6 +15,7 @@ from equiny.core.shared.domain.errors import (
 )
 from equiny.routers.auth import AuthRouter
 from equiny.routers.docs import DocsRouter
+from equiny.routers.matching import MatchingRouter
 from equiny.routers.profiling import ProfilingRouter
 from equiny.routers.storage import StorageRouter
 from equiny.rest.middlewares import (
@@ -48,6 +49,7 @@ class FastAPIApp:
 
         app.include_router(AuthRouter.register())
         app.include_router(DocsRouter.register())
+        app.include_router(MatchingRouter.register())
         app.include_router(ProfilingRouter.register())
         app.include_router(StorageRouter.register())
 
