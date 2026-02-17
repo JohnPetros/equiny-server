@@ -18,6 +18,7 @@ class HorseModel(Model):
 
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
+    description: Mapped[str | None] = mapped_column(nullable=True)
     birth_month: Mapped[int]
     birth_year: Mapped[int]
     height: Mapped[float]

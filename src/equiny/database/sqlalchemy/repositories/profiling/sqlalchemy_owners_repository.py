@@ -38,9 +38,35 @@ class SqlalchemyOwnersRepository(SqlalchemyRepository, OwnersRepository):
             return None
         return OwnersMapper.to_entity(owner_model)
 
+    def replace(self, owner: Owner) -> None:
+        owner_model = (
+            self.sqlalchemy.query(OwnerModel)
+            .filter(OwnerModel.id == owner.id.value)
+            .first()
+        )
+        if owner_model is None:
+            return
+
+        owner_dto = owner.dto
+        owner_model.name = owner_dto.name
+        owner_model.email = owner_dto.email
+        owner_model.account_id = owner_dto.account_id
+        owner_model.bio = owner_dto.bio
+        owner_model.phone = owner_dto.phone
+        owner_model.has_completed_onboarding = owner_dto.has_completed_onboarding
+
     def update_has_completed_onboarding(
         self,
         owner_id: Id,
         has_completed_onboarding: Logical,
     ) -> None:
-        _ = (owner_id, has_completed_onboarding)
+        owner_model = (
+            self.sqlalchemy.query(OwnerModel)
+            .filter(OwnerModel.id == owner_id.value)
+            .first()
+        )
+
+        if owner_model is None:
+            return
+
+        owner_model.has_completed_onboarding = has_completed_onboarding.value

@@ -92,6 +92,7 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         horse_model.name = horse_dto.name
         horse_model.birth_month = horse_dto.birth_month
         horse_model.birth_year = horse_dto.birth_year
+        horse_model.description = horse_dto.description
         horse_model.height = horse_dto.height
         horse_model.breed = BreedValue(horse_dto.breed)
         horse_model.sex = SexValue(horse_dto.sex)
