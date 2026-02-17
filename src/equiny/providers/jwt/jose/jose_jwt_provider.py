@@ -10,7 +10,7 @@ from equiny.core.shared.domain.errors import AuthError
 
 class JoseJwtProvider(JwtProvider):
     _ALGORITHM = 'HS256'
-    _EXPIRATION_TIME_IN_MINUTES = 15
+    _EXPIRATION_TIME_IN_MINUTES = 60
 
     def encode(self, subject: str) -> str:
         now_time = datetime.now(UTC)

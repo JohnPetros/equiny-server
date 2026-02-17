@@ -16,11 +16,12 @@ class SupabaseFileStorageProvider(FileStorageProvider):
         self.supabase = create_client(ENV.SUPABASE_URL, ENV.SUPABASE_KEY)
 
     def upload(self, file: File) -> Text:
-        key = f'{file.folder.dto}/{uuid.uuid4()}-{file.name.value}'
+        key = f'{uuid.uuid4()}-{file.name.value}'
+        path = f'{file.folder.dto}/{key}'
 
         try:
-            response = self.supabase.storage.from_(self._BUCKET).upload(
-                key, file.data, {'content-type': file.content_type}
+            self.supabase.storage.from_(self._BUCKET).upload(
+                path, file.data, {'content-type': file.content_type}
             )
         except Exception as error:
             raise AppError(
@@ -28,7 +29,7 @@ class SupabaseFileStorageProvider(FileStorageProvider):
                 f'Falha ao enviar arquivo "{file.name.value}" para o storage: {error!s}',
             ) from error
 
-        return Text.create(response.full_path)
+        return Text.create(key)
 
     def upload_many(self, files: list[File]) -> list[Text]:
         return [self.upload(file) for file in files]

@@ -16,6 +16,7 @@ class HorsesFaker:
         name: str | None = None,
         birth_month: int | None = None,
         birth_year: int | None = None,
+        description: str | None = None,
         height: float | None = None,
         breed: str | None = None,
         sex: str | None = None,
@@ -24,7 +25,15 @@ class HorsesFaker:
     ) -> Horse:
         return Horse.create(
             HorsesFaker.fake_dto(
-                name, birth_month, birth_year, height, breed, sex, location, is_active
+                name,
+                birth_month,
+                birth_year,
+                description,
+                height,
+                breed,
+                sex,
+                location,
+                is_active,
             )
         )
 
@@ -33,6 +42,7 @@ class HorsesFaker:
         name: str | None = None,
         birth_month: int | None = None,
         birth_year: int | None = None,
+        description: str | None = None,
         height: float | None = None,
         breed: str | None = None,
         sex: str | None = None,
@@ -54,6 +64,7 @@ class HorsesFaker:
             name=name or HorsesFaker._faker.first_name(),
             birth_month=birth_month or HorsesFaker._faker.random_int(min=1, max=12),
             birth_year=birth_year or HorsesFaker._faker.random_int(min=2000, max=2024),
+            description=description or HorsesFaker._faker.sentence(),
             height=height
             or HorsesFaker._faker.pyfloat(min_value=0, max_value=3, right_digits=2),
             breed=breed or HorsesFaker._faker.random_element(elements=horse_breeds),

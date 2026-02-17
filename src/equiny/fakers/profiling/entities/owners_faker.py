@@ -13,6 +13,8 @@ class OwnersFaker:
         name: str | None = None,
         email: str | None = None,
         account_id: str | None = None,
+        bio: str | None = None,
+        phone: str | None = None,
         has_completed_onboarding: bool = False,
     ) -> Owner:
         return Owner.create(
@@ -21,6 +23,8 @@ class OwnersFaker:
                 name=name,
                 email=email,
                 account_id=account_id,
+                bio=bio,
+                phone=phone,
             )
         )
 
@@ -29,6 +33,8 @@ class OwnersFaker:
         name: str | None = None,
         email: str | None = None,
         account_id: str | None = None,
+        bio: str | None = None,
+        phone: str | None = None,
         has_completed_onboarding: bool = False,
     ) -> OwnerDto:
         return OwnerDto(
@@ -36,5 +42,7 @@ class OwnersFaker:
             name=name or OwnersFaker._faker.name(),
             email=email or OwnersFaker._faker.email(),
             account_id=account_id or IdFaker.fake().value,
+            bio=bio,
+            phone=phone,
             has_completed_onboarding=has_completed_onboarding,
         )
