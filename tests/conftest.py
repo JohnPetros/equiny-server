@@ -64,7 +64,9 @@ def auth_headers() -> dict[str, str]:
 
 
 @pytest.fixture
-def client(mocker: MockerFixture) -> TestClient:
+def client(
+    mocker: MockerFixture, override_sqlalchemy_session_for_tests: None
+) -> TestClient:
     mocker.patch.object(InngestPubSub, 'register', return_value=Mock())
     app = FastAPIApp.register()
     return TestClient(app)

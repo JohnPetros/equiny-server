@@ -13,6 +13,7 @@ class HorsesFaker:
 
     @staticmethod
     def fake(
+        id: str | None = None,
         name: str | None = None,
         birth_month: int | None = None,
         birth_year: int | None = None,
@@ -25,6 +26,7 @@ class HorsesFaker:
     ) -> Horse:
         return Horse.create(
             HorsesFaker.fake_dto(
+                id,
                 name,
                 birth_month,
                 birth_year,
@@ -39,6 +41,7 @@ class HorsesFaker:
 
     @staticmethod
     def fake_dto(
+        id: str | None = None,
         name: str | None = None,
         birth_month: int | None = None,
         birth_year: int | None = None,
@@ -60,7 +63,7 @@ class HorsesFaker:
         ]
 
         return HorseDto(
-            id=IdFaker.fake().value,
+            id=id or IdFaker.fake().value,
             name=name or HorsesFaker._faker.first_name(),
             birth_month=birth_month or HorsesFaker._faker.random_int(min=1, max=12),
             birth_year=birth_year or HorsesFaker._faker.random_int(min=2000, max=2024),
