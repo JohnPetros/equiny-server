@@ -24,12 +24,15 @@ def seed() -> None:
         HorseModel,
         OwnerModel,
     )
+    from equiny.database.sqlalchemy.models.matching import MatchModel, SwipeModel
 
     _ = (AccountModel, OwnerModel, HorseModel, HorseImageModel)
 
     session = Sqlalchemy.get_session()
     try:
         session.execute(delete(HorseImageModel))
+        session.execute(delete(SwipeModel))
+        session.execute(delete(MatchModel))
         session.execute(delete(HorseModel))
         session.execute(delete(OwnerModel))
         session.execute(delete(AccountModel))

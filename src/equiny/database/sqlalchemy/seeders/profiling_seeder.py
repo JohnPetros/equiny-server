@@ -22,7 +22,7 @@ class ProfilingSeeder:
     _HORSES: ClassVar[list[HorseWithImages]] = [
         {
             'horse': HorsesFaker.fake(
-                id='66e8d767-bfcf-43df-83ea-94e21caea10e',
+                id='01KHPD158QDMXWTGENWZK5DFYD',
                 name='Fandangueiro',
                 birth_month=9,
                 birth_year=2016,
@@ -48,7 +48,7 @@ class ProfilingSeeder:
         },
         {
             'horse': HorsesFaker.fake(
-                id='3fe89987-e47c-4cda-9dd3-830d865222f2',
+                id='01KHPDT8C9BM21QXZPT8QF2QYT',
                 name='Gaivota',
                 birth_month=4,
                 birth_year=2019,
@@ -65,7 +65,7 @@ class ProfilingSeeder:
         },
         {
             'horse': HorsesFaker.fake(
-                id='fd2f85f9-1101-4e02-93fe-31baa1af89c1',
+                id='01KHPDTD59JH4AYNP759MEXE8S',
                 name='Tordilho',
                 birth_month=1,
                 birth_year=2018,
@@ -91,7 +91,7 @@ class ProfilingSeeder:
         },
         {
             'horse': HorsesFaker.fake(
-                id='d0e05ba6-802b-45fe-ad75-418f7c9a6326',
+                id='01KHPDTHJDG6AE016WS4D4Q9CW',
                 name='Sereia',
                 birth_month=6,
                 birth_year=2020,
@@ -108,7 +108,7 @@ class ProfilingSeeder:
         },
         {
             'horse': HorsesFaker.fake(
-                id='8880f51e-4233-4ed7-ad4a-062752a339d2',
+                id='01KHPDTQ5NEQWYZ11FY9YV9P1B',
                 name='Valente',
                 birth_month=10,
                 birth_year=2017,

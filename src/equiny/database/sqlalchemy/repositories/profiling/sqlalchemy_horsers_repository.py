@@ -1,8 +1,14 @@
+from datetime import datetime
+
 from equiny.core.profiling.domain.entities.horse import Horse
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.core.profiling.domain.structures.gallery import Gallery
-from equiny.core.profiling.domain.structures.breed import BreedValue
-from equiny.core.profiling.domain.structures.sex import SexValue
+from equiny.core.profiling.domain.structures.breed import Breed, BreedValue
+from equiny.core.profiling.domain.structures.sex import Sex, SexValue
+from equiny.core.profiling.domain.structures.age_range import AgeRange
+from equiny.core.profiling.domain.structures.location import Location
+from equiny.core.shared.domain.structures.decimal import Decimal
+from equiny.core.shared.responses.pagination_response import PaginationResponse
 from equiny.database.sqlalchemy.mappers.profiling.horses_mapper import HorsesMapper
 from equiny.database.sqlalchemy.mappers.profiling.horse_images_mapper import (
     HorseImagesMapper,
@@ -14,8 +20,11 @@ from equiny.database.sqlalchemy.models.profiling.horse_model import HorseModel
 from equiny.database.sqlalchemy.models.profiling.horse_image_model import (
     HorseImageModel,
 )
+from equiny.database.sqlalchemy.models.matching.swipe_model import SwipeModel
 from equiny.core.shared.domain.structures.id import Id
 from equiny.core.profiling.domain.structures.image import Image
+from equiny.core.profiling.domain.structures.feed_horse import FeedHorse
+from equiny.core.profiling.domain.structures.dtos.feed_horse_dto import FeedHorseDto
 
 
 class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
@@ -99,3 +108,78 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         horse_model.location_city = horse_dto.location.city
         horse_model.location_state = horse_dto.location.state
         horse_model.is_active = horse_dto.is_active
+
+    def find_many_feed_horses(
+        self,
+        horse_id: Id,
+        sex: Sex,
+        age_range: AgeRange,
+        breeds: list[Breed],
+        location: Location,
+        cursor: Id | None = None,
+        limit: int = 20,
+    ) -> PaginationResponse[FeedHorse]:
+        query = self.sqlalchemy.query(HorseModel).filter(HorseModel.is_active)
+
+        query = query.filter(HorseModel.id != horse_id.value)
+
+        query = query.filter(HorseModel.sex == SexValue(sex.dto))
+
+        if breeds:
+            breed_values = [BreedValue(breed.dto) for breed in breeds]
+            query = query.filter(HorseModel.breed.in_(breed_values))
+
+        query = query.filter(HorseModel.location_city == location.city.value)
+        query = query.filter(HorseModel.location_state == location.state.value)
+
+        current_year = datetime.now().year
+        min_birth_year = current_year - age_range.max_age.value
+        max_birth_year = current_year - age_range.min_age.value
+
+        query = query.filter(HorseModel.birth_year >= min_birth_year)
+        query = query.filter(HorseModel.birth_year <= max_birth_year)
+
+        # Filter out horses that already have a swipe with the requesting horse
+        swipe_exists = (
+            self.sqlalchemy.query(SwipeModel)
+            .filter(
+                (
+                    (SwipeModel.from_horse_id == horse_id.value)
+                    & (SwipeModel.to_horse_id == HorseModel.id)
+                )
+                | (
+                    (SwipeModel.to_horse_id == horse_id.value)
+                    & (SwipeModel.from_horse_id == HorseModel.id)
+                )
+            )
+            .exists()
+        )
+        query = query.filter(~swipe_exists)
+
+        if cursor:
+            query = query.filter(HorseModel.id < cursor.value)
+
+        models = query.order_by(HorseModel.id.desc()).limit(limit + 1).all()
+        print(models)
+
+        has_more = len(models) > limit
+        if has_more:
+            models = models[:limit]
+
+        feed_horses: list[FeedHorse] = []
+        for model in models:
+            horse = HorsesMapper.to_entity(model)
+            gallery = self.find_gallery_by_horse_id(horse.id)
+            if gallery is None:
+                gallery = Gallery.create_empty()
+            feed_horse_dto = FeedHorseDto(
+                horse=horse.dto,
+                gallery=gallery.dto,
+            )
+            feed_horses.append(FeedHorse.create(feed_horse_dto))
+
+        next_cursor = feed_horses[-1].horse.id.value if has_more else None
+
+        return PaginationResponse(
+            items=feed_horses, next_cursor=next_cursor, has_more=has_more
+        )
