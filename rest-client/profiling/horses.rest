@@ -1,0 +1,60 @@
+@URL = http://localhost:8080/profiling/horses
+@HORSE_ID = ede7deb4-b18f-49f7-9b2e-a73cc4416fb9
+
+### Create Horse
+POST {{URL}}
+Content-Type: application/json
+
+{
+  "name": "Mr. Cavalo",
+  "birth_month": 1,
+  "birth_year": 2018,
+  "breed": "quarto de milha",
+  "sex": "male",
+  "location": {
+    "state": "SP",
+    "city": "São Paulo"
+  }
+}
+
+### Get Horse
+GET {{URL}}/{{HORSE_ID}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### Update Horse
+PUT {{URL}}/{{HORSE_ID}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "name": "Mr. Cavalo",
+  "birth_month": 1,
+  "birth_year": 2018,
+  "height": 1.5,
+  "breed": "quarto de milha",
+  "sex": "male",
+  "location": {
+    "state": "SP",
+    "city": "São Paulo"
+  }
+}
+
+### Get Horse Gallery
+GET {{URL}}/{{HORSE_ID}}/gallery
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### Update Horse Gallery
+PUT {{URL}}/{{HORSE_ID}}/gallery
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "images": [
+    {
+      "key": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "image.jpg"
+    }
+  ]
+}

@@ -18,6 +18,7 @@ class HorseModel(Model):
 
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
+    description: Mapped[str | None] = mapped_column(nullable=True)
     birth_month: Mapped[int]
     birth_year: Mapped[int]
     height: Mapped[float]
@@ -30,6 +31,7 @@ class HorseModel(Model):
         nullable=True,
         default=None,
     )
+    is_active: Mapped[bool] = mapped_column(default=True)
 
     owner: Mapped['OwnerModel | None'] = relationship(back_populates='horses')
     images: Mapped[list['HorseImageModel']] = relationship(

@@ -1,32 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from equiny.core.auth.domain.entities.account import Account
-from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
 from equiny.database.sqlalchemy.repositories.auth import SqlalchemyAccountsRepository
 from equiny.database.sqlalchemy.repositories.profiling import (
     SqlalchemyHorsesRepository,
     SqlalchemyOwnersRepository,
 )
+from equiny.database.sqlalchemy.seeders.auth_seeder import AuthSeeder
+from equiny.database.sqlalchemy.seeders.profiling_seeder import ProfilingSeeder
+from equiny.database.sqlalchemy.seeders.storage_seeder import StorageSeeder
 from equiny.database.sqlalchemy.sqlalchemy import Sqlalchemy
 from equiny.providers.hash import PwdlibHashProvider
-from faker import Faker
-
-from equiny.fakers.profiling.entities.horses_faker import HorsesFaker
-from equiny.fakers.profiling.entities.owners_faker import OwnersFaker
-
-if TYPE_CHECKING:
-    from equiny.core.auth.interfaces.repositories.accounts_repository import (
-        AccountsRepository,
-    )
-    from equiny.core.profiling.interfaces.repositories import OwnersRepository
-
-
-TEST_ACCOUNT_EMAIL = 'test@equiny.com'
-TEST_ACCOUNT_PASSWORD = '123456'  # noqa: S105
-
-SEED_EXTRA_OWNERS_COUNT = 4
+from equiny.providers.storage.supabase.supabase_file_storage_provider import (
+    SupabaseFileStorageProvider,
+)
 
 
 def seed() -> None:
@@ -50,43 +36,18 @@ def seed() -> None:
         session.commit()
 
         hash_provider = PwdlibHashProvider()
-        account_repository: AccountsRepository = SqlalchemyAccountsRepository(session)
-        owners_repository: OwnersRepository = SqlalchemyOwnersRepository(session)
+        file_storage_provider = SupabaseFileStorageProvider()
+        account_repository = SqlalchemyAccountsRepository(session)
+        owners_repository = SqlalchemyOwnersRepository(session)
         horses_repository = SqlalchemyHorsesRepository(session)
 
-        hashed_password = hash_provider.generate(TEST_ACCOUNT_PASSWORD)
-        account = Account.create(
-            AccountDto(email=TEST_ACCOUNT_EMAIL, password=hashed_password)
-        )
-        account_repository.add(account)
+        auth_seeder = AuthSeeder(account_repository, hash_provider)
+        profiling_seeder = ProfilingSeeder(horses_repository, owners_repository)
+        storage_seeder = StorageSeeder(file_storage_provider)
 
-        owner = OwnersFaker.fake(
-            account_id=account.id.value,
-            email=account.email.value,
-            has_completed_onboarding=False,
-        )
-        owners_repository.add(owner)
-
-        horse = HorsesFaker.fake()
-        horses_repository.add(horse, owner_id=owner.id)
-
-        faker = Faker()
-        for _ in range(SEED_EXTRA_OWNERS_COUNT):
-            extra_email = faker.unique.email()
-            extra_password = hash_provider.generate('123456')
-            extra_account = Account.create(
-                AccountDto(email=extra_email, password=extra_password)
-            )
-            account_repository.add(extra_account)
-
-            extra_owner = OwnersFaker.fake(
-                account_id=extra_account.id.value,
-                email=extra_account.email.value,
-            )
-            owners_repository.add(extra_owner)
-
-            extra_horse = HorsesFaker.fake()
-            horses_repository.add(extra_horse, owner_id=extra_owner.id)
+        accounts_ids = auth_seeder.seed()
+        profiling_seeder.seed(accounts_ids)
+        storage_seeder.seed()
 
         session.commit()
     finally:

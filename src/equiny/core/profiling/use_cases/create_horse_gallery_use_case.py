@@ -21,10 +21,16 @@ class CreateHorseGalleryUseCase:
         self.owners_repository = owners_repository
 
     def execute(
-        self, horse_id: str, owner_id: str, images: list[ImageDto]
+        self,
+        horse_id: str,
+        owner_id: str,
+        gallery_dto: GalleryDto | None = None,
+        images: list[ImageDto] | None = None,
     ) -> GalleryDto:
         horse = self._find_horse(Id.create(horse_id), Id.create(owner_id))
-        gallery = Gallery.create(images)
+        if gallery_dto is None:
+            gallery_dto = GalleryDto(images=images or [])
+        gallery = Gallery.create(gallery_dto)
         self.horsers_repository.add_many_images(horse.id, gallery.images)
         self.owners_repository.update_has_completed_onboarding(
             Id.create(owner_id), Logical.create_true()

@@ -8,7 +8,9 @@ class HorseDto:
     name: str
     birth_month: int
     birth_year: int
+    description: str | None = None
     breed: str
     sex: str
     height: float
     location: LocationDto
+    is_active: bool

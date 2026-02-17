@@ -1,0 +1,23 @@
+@URL = http://localhost:8080/profiling/owners
+
+### Get Owner
+GET {{URL}}/me
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### Get Owner Horses
+GET {{URL}}/me/horses
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### Update Owner
+PUT {{URL}}/me
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "bio": "I am a horse owner",
+  "phone": "1234567890",
+  "has_completed_onboarding": true
+}

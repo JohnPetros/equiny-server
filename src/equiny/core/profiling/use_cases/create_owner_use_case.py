@@ -13,6 +13,8 @@ class CreateOwnerUseCase:
                 name=owner_name,
                 email=owner_email,
                 account_id=account_id,
+                bio=None,
+                phone=None,
                 has_completed_onboarding=False,
             )
         )

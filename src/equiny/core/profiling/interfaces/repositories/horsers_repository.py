@@ -1,5 +1,6 @@
 from typing import Protocol
 from equiny.core.profiling.domain.entities.horse import Horse
+from equiny.core.profiling.domain.structures.gallery import Gallery
 from equiny.core.profiling.domain.structures.image import Image
 from equiny.core.shared.domain.structures.id import Id
 
@@ -13,4 +14,12 @@ class HorsesRepository(Protocol):
 
     def find_by_id_and_owner_id(self, horse_id: Id, owner_id: Id) -> Horse | None: ...
 
+    def find_many_by_owner(self, owner_id: Id) -> list[Horse]: ...
+
     def add_many_images(self, horse_id: Id, images: list[Image]) -> None: ...
+
+    def find_gallery_by_horse_id(self, horse_id: Id) -> Gallery | None: ...
+
+    def replace(self, horse: Horse) -> None: ...
+
+    def delete_many_images(self, horse_id: Id) -> None: ...

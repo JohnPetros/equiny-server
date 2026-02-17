@@ -3,6 +3,11 @@ from .create_owner_use_case import CreateOwnerUseCase
 from .get_horse_use_case import GetHorseUseCase
 from .create_horse_gallery_use_case import CreateHorseGalleryUseCase
 from .upload_image_files_use_case import UploadImageFilesUseCase
+from .get_horse_gallery import GetHorseGalleryUseCase
+from .update_horse_gallery_use_case import UpdateHorseGalleryUseCase
+from .update_horse_use_case import UpdateHorseUseCase
+from .get_owner_horses_use_case import GetOwnerHorsesUseCase
+from .update_owner_use_case import UpdateOwnerUseCase
 
 __all__ = [
     'CreateHorseUseCase',
@@ -10,4 +15,9 @@ __all__ = [
     'GetHorseUseCase',
     'CreateHorseGalleryUseCase',
     'UploadImageFilesUseCase',
+    'GetHorseGalleryUseCase',
+    'UpdateHorseGalleryUseCase',
+    'UpdateHorseUseCase',
+    'GetOwnerHorsesUseCase',
+    'UpdateOwnerUseCase',
 ]

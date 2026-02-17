@@ -1,0 +1,8 @@
+{
+  "rest-client.environmentVariables": {
+    "DEV": {
+      "BASE_URL": "http://localhost:8080",
+      "JWT": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZGJjYmQyNi00YTVlLTQ0NTktYjc3Ni1mMTUxYjA4MzAxZDEiLCJpYXQiOjE3NzEyNzE4NDksImV4cCI6MTc3MTI3Mjc0OX0.6Oc9yadpoiw4Y_519mg0LcZhBy0kUwgt4Ysh4I82oxc",
+    }
+  }
+}

@@ -98,6 +98,7 @@ last_updated_at: <data da ultima atualizacao>
 # 6. O que deve ser criado
 
 > 🛠️ Liste arquivos novos por camada. Para cada arquivo, detalhe **assinatura**, **responsabilidade** e **dependencias**.
+> Caso alguma seção não esteja envolvida na implementação, ignore-a na spec.
 
 ## 6.1 Core
 
@@ -181,7 +182,7 @@ last_updated_at: <data da ultima atualizacao>
 - **Arquivo:** `src/equiny/...`
   - **Mudanca:** ...
   - **Justificativa:** ...
-  - **Impacto:** `core` | `database` | `rest` | `routers` | `validation` | `pipes/middlewares`
+  - **Camada:** `core` | `database` | `rest` | `routers` | `validation` | `pipes/middlewares`
 
 # 8. O que deve ser removido
 

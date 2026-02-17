@@ -26,4 +26,6 @@ class UploadImageFilesController:
             ),
         ) -> list[ImageDto]:
             use_case = UploadImageFilesUseCase(file_storage_provider)
-            return use_case.execute(files_dto)
+            images = use_case.execute(files_dto)
+            print('images', images)
+            return images

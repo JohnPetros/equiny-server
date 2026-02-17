@@ -35,4 +35,4 @@ class CreateHorseGalleryController:
             ),
         ) -> GalleryDto:
             use_case = CreateHorseGalleryUseCase(horses_repository, owners_repository)
-            return use_case.execute(horse_id, owner.id.value, body.to_dto().images)
+            return use_case.execute(horse_id, owner.id.value, body.to_dto())
