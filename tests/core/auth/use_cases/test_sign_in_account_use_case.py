@@ -29,7 +29,7 @@ class TestSignInAccountUseCase:
 
         account = Account.create(
             AccountDto(
-                id='550e8400-e29b-41d4-a716-446655440000',
+                id='01ARZ3NDEKTSV4RRFFQ69G5FAV',
                 email='user@example.com',
                 password='hashed-password',
             )
@@ -52,7 +52,7 @@ class TestSignInAccountUseCase:
             'plain-password', 'hashed-password'
         )
         self.jwt_provider_mock.encode.assert_called_once_with(
-            '550e8400-e29b-41d4-a716-446655440000'
+            '01ARZ3NDEKTSV4RRFFQ69G5FAV'
         )
 
         assert result == 'jwt-token'
@@ -63,9 +63,7 @@ class TestSignInAccountUseCase:
         self.hash_provider_mock.verify.return_value = False
 
         with pytest.raises(InvalidCredentialsError):
-            self.use_case.execute(
-                email='user@example.com', password='wrong-password'
-            )
+            self.use_case.execute(email='user@example.com', password='wrong-password')
 
         self.repository_mock.find_by_email.assert_called_once_with('user@example.com')
         self.hash_provider_mock.verify.assert_called_once()
