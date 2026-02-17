@@ -6,6 +6,8 @@ from sqlalchemy import pool
 from alembic import context
 
 from equiny.database.sqlalchemy.models.auth.account_model import AccountModel
+from equiny.database.sqlalchemy.models.matching.match_model import MatchModel
+from equiny.database.sqlalchemy.models.matching.swipe_model import SwipeModel
 from equiny.database.sqlalchemy.models.model import Model
 from equiny.database.sqlalchemy.models.profiling.horse_model import HorseModel
 from equiny.database.sqlalchemy.models.profiling.horse_image_model import HorseImageModel
@@ -28,6 +30,8 @@ _ = AccountModel
 _ = HorseModel
 _ = HorseImageModel
 _ = OwnerModel
+_ = SwipeModel
+_ = MatchModel
 
 config.set_main_option('sqlalchemy.url', DATABASE_URL)
 

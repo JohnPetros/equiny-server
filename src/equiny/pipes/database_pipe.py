@@ -7,10 +7,16 @@ from sqlalchemy.orm import Session
 from equiny.core.auth.interfaces.repositories.accounts_repository import (
     AccountsRepository,
 )
+from equiny.core.matching.interfaces.matches_repository import MatchesRepository
+from equiny.core.matching.interfaces.swipes_repository import SwipesRepository
 from equiny.database.sqlalchemy.repositories.auth import SqlalchemyAccountsRepository
 from equiny.core.profiling.interfaces.repositories import (
     HorsesRepository,
     OwnersRepository,
+)
+from equiny.database.sqlalchemy.repositories.matching import (
+    SqlalchemyMatchesRepository,
+    SqlalchemySwipesRepository,
 )
 from equiny.database.sqlalchemy.repositories.profiling import (
     SqlalchemyHorsesRepository,
@@ -40,3 +46,15 @@ class DatabasePipe:
         sqlalchemy: Annotated[Session, Depends(get_sqlalchemy_session)],
     ) -> AccountsRepository:
         return SqlalchemyAccountsRepository(sqlalchemy)
+
+    @staticmethod
+    def get_swipes_repository(
+        sqlalchemy: Annotated[Session, Depends(get_sqlalchemy_session)],
+    ) -> SwipesRepository:
+        return SqlalchemySwipesRepository(sqlalchemy)
+
+    @staticmethod
+    def get_matches_repository(
+        sqlalchemy: Annotated[Session, Depends(get_sqlalchemy_session)],
+    ) -> MatchesRepository:
+        return SqlalchemyMatchesRepository(sqlalchemy)
