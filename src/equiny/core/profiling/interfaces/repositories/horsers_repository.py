@@ -3,10 +3,27 @@ from equiny.core.profiling.domain.entities.horse import Horse
 from equiny.core.profiling.domain.structures.gallery import Gallery
 from equiny.core.profiling.domain.structures.image import Image
 from equiny.core.shared.domain.structures.id import Id
+from equiny.core.profiling.domain.structures.location import Location
+from equiny.core.profiling.domain.structures.breed import Breed
+from equiny.core.profiling.domain.structures.sex import Sex
+from equiny.core.profiling.domain.structures.age_range import AgeRange
+from equiny.core.shared.responses.pagination_response import PaginationResponse
+from equiny.core.profiling.domain.structures.feed_horse import FeedHorse
 
 
 class HorsesRepository(Protocol):
     def add(self, horse: Horse, owner_id: Id) -> None: ...
+
+    def find_many_feed_horses(
+        self,
+        horse_id: Id,
+        sex: Sex,
+        age_range: AgeRange,
+        breeds: list[Breed],
+        location: Location,
+        cursor: Id | None = None,
+        limit: int = 20,
+    ) -> PaginationResponse[FeedHorse]: ...
 
     def add_many(self, horses: list[Horse], owner_id: Id) -> None: ...
 
