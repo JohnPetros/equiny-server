@@ -14,6 +14,7 @@ class HorseSchema(BaseModel):
     name: NameSchema
     birth_month: int = Field(ge=1, le=12)
     birth_year: int = Field(ge=1900, le=current_year)
+    description: str = ''
     height: float = Field(ge=0)
     breed: BreedValue
     sex: SexValue
@@ -25,6 +26,7 @@ class HorseSchema(BaseModel):
             name=self.name,
             birth_month=self.birth_month,
             birth_year=self.birth_year,
+            description=self.description,
             height=self.height,
             breed=self.breed.value,
             sex=self.sex.value,
