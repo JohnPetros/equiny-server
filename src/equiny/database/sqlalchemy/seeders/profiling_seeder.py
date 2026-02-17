@@ -71,7 +71,20 @@ class ProfilingSeeder:
                 sex='male',
                 location=LocationDto(state='SP', city='Ribeirão Preto'),
             ),
-            'images': [],
+            'images': [
+                ImageFaker.fake(
+                    key='tordilho-5a341c27-334a-4af4-b59b-1f3ec3c616a0.png'
+                ),
+                ImageFaker.fake(
+                    key='tordilho-a6ac04e1-6215-4c40-bd78-2a5ff7b81a71.png'
+                ),
+                ImageFaker.fake(
+                    key='tordilho-e40074c4-20b7-4ee7-8b8d-10693f27acd7.png'
+                ),
+                ImageFaker.fake(
+                    key='tordilho-fe195f5f-f680-456a-a905-d5ce7c3f3e8f.png'
+                ),
+            ],
         },
         {
             'horse': HorsesFaker.fake(
@@ -83,7 +96,11 @@ class ProfilingSeeder:
                 sex='female',
                 location=LocationDto(state='BA', city='Feira de Santana'),
             ),
-            'images': [],
+            'images': [
+                ImageFaker.fake(key='sereia-201b4f9e-2612-4efd-bac2-dee8ebde4bfb.png'),
+                ImageFaker.fake(key='sereia-0854b929-d77c-4f53-b890-4049087b54d8.png'),
+                ImageFaker.fake(key='sereia-b38cd13b-da92-40ed-b9c0-fbc657c7a995.png'),
+            ],
         },
         {
             'horse': HorsesFaker.fake(
@@ -95,7 +112,12 @@ class ProfilingSeeder:
                 sex='male',
                 location=LocationDto(state='RJ', city='Teresópolis'),
             ),
-            'images': [],
+            'images': [
+                ImageFaker.fake(key='valente-9d800c36-ef70-4df8-8234-ab16c369ddd9.png'),
+                ImageFaker.fake(key='valente-56ca1044-4873-4f6a-8e02-7c0c27f08076.png'),
+                ImageFaker.fake(key='valente-a4d570a9-f683-4898-8a0a-9bb882154d43.png'),
+                ImageFaker.fake(key='valente-e6762a70-cca2-4cad-b032-526e9fdbcca7.png'),
+            ],
         },
     ]
 
