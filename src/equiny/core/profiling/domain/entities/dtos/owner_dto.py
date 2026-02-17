@@ -7,4 +7,6 @@ class OwnerDto:
     name: str
     email: str
     account_id: str
+    bio: str | None = None
+    phone: str | None = None
     has_completed_onboarding: bool
