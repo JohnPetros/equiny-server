@@ -8,6 +8,7 @@ from .update_horse_gallery_use_case import UpdateHorseGalleryUseCase
 from .update_horse_use_case import UpdateHorseUseCase
 from .get_owner_horses_use_case import GetOwnerHorsesUseCase
 from .update_owner_use_case import UpdateOwnerUseCase
+from .get_horse_feed_use_case import GetHorseFeedUseCase
 
 __all__ = [
     'CreateHorseUseCase',
@@ -20,4 +21,5 @@ __all__ = [
     'UpdateHorseUseCase',
     'GetOwnerHorsesUseCase',
     'UpdateOwnerUseCase',
+    'GetHorseFeedUseCase',
 ]
