@@ -1,0 +1,12 @@
+@URL = {{BASE_URL}}/matching/swipes
+
+POST {{URL}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "from_horse_id": "d2032f7f-5c13-4479-b8a5-cab36c3e825a",
+  "to_horse_id": "66e8d767-bfcf-43df-83ea-94e21caea10e",
+  "decision": "like"
+}
+

@@ -20,3 +20,11 @@ class Logical(Structure):
 
     def invert(self) -> 'Logical':
         return Logical(value=not self.value)
+
+    @property
+    def is_true(self) -> bool:
+        return self.value
+
+    @property
+    def is_false(self) -> bool:
+        return not self.value
