@@ -31,5 +31,6 @@ class UpdateHorseGalleryController:
             ),
             broker: Broker = Depends(PubSubPipe.get_broker),
         ) -> GalleryDto:
+            print('body', body.to_dto())
             use_case = UpdateHorseGalleryUseCase(horses_repository, broker)
             return use_case.execute(owner.id.value, horse_id, body.to_dto())

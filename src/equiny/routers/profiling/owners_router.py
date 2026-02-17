@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from equiny.rest.controllers.profiling import (
     FetchOwnerController,
     FetchOwnerHorsesController,
+    UpdateOwnerController,
 )
 
 
@@ -13,5 +14,6 @@ class OwnersRouter:
 
         FetchOwnerController.handle(router)
         FetchOwnerHorsesController.handle(router)
+        UpdateOwnerController.handle(router)
 
         return router

@@ -6,8 +6,8 @@ from .fetch_owner_horses_controller import FetchOwnerHorsesController
 from .fetch_onwer_controller import FetchOwnerController
 from .update_horse_controller import UpdateHorseController
 from .update_horse_gallery_controller import UpdateHorseGalleryController
+from .update_owner_controller import UpdateOwnerController
 from .upload_image_files_controller import UploadImageFilesController
-from .toggle_horse_activation_controller import ToggleHorseActivationController
 
 __all__ = [
     'CreateHorseController',
@@ -18,6 +18,6 @@ __all__ = [
     'FetchOwnerController',
     'UpdateHorseController',
     'UpdateHorseGalleryController',
+    'UpdateOwnerController',
     'UploadImageFilesController',
-    'ToggleHorseActivationController',
 ]
