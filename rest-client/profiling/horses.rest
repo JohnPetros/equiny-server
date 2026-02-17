@@ -58,8 +58,3 @@ Authorization: Bearer {{JWT}}
     }
   ]
 }
-
-### Toggle Horse Activation
-PATCH {{URL}}/{{HORSE_ID}}/activation
-Content-Type: application/json
-Authorization: Bearer {{JWT}}

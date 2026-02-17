@@ -9,3 +9,15 @@ Authorization: Bearer {{JWT}}
 GET {{URL}}/me/horses
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
+
+### Update Owner
+PUT {{URL}}/me
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "bio": "I am a horse owner",
+  "phone": "1234567890",
+  "has_completed_onboarding": true
+}
