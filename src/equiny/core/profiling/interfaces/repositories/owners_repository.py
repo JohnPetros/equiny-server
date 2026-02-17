@@ -13,6 +13,8 @@ class OwnersRepository(Protocol):
 
     def find_by_account_id(self, account_id: Id) -> Owner | None: ...
 
+    def replace(self, owner: Owner) -> None: ...
+
     def update_has_completed_onboarding(
         self,
         owner_id: Id,
