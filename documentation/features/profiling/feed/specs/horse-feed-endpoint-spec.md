@@ -22,7 +22,6 @@ Entregar o endpoint autenticado `GET /profiling/horses/{horse_id}/feed` para lis
 - Alteracao de schema de banco e criacao de migration Alembic.
 - Mudancas no fluxo de `swipe`, `match` ou chat.
 - Regras avancadas de ranking/ordenacao por relevancia (ex.: score, boost, machine learning).
-- Exclusao de perfis ja avaliados via integracao com `swipes` (fica para evolucao posterior).
 - Refactor amplo de nomenclaturas legadas (`horsers`, `onwer`, etc.) fora do necessario para o endpoint.
 
 # 3. Requisitos

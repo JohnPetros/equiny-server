@@ -39,7 +39,7 @@ class TestSignInAccountController:
         )
 
         assert response.status_code == 422
-        assert response.json()['detail'][0]['type'] == 'value_error'
+        assert response.json()['title'] == 'Erro de validação'
 
     def test_should_return_401_when_password_is_invalid(
         self, client: TestClient

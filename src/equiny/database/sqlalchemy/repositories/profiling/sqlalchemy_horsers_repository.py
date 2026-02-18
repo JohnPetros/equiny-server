@@ -7,7 +7,6 @@ from equiny.core.profiling.domain.structures.breed import Breed, BreedValue
 from equiny.core.profiling.domain.structures.sex import Sex, SexValue
 from equiny.core.profiling.domain.structures.age_range import AgeRange
 from equiny.core.profiling.domain.structures.location import Location
-from equiny.core.shared.domain.structures.decimal import Decimal
 from equiny.core.shared.responses.pagination_response import PaginationResponse
 from equiny.database.sqlalchemy.mappers.profiling.horses_mapper import HorsesMapper
 from equiny.database.sqlalchemy.mappers.profiling.horse_images_mapper import (
@@ -139,7 +138,6 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         query = query.filter(HorseModel.birth_year >= min_birth_year)
         query = query.filter(HorseModel.birth_year <= max_birth_year)
 
-        # Filter out horses that already have a swipe with the requesting horse
         swipe_exists = (
             self.sqlalchemy.query(SwipeModel)
             .filter(
@@ -160,16 +158,36 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
             query = query.filter(HorseModel.id < cursor.value)
 
         models = query.order_by(HorseModel.id.desc()).limit(limit + 1).all()
-        print(models)
 
         has_more = len(models) > limit
         if has_more:
             models = models[:limit]
 
+        horse_ids = [model.id for model in models]
+        galleries_by_horse_id: dict[str, Gallery] = {}
+
+        if horse_ids:
+            image_models = (
+                self.sqlalchemy.query(HorseImageModel)
+                .filter(HorseImageModel.horse_id.in_(horse_ids))
+                .order_by(HorseImageModel.position)
+                .all()
+            )
+
+            images_by_horse_id: dict[str, list[Image]] = {}
+            for image_model in image_models:
+                image_entity = HorseImagesMapper.to_entity(image_model)
+                images_by_horse_id.setdefault(image_model.horse_id, []).append(
+                    image_entity
+                )
+
+            for horse_id_value, images in images_by_horse_id.items():
+                galleries_by_horse_id[horse_id_value] = Gallery(images=images)
+
         feed_horses: list[FeedHorse] = []
         for model in models:
             horse = HorsesMapper.to_entity(model)
-            gallery = self.find_gallery_by_horse_id(horse.id)
+            gallery = galleries_by_horse_id.get(horse.id.value)
             if gallery is None:
                 gallery = Gallery.create_empty()
             feed_horse_dto = FeedHorseDto(

@@ -124,7 +124,6 @@ class FastAPIApp:
     @staticmethod
     def _validation_error_response(errors: Sequence[Any]) -> JSONResponse:
         errors = jsonable_encoder(errors)
-        print(errors)
         return JSONResponse(
             status_code=422,
             content={

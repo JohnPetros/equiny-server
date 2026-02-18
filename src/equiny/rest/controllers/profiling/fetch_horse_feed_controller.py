@@ -21,7 +21,7 @@ from equiny.validation.shared import IdSchema
 
 class QuerySchema(BaseModel):
     sex: SexValue
-    breeds: list[BreedValue] = Query(default=[])
+    breeds: list[BreedValue] = Query(default_factory=list)
     min_age: int = Query(default=0, ge=0, le=30)
     max_age: int = Query(default=30, ge=0, le=30)
     city: str
@@ -54,7 +54,6 @@ class FetchHorseFeedController:
             repository: repository,
         ) -> PaginationResponse[FeedHorseDto]:
             use_case = GetHorseFeedUseCase(repository)
-            print('FetchHorseFeedController.handle: query', query)
             return use_case.execute(
                 horse_id=horse_id,
                 sex=query.sex.value,
