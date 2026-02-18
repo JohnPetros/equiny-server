@@ -21,13 +21,14 @@ description: Criar spec tecnica detalhada para implementacao no equiny-server
 ## Diretrizes de execucao
 
 1. **Pesquisa e contextualizacao (sem expor `chain-of-thought`):**
+   - leia o PRD referente a spec.
    - Identifique **objetivo**, **escopo** e **risco**.
    - Mapeie o fluxo principal: `HTTP` -> `Router` -> `Controller` -> `Pipe/Depends` -> `UseCase` -> `Repository` -> `SQLAlchemy` -> `PostgreSQL`.
    - Leia e aplique as regras relevantes:
-     - Mudou regra de negocio -> `documentation/rules/core-rules.md`
-     - Mudou persistencia/SQLAlchemy -> `documentation/rules/database-rules.md`
-     - Mudou endpoint/contrato HTTP -> `documentation/rules/rest-rules.md` e `documentation/rules/routers-rules.md`
-     - Mudou `Depends`/DI -> `documentation/rules/pipes-rules.md`
+     - Envolve regra de negocio -> `documentation/rules/core-rules.md`
+     - Envolve persistencia/SQLAlchemy -> `documentation/rules/database-rules.md`
+     - Envolve endpoint/contrato HTTP -> `documentation/rules/rest-rules.md` e `documentation/rules/routers-rules.md`
+     - Envolve `Depends`/DI -> `documentation/rules/pipes-rules.md`
    - Reuse/extenda componentes existentes; evite duplicidade de `UseCase`, `DTO`, `Pipe`, `Mapper` e `Repository`.
 
 2. **Ferramentas auxiliares:**
