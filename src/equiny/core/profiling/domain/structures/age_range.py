@@ -12,14 +12,14 @@ class AgeRange(Structure):
 
     @staticmethod
     def create(dto: AgeRangeDto) -> 'AgeRange':
-        if dto.min_age < 0 or dto.max_age > 30:
+        if dto.min_age < 0 or dto.max_age > 30 or dto.min_age > 30 or dto.max_age < 0:
             raise ValidationError(
-                f'1 A Idade deve ser entre 0 e 30 anos, obtido {dto.min_age} e {dto.max_age}'
+                f'A idade deve ser entre 0 e 30 anos, obtido {dto.min_age} e {dto.max_age}'
             )
 
         if dto.max_age < dto.min_age:
             raise ValidationError(
-                f'2 A Idade máxima deve ser maior que a idade mínima, obtido {dto.min_age} e {dto.max_age}'
+                f'A idade máxima deve ser maior que a idade mínima, obtido {dto.min_age} e {dto.max_age}'
             )
 
         return AgeRange(
