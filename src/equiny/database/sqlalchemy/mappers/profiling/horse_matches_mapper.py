@@ -8,7 +8,7 @@ from equiny.database.sqlalchemy.models.profiling.horse_model import HorseModel
 
 class HorseMatchesMapper:
     @staticmethod
-    def to_entity(horse_model: HorseModel, created_at: datetime) -> HorseMatch:
+    def to_structure(horse_model: HorseModel, created_at: datetime) -> HorseMatch:
         return HorseMatch.create(
             HorseMatchDto(
                 horse=HorsesMapper.to_dto(horse_model),

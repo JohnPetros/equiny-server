@@ -92,7 +92,7 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         )
 
         return [
-            HorseMatchesMapper.to_entity(horse_model, created_at)
+            HorseMatchesMapper.to_structure(horse_model, created_at)
             for horse_model, created_at in matches_rows
         ]
 
