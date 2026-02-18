@@ -9,6 +9,7 @@ from equiny.core.profiling.domain.structures.sex import Sex
 from equiny.core.profiling.domain.structures.age_range import AgeRange
 from equiny.core.shared.responses.pagination_response import PaginationResponse
 from equiny.core.profiling.domain.structures.feed_horse import FeedHorse
+from equiny.core.profiling.domain.structures.horse_match import HorseMatch
 
 
 class HorsesRepository(Protocol):
@@ -30,6 +31,8 @@ class HorsesRepository(Protocol):
     def find_by_id(self, horse_id: Id) -> Horse | None: ...
 
     def find_by_id_and_owner_id(self, horse_id: Id, owner_id: Id) -> Horse | None: ...
+
+    def find_all_matches(self, horse_id: Id) -> list[HorseMatch]: ...
 
     def find_many_by_owner(self, owner_id: Id) -> list[Horse]: ...
 
