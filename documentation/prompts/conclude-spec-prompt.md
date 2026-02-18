@@ -33,6 +33,7 @@ Diretrizes de execucao:
 - Se a implementacao mudou decisoes da spec, atualize a propria spec com o que foi decidido.
 - Se houver mudanca arquitetural relevante (nova camada/padrao/fluxo), atualize `documentation/architecture.md`.
 - Se a mudanca introduz regras novas/ajustes de padrao, atualize `documentation/rules/*.md`.
+- Se houve mudanças na regra de negócio, atualize o PRD referente a spec que está no nível acima do diretório da spec.
 
 4. Status da spec
 

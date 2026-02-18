@@ -46,6 +46,7 @@ Use frontmatter e a hierarquia de cabecalhos sem pular niveis.
 ```md
 ---
 title: <Titulo claro>
+prd: <link para o PRD referente a spec, que esta no nivel acima do diretório da spec>
 status: <em progresso|concluido>
 last_updated_at: <data da ultima atualizacao>
 ---

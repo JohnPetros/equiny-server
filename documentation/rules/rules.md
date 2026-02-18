@@ -1,98 +1,163 @@
-# Regras de leitura progressiva (Progressive Disclosure)
+# Regras do Projeto
 
-Objetivo: reduzir contexto desnecessario e ler apenas as regras certas para cada
-tipo de tarefa. Use este documento como porta de entrada antes de consultar os
-demais arquivos em `documentation/rules/`.
+**Objetivo do documento:** reduzir contexto desnecessário e ler apenas as regras certas para cada tipo de tarefa. Use este documento como porta de entrada antes de consultar os demais arquivos em `documentation/rules/`.
 
-## Ordem recomendada de leitura
+## Ordem Recomendada de Leitura
 
-- Comece por este arquivo (`rules.md`).
-- Leia apenas os documentos acionados pelo tipo de mudanca.
-- Se a tarefa crescer de escopo, desbloqueie o proximo documento necessario.
-- Em caso de duvida entre duas camadas, leia primeiro regra geral da camada e
-  depois regra especifica de teste.
+1. Comece por este arquivo (`rules.md`).
+2. Leia apenas os documentos acionados pelo tipo de mudança.
+3. Se a tarefa crescer de escopo, desbloqueie o próximo documento necessário.
+4. Em caso de dúvida entre duas camadas, leia primeiro a regra geral da camada e depois a regra específica de teste.
 
-## `documentation/rules/code-conventions-rules.md`
+---
 
-Quando ler:
+## `code-conventions-rules.md`
 
-- SEMPRE que realizar qualquer alteracao ou escrita de codigo.
-- Antes de executar tarefas de validacao (`uv run poe codecheck` ou `uv run poe typecheck`).
-- Ao padronizar estilo de codigo em features novas ou refactors.
-- Ao revisar consistencia de nomenclatura e organizacao de arquivos.
-- Ao preparar PR com mudancas amplas para evitar divergencia de estilo.
+### Quando ler
 
-Instrucoes praticas:
+- **SEMPRE** que realizar qualquer alteração ou escrita de código.
+- Antes de executar tarefas de validação (`uv run poe codecheck` ou `uv run poe typecheck`).
+- Ao padronizar estilo de código em features novas ou refactors.
+- Ao revisar consistência de nomenclatura e organização de arquivos.
+- Ao preparar PR com mudanças amplas para evitar divergência de estilo.
 
-- Siga convencoes de nomes do projeto (arquivos, classes, sufixos de papel).
-- Preserve estrutura de modulos e exports publicos (`__init__.py`/`__all__`).
-- Priorize legibilidade e consistencia com o padrao ja existente.
-- Evite introduzir padrao novo sem necessidade arquitetural clara.
+### Instruções práticas
 
-## `documentation/rules/core-layer-rules.md`
+- Siga convenções de nomes do projeto (arquivos, classes, sufixos de papel).
+- Preserve estrutura de módulos e exports públicos (`__init__.py` / `__all__`).
+- Priorize legibilidade e consistência com o padrão já existente.
+- Evite introduzir padrão novo sem necessidade arquitetural clara.
 
-Quando ler:
+---
 
-- Ao criar/alterar entidades, structures, DTOs, erros de dominio ou use cases.
+## `core-layer-rules.md`
+
+### Quando ler
+
+- Ao criar/alterar **entidades**, **structures**, **DTOs**, **erros de domínio** ou **use cases**.
 - Ao revisar limites arquiteturais entre `core` e outras camadas.
-- Ao validar dependencia correta entre `core`, `rest` e `database`.
+- Ao validar dependência correta entre `core`, `rest` e `database`.
 
-Instrucoes praticas:
+### Instruções práticas
 
-- Mantenha o `core` puro: sem FastAPI, ORM, SQL, sessao, env var ou HTTP.
-- Centralize regra de negocio em entidades/structures/use cases.
-- Use interfaces (ports) para dependencias externas.
-- Garanta convencoes de nome: `*UseCase`, `*Dto`, `*Repository`, `execute(...)`.
+- Mantenha o `core` puro: sem FastAPI, ORM, SQL, sessão, env var ou HTTP.
+- Centralize regra de negócio em entidades/structures/use cases.
+- Use interfaces (ports) para dependências externas.
+- Garanta convenções de nome: `*UseCase`, `*Dto`, `*Repository`, `execute(...)`.
 
-## `documentation/rules/database-rules.md`
+---
 
-Quando ler:
+## `database-layer-rules.md`
 
-- Ao criar/alterar models, mappers, repositorios SQLAlchemy ou sessao DB.
-- Ao integrar persistencia nova com interfaces do `core`.
-- Ao ajustar fluxo de transacao por request (middleware + Session).
+### Quando ler
 
-Instrucoes praticas:
+- Ao criar/alterar **models**, **mappers**, **repositórios SQLAlchemy** ou sessão DB.
+- Ao integrar persistência nova com interfaces do `core`.
+- Ao ajustar fluxo de transação por request (`middleware` + `Session`).
 
-- Implemente apenas persistencia e mapeamento; sem regra de negocio.
+### Instruções práticas
+
+- Implemente apenas persistência e mapeamento; sem regra de negócio.
 - Respeite exatamente o contrato das interfaces definidas no `core`.
-- Use mapper para traducao dominio <-> ORM; nao exponha ORM para bordas.
-- Nao espalhe commit/rollback em repositorios; ciclo transacional fica no middleware.
+- Use `mapper` para tradução domínio <-> ORM; não exponha ORM para bordas.
+- Não espalhe `commit`/`rollback` em repositórios; ciclo transacional fica no `middleware`.
 
-## `documentation/rules/rest-layer-rules.md`
+---
 
-Quando ler:
+## `rest-layer-rules.md`
 
-- Ao criar/alterar controllers, rotas e contratos HTTP.
-- Ao mexer em integracao com schema de validacao ou `response_model`.
-- Ao conectar endpoint a use case e repositorio concreto.
+### Quando ler
 
-Instrucoes praticas:
+- Ao criar/alterar **controllers**, **rotas** e **contratos HTTP**.
+- Ao mexer em integração com schema de validação ou `response_model`.
+- Ao conectar endpoint a use case e repositório concreto.
 
-- Mantenha controller fino: valida/adapta/delega, sem regra de negocio.
-- Defina `status_code` e `response_model` explicitos nos endpoints.
+### Instruções práticas
+
+- Mantenha controller fino: valida/adapta/delega, sem regra de negócio.
+- Defina `status_code` e `response_model` explícitos nos endpoints.
 - Converta entrada para DTO antes de chamar use case.
-- Use dependencia de `Session` por `Depends(...)` e sem controlar transacao no controller.
+- Use dependência de `Session` por `Depends(...)` e sem controlar transação no controller.
 
-## `documentation/rules/testing-rules.md`
+---
 
-Quando ler:
+## `routers-layers-rules.md`
 
-- Ao criar/alterar testes e precisar decidir rapidamente qual padrao aplicar.
+### Quando ler
+
+- Ao criar/alterar **routers** e organização de rotas por módulo.
+- Ao definir `prefix`, `tags` e hierarquia de sub-routers.
+- Ao integrar novos routers no composition root (`app.py`).
+
+### Instruções práticas
+
+- **Router = composição**, **Controller = endpoint**.
+- Defina routers como classes com método estático `register() -> APIRouter`.
+- Agrupe por contexto: um router por módulo (ex: `AuthRouter`, `ProfilingRouter`).
+- Não declare funções `@router.get/post/...` diretamente no router; use `Controller.handle(router)`.
+
+---
+
+## `pipes-layer-rules.md`
+
+### Quando ler
+
+- Ao criar/alterar **pipes** (provedores de dependência para FastAPI).
+- Ao injetar repositórios, providers, `Broker` ou validar uploads.
+- Ao criar novo `Depends(...)` reutilizável em controllers.
+
+### Instruções práticas
+
+- Pipes são **dependency providers**, não pipeline de processamento.
+- Retorne interfaces do `core` sempre que possível (ex: `HorsesRepository`, `Broker`).
+- Use `request.state` para obter recursos criados por middlewares.
+- Não contenha regras de negócio, lógica HTTP ou transações.
+
+---
+
+## `pubsub-layer-rules.md`
+
+### Quando ler
+
+- Ao criar/alterar **jobs assíncronos** com `Inngest`.
+- Ao publicar eventos de domínio via `Broker`.
+- Ao implementar processamento orientado a eventos.
+
+### Instruções práticas
+
+- Camada de **orquestração**: validar payload, abrir recursos, executar `UseCase`.
+- Não contenha regra de negócio; delegue para o `core`.
+- Jobs devem ser **idempotentes** e usar `Job.sqlalchemy_session()` para transação.
+- Publique eventos via porta `Broker`, não diretamente com SDK do `Inngest`.
+
+---
+
+## `testing-rules.md`
+
+### Quando ler
+
+- Ao criar/alterar testes e precisar decidir rapidamente qual padrão aplicar.
 - Ao trabalhar em PR que mistura testes de `core` e `rest`.
-- Ao revisar cobertura minima esperada por tipo de teste.
+- Ao revisar cobertura mínima esperada por tipo de teste.
 
-Instrucoes praticas:
+### Instruções práticas
 
-- Use como indice de decisao para direcionar a estrategia de teste.
+- Use como índice de decisão para direcionar a estratégia de teste.
 - Aplique nomenclatura e estrutura AAA de forma consistente.
-- Garanta cenarios de sucesso e falha relevantes para cada unidade testada.
-- Se envolver testes especificos de use case/controller, complemente com as regras especializadas correspondentes.
+- Garanta cenários de sucesso e falha relevantes para cada unidade testada.
+- Se envolver testes específicos de use case/controller, complemente com as regras especializadas correspondentes.
 
-## Regra de acionamento rapido
+---
 
-- Mudou regra de negocio -> leia `core-layer-rules.md`.
-- Mudou persistencia/SQLAlchemy -> leia `database-rules.md`.
-- Mudou endpoint/contrato HTTP -> leia `rest-layer-rules.md`.
-- Mudou testes -> leia `testing-rules.md` (e depois regras especializadas quando necessario).
-- Mudou estilo/nomeacao/organizacao -> leia `code-conventions-rules.md`.
+## Regra de Acionamento Rápido
+
+| Tipo de Mudança | Documento Principal |
+|---|---|
+| Regra de negócio | `core-layer-rules.md` |
+| Persistência/SQLAlchemy | `database-layer-rules.md` |
+| Endpoint/contrato HTTP | `rest-layer-rules.md` |
+| Roteamento/composição de módulos | `routers-layers-rules.md` |
+| Injeção de dependência | `pipes-layer-rules.md` |
+| Jobs assíncronos/eventos | `pubsub-layer-rules.md` |
+| Testes (índice geral) | `testing-rules.md` |
+| Estilo/nomeação/organização | `code-conventions-rules.md` |
