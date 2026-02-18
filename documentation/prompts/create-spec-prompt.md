@@ -24,12 +24,9 @@ description: Criar spec tecnica detalhada para implementacao no equiny-server
    - leia o PRD referente a spec.
    - Identifique **objetivo**, **escopo** e **risco**.
    - Mapeie o fluxo principal: `HTTP` -> `Router` -> `Controller` -> `Pipe/Depends` -> `UseCase` -> `Repository` -> `SQLAlchemy` -> `PostgreSQL`.
-   - Leia e aplique as regras relevantes:
-     - Envolve regra de negocio -> `documentation/rules/core-rules.md`
-     - Envolve persistencia/SQLAlchemy -> `documentation/rules/database-rules.md`
-     - Envolve endpoint/contrato HTTP -> `documentation/rules/rest-rules.md` e `documentation/rules/routers-rules.md`
-     - Envolve `Depends`/DI -> `documentation/rules/pipes-rules.md`
+   - Leia e aplique as regras relevantes que envolvam a spec em `documentation/rules/rules.md`:
    - Reuse/extenda componentes existentes; evite duplicidade de `UseCase`, `DTO`, `Pipe`, `Mapper` e `Repository`.
+   - Use sua tool de `question` para me fazer perguntas sobre a implementação ou incongruencias encontradas.
 
 2. **Ferramentas auxiliares:**
    - Use Serena para localizar arquivos e exemplos na codebase.
