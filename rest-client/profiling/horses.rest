@@ -70,3 +70,8 @@ GET {{URL}}/{{HORSE_ID}}/feed
 &limit=10
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
+
+### Get Horse Matches
+GET {{URL}}/{{HORSE_ID}}/matches
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
