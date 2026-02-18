@@ -1,5 +1,5 @@
 @URL = http://localhost:8080/profiling/horses
-@HORSE_ID = ede7deb4-b18f-49f7-9b2e-a73cc4416fb9
+@HORSE_ID = 01KHPD0D1CY2E0DD0V7M613GDT
 
 ### Create Horse
 POST {{URL}}
@@ -58,3 +58,15 @@ Authorization: Bearer {{JWT}}
     }
   ]
 }
+
+### Get Horse Feed
+GET {{URL}}/{{HORSE_ID}}/feed
+?sex=female
+&min_age=1
+&max_age=20
+&height=1.5
+&city=Bagé
+&state=RS
+&limit=10
+Content-Type: application/json
+Authorization: Bearer {{JWT}}

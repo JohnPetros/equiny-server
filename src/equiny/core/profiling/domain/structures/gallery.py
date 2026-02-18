@@ -14,6 +14,10 @@ class Gallery(Structure):
             images=[Image.create(image_dto) for image_dto in dto.images],
         )
 
+    @classmethod
+    def create_empty(cls) -> 'Gallery':
+        return cls(images=[])
+
     def get_removed_images(self, old_gallery: 'Gallery') -> list[Image]:
         new_keys = {image.key.value for image in self.images}
         return [
