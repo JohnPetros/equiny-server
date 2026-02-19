@@ -31,6 +31,7 @@ class SignInAccountUseCase:
 
     def find_account_by_email(self, email: str) -> Account:
         account = self.repository.find_by_email(email)
+        print('account', account)
         if account is None:
             raise InvalidCredentialsError
         return account
