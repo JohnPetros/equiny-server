@@ -8,5 +8,4 @@ class ListHorseMatchesUseCase:
         self._repository = repository
 
     def execute(self, horse_id: str) -> list[HorseMatch]:
-        matches = self._repository.find_all_matches(Id.create(horse_id))
-        return [HorseMatch.create(match.dto) for match in matches]
+        return self._repository.find_all_matches(Id.create(horse_id))
