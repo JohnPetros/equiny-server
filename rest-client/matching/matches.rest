@@ -1,9 +1,8 @@
 @URL = {{BASE_URL}}/matching/matches
 
-@HORSE_ID = 66e8d767-bfcf-43df-83ea-94e21caea10e
 
-GET {{URL}}?horse_id={{HORSE_ID}}
+### Dismatch Horse
+DELETE {{URL}}?horse_a_id=01KHPD158QDMXWTGENWZK5DFYD&horse_b_id=01KHPDVN4W6Z2Y7X8C3V9B1N0M
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
-
 

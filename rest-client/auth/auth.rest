@@ -4,6 +4,6 @@ POST {{URL}}/sign-in
 Content-Type: application/json
 
 {
-  "account_email": "petros@equiny.com",
+  "account_email": "mariana.duarte@equiny.dev",
   "account_password": "12345678"
 }

@@ -1,5 +1,5 @@
 @URL = http://localhost:8080/profiling/horses
-@HORSE_ID = 01KHPD0D1CY2E0DD0V7M613GDT
+@HORSE_ID = 01KHPD158QDMXWTGENWZK5DFYD
 
 ### Create Horse
 POST {{URL}}
@@ -75,3 +75,9 @@ Authorization: Bearer {{JWT}}
 GET {{URL}}/{{HORSE_ID}}/matches
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
+
+### View Horse Match
+GET {{URL}}/{{HORSE_ID}}/matches/01KHPDT8C9BM21QXZPT8QF2QYT
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
