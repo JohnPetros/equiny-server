@@ -7,6 +7,7 @@ from equiny.core.shared.domain.structures.id import Id
 from equiny.core.shared.domain.structures.email import Email
 from equiny.core.shared.domain.structures.text import Text
 from equiny.core.shared.domain.structures.phone import Phone
+from equiny.core.profiling.domain.structures.image import Image
 
 
 @entity
@@ -16,6 +17,7 @@ class Owner(Entity):
     account_id: Id
     bio: Text | None
     phone: Phone | None
+    avatar: Image | None
     has_completed_onboarding: Logical
 
     @classmethod
@@ -27,6 +29,7 @@ class Owner(Entity):
             account_id=Id.create(dto.account_id),
             bio=Text.create(dto.bio) if dto.bio is not None else None,
             phone=Phone.create(dto.phone) if dto.phone is not None else None,
+            avatar=Image.create(dto.avatar) if dto.avatar is not None else None,
             has_completed_onboarding=Logical.create(value=dto.has_completed_onboarding),
         )
 
@@ -39,5 +42,9 @@ class Owner(Entity):
             account_id=self.account_id.value,
             bio=self.bio.value if self.bio is not None else None,
             phone=self.phone.value if self.phone is not None else None,
+            avatar=self.avatar.dto if self.avatar is not None else None,
             has_completed_onboarding=self.has_completed_onboarding.value,
         )
+
+    def set_account_id(self, account_id: Id) -> None:
+        self.account_id = account_id

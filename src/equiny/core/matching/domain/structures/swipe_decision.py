@@ -15,11 +15,15 @@ class SwipeDecision(Structure):
     value: SwipeDecisionValue
 
     @classmethod
-    def create(cls, value: SwipeDecisionValue) -> 'SwipeDecision':
-        return SwipeDecision(value=value)
+    def create(cls, value: str) -> 'SwipeDecision':
+        return SwipeDecision(value=SwipeDecisionValue(value))
 
     def is_like(self) -> Logical:
         return Logical.create(self.value == SwipeDecisionValue.LIKE)
 
     def is_dislike(self) -> Logical:
         return Logical.create(self.value == SwipeDecisionValue.DISLIKE)
+
+    @property
+    def dto(self) -> str:
+        return self.value.value
