@@ -79,7 +79,7 @@ Explique por que este PR foi criado e qual seu propósito central.
 Vincule tarefas/buffs:
 
 ```
-resolve https://github.com/JohnPetros/equiny/issues/<issue_number>
+resolves https://github.com/JohnPetros/equiny/issues/<issue_number>
 ```
 
 ---
