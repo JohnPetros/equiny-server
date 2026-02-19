@@ -5,7 +5,7 @@ class TestSignInAccountController:
     def test_should_sign_in_and_return_access_token_when_body_is_valid(
         self, client: TestClient
     ) -> None:
-        client.post(
+        response1 = client.post(
             '/auth/sign-up',
             json={
                 'owner_name': 'John Owner',
@@ -13,7 +13,7 @@ class TestSignInAccountController:
                 'account_password': 'plain-password',
             },
         )
-
+        print('response1', response1.status_code)
         response = client.post(
             '/auth/sign-in',
             json={
@@ -22,6 +22,7 @@ class TestSignInAccountController:
             },
         )
 
+        print(response)
         assert response.status_code == 201
 
         data = response.json()
