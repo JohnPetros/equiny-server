@@ -16,23 +16,43 @@ class AuthSeeder:
     def seed(self) -> list[Id]:
         accounts = [
             AccountsFaker.fake(
-                email='petros@equiny.com',
+                email='mariana.duarte@equiny.dev',
                 password=self._hash_provider.generate('12345678'),
             ),
             AccountsFaker.fake(
-                email='vitor@equiny.com',
+                email='rafael.monteiro@equiny.dev',
                 password=self._hash_provider.generate('12345678'),
             ),
             AccountsFaker.fake(
-                email='renato@equiny.com',
+                email='camila.nascimento@equiny.dev',
                 password=self._hash_provider.generate('12345678'),
             ),
             AccountsFaker.fake(
-                email='paulo@equiny.com',
+                email='bruno.almeida@equiny.dev',
                 password=self._hash_provider.generate('12345678'),
             ),
             AccountsFaker.fake(
-                email='ricardo@equiny.com',
+                email='fernanda.ribeiro@equiny.dev',
+                password=self._hash_provider.generate('12345678'),
+            ),
+            AccountsFaker.fake(
+                email='lucas.ferreira@equiny.dev',
+                password=self._hash_provider.generate('12345678'),
+            ),
+            AccountsFaker.fake(
+                email='juliana.santos@equiny.dev',
+                password=self._hash_provider.generate('12345678'),
+            ),
+            AccountsFaker.fake(
+                email='tiago.oliveira@equiny.dev',
+                password=self._hash_provider.generate('12345678'),
+            ),
+            AccountsFaker.fake(
+                email='patricia.lima@equiny.dev',
+                password=self._hash_provider.generate('12345678'),
+            ),
+            AccountsFaker.fake(
+                email='gustavo.barros@equiny.dev',
                 password=self._hash_provider.generate('12345678'),
             ),
         ]

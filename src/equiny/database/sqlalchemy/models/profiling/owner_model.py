@@ -19,6 +19,8 @@ class OwnerModel(Model):
     account_id: Mapped[str] = mapped_column(ForeignKey('accounts.id'))
     bio: Mapped[str | None] = mapped_column(nullable=True)
     phone: Mapped[str | None] = mapped_column(nullable=True)
+    avatar_key: Mapped[str | None] = mapped_column(nullable=True)
+    avatar_name: Mapped[str | None] = mapped_column(nullable=True)
     has_completed_onboarding: Mapped[bool] = mapped_column(default=False)
 
     account: Mapped['AccountModel'] = relationship(back_populates='owners')

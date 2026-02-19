@@ -81,7 +81,7 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         )
 
         matches_rows = (
-            self.sqlalchemy.query(HorseModel, MatchModel.created_at)
+            self.sqlalchemy.query(HorseModel, MatchModel)
             .join(MatchModel, HorseModel.id == paired_horse_id)
             .filter(
                 (MatchModel.horse_a_id == horse_id.value)
@@ -92,9 +92,36 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         )
 
         return [
-            HorseMatchesMapper.to_structure(horse_model, created_at)
-            for horse_model, created_at in matches_rows
+            HorseMatchesMapper.to_structure(
+                horse_model,
+                match_model.created_at,
+                match_model.has_horse_a_viewed
+                if match_model.horse_a_id == horse_id.value
+                else match_model.has_horse_b_viewed,
+            )
+            for horse_model, match_model in matches_rows
         ]
+
+    def find_horse_match_by_to_horse_id(
+        self, from_horse_id: Id, to_horse_id: Id
+    ) -> HorseMatch | None:
+        match_model = (
+            self.sqlalchemy.query(HorseModel, MatchModel.created_at)
+            .filter(
+                (
+                    (MatchModel.horse_a_id == from_horse_id.value)
+                    & (MatchModel.horse_b_id == to_horse_id.value)
+                )
+                | (
+                    (MatchModel.horse_a_id == to_horse_id.value)
+                    & (MatchModel.horse_b_id == from_horse_id.value)
+                )
+            )
+            .first()
+        )
+        if match_model is None:
+            return None
+        return HorseMatchesMapper.to_structure(match_model[0], match_model[1])
 
     def add_many_images(self, horse_id: Id, images: list[Image]) -> None:
         image_models = HorseImagesMapper.to_models(images, horse_id)
@@ -137,6 +164,31 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         horse_model.location_state = horse_dto.location.state
         horse_model.is_active = horse_dto.is_active
 
+    def replace_horse_match(
+        self,
+        from_horse_id: Id,
+        to_horse_id: Id,
+        horse_match: HorseMatch,
+    ) -> None:
+        horse_a_match_model = (
+            self.sqlalchemy.query(MatchModel)
+            .filter(MatchModel.horse_a_id == from_horse_id.value)
+            .filter(MatchModel.horse_b_id == to_horse_id.value)
+            .first()
+        )
+        if horse_a_match_model:
+            horse_a_match_model.has_horse_a_viewed = horse_match.is_viewed.value
+            return
+
+        horse_b_match_model = (
+            self.sqlalchemy.query(MatchModel)
+            .filter(MatchModel.horse_b_id == from_horse_id.value)
+            .filter(MatchModel.horse_a_id == to_horse_id.value)
+            .first()
+        )
+        if horse_b_match_model:
+            horse_b_match_model.has_horse_b_viewed = horse_match.is_viewed.value
+
     def find_many_feed_horses(
         self,
         horse_id: Id,
@@ -170,14 +222,8 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         swipe_exists = (
             self.sqlalchemy.query(SwipeModel)
             .filter(
-                (
-                    (SwipeModel.from_horse_id == horse_id.value)
-                    & (SwipeModel.to_horse_id == HorseModel.id)
-                )
-                | (
-                    (SwipeModel.to_horse_id == horse_id.value)
-                    & (SwipeModel.from_horse_id == HorseModel.id)
-                )
+                (SwipeModel.from_horse_id == horse_id.value)
+                & (SwipeModel.to_horse_id == HorseModel.id)
             )
             .exists()
         )
