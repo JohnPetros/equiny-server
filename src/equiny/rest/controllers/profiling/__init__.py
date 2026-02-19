@@ -1,5 +1,6 @@
 from .create_horse_controller import CreateHorseController
 from .create_horse_gallery_controller import CreateHorseGalleryController
+from .fetch_breeds_controller import FetchBreedsController
 from .fetch_horse_controller import FetchHorseController
 from .fetch_horse_feed_controller import FetchHorseFeedController
 from .fetch_horse_gallery_controller import FetchHorseGalleryController
@@ -10,10 +11,12 @@ from .update_horse_controller import UpdateHorseController
 from .update_horse_gallery_controller import UpdateHorseGalleryController
 from .update_owner_controller import UpdateOwnerController
 from .upload_image_files_controller import UploadImageFilesController
+from .view_horse_match_controller import ViewHorseMatchController
 
 __all__ = [
     'CreateHorseController',
     'CreateHorseGalleryController',
+    'FetchBreedsController',
     'FetchHorseController',
     'FetchHorseFeedController',
     'FetchHorseGalleryController',
@@ -24,4 +27,5 @@ __all__ = [
     'UpdateHorseGalleryController',
     'UpdateOwnerController',
     'UploadImageFilesController',
+    'ViewHorseMatchController',
 ]
