@@ -14,6 +14,10 @@ class SqlalchemyMatchesRepository(SqlalchemyRepository, MatchesRepository):
         model = MatchesMapper.to_model(match)
         self.sqlalchemy.add(model)
 
+    def add_many(self, matches: list[Match]) -> None:
+        models = [MatchesMapper.to_model(match) for match in matches]
+        self.sqlalchemy.add_all(models)
+
     def find_many_by_horse(
         self, horse_id: Id, cursor: str | None = None, limit: int = 20
     ) -> PaginationResponse[Match]:

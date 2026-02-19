@@ -309,3 +309,5 @@ Client
 - `uv run poe typecheck`: 0 errors, 0 warnings, 0 informations
 - `uv run poe test`: 41 passed
 - Migration aplicada com sucesso
+/create-pr specs: documentation/features/matching/feed/specs/swipe-horse-endpoint-spec.md
+documentation/features/matching/feed/specs/dismatch-horse-endpoint-spec.md issue

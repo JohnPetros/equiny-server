@@ -15,7 +15,7 @@ class SwipeHorseController:
     @staticmethod
     def handle(router: APIRouter) -> None:
         @router.post(
-            '/swipes',
+            '/',
             status_code=HTTPStatus.CREATED,
             response_model=SwipeDto,
         )

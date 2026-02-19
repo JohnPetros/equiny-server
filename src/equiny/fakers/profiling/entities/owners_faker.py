@@ -2,6 +2,7 @@ from faker import Faker
 
 from equiny.core.profiling.domain.entities.dtos import OwnerDto
 from equiny.core.profiling.domain.entities.owner import Owner
+from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
 from equiny.fakers.shared.structures.id_faker import IdFaker
 
 
@@ -15,6 +16,7 @@ class OwnersFaker:
         account_id: str | None = None,
         bio: str | None = None,
         phone: str | None = None,
+        avatar: ImageDto | None = None,
         has_completed_onboarding: bool = False,
     ) -> Owner:
         return Owner.create(
@@ -25,6 +27,7 @@ class OwnersFaker:
                 account_id=account_id,
                 bio=bio,
                 phone=phone,
+                avatar=avatar,
             )
         )
 
@@ -35,6 +38,7 @@ class OwnersFaker:
         account_id: str | None = None,
         bio: str | None = None,
         phone: str | None = None,
+        avatar: ImageDto | None = None,
         has_completed_onboarding: bool = False,
     ) -> OwnerDto:
         return OwnerDto(
@@ -44,5 +48,6 @@ class OwnersFaker:
             account_id=account_id or IdFaker.fake().value,
             bio=bio,
             phone=phone,
+            avatar=avatar,
             has_completed_onboarding=has_completed_onboarding,
         )

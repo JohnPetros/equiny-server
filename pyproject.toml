@@ -21,6 +21,8 @@ dependencies = [
     "sqlalchemy>=2.0.46",
     "supabase>=2.28.0",
     "python-ulid",
+    "testcontainers>=4.14.1",
+    "psycopg2-binary>=2.9.11",
 ]
 
 [dependency-groups]
@@ -147,14 +149,13 @@ indent-style = "space"
 line-ending = "lf"
 
 [tool.ruff.lint.isort]
-# Ensina ao Ruff qual é o pacote principal do seu projeto.
-# Deve ser o mesmo nome da pasta dentro de 'src/'.
 known-first-party = ["equiny"]
 
 [tool.pyright]
 typeCheckingMode = "strict"
-pythonVersion = "3.13"
-include = ["src", 'tests']
+pythonVersion = "3.12"
+include = ["src", "tests"]
+stubPath = "stubs"
 exclude = [
     "**/venv",
     "**/.venv",

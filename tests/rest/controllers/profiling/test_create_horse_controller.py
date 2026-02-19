@@ -3,54 +3,56 @@ from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
+from pwdlib import PasswordHash
+from sqlalchemy.orm import Session
 
-from equiny.core.profiling.use_cases.create_owner_use_case import CreateOwnerUseCase
+from equiny.core.auth.domain.entities.account import Account
+from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from equiny.core.profiling.domain.entities.owner import Owner
+from equiny.core.profiling.domain.entities.dtos.owner_dto import OwnerDto
 from equiny.database.sqlalchemy.repositories.profiling.sqlalchemy_owners_repository import (
     SqlalchemyOwnersRepository,
 )
-from equiny.database.sqlalchemy.sqlalchemy import Sqlalchemy
+from equiny.database.sqlalchemy.repositories.auth.sqlalchemy_accounts_repository import (
+    SqlalchemyAccountsRepository,
+)
 from equiny.providers.jwt import JoseJwtProvider
 
 
 class TestCreateHorseController:
-    def _auth_headers(self, client: TestClient) -> dict[str, str]:
+    def _auth_headers(self, sqlalchemy_session: Session) -> dict[str, str]:
         account_email = f'create-horse-{uuid4().hex}@example.com'
 
-        client.post(
-            '/auth/sign-up',
-            json={
-                'owner_name': 'John Owner',
-                'account_email': account_email,
-                'account_password': 'plain-password',
-            },
-        )
+        password_hash = PasswordHash.recommended().hash('plain-password')
 
-        sign_in_response = client.post(
-            '/auth/sign-in',
-            json={
-                'email': account_email,
-                'password': 'plain-password',
-            },
-        )
-
-        access_token = sign_in_response.json()['access_token']
-        account_id = JoseJwtProvider().decode(access_token)['sub']
-
-        sqlalchemy = Sqlalchemy.get_session()
-        try:
-            repository = SqlalchemyOwnersRepository(sqlalchemy)
-            CreateOwnerUseCase(repository).execute(
-                owner_name='John Owner',
-                owner_email=account_email,
-                account_id=account_id,
+        accounts_repo = SqlalchemyAccountsRepository(sqlalchemy_session)
+        account = Account.create(
+            AccountDto(
+                email=account_email, password=password_hash
             )
-            sqlalchemy.commit()
-        finally:
-            sqlalchemy.close()
+        )
+        accounts_repo.add(account)
+        sqlalchemy_session.flush()
+
+        owners_repo = SqlalchemyOwnersRepository(sqlalchemy_session)
+        owner = Owner.create(
+            OwnerDto(
+                name='John Owner',
+                email=account_email,
+                account_id=account.id.value,
+                has_completed_onboarding=False,
+            )
+        )
+        owners_repo.add(owner)
+        sqlalchemy_session.commit()
+
+        access_token = JoseJwtProvider().encode(account.id.value)
 
         return {'Authorization': f'Bearer {access_token}'}
 
-    def test_should_create_horse_and_return_payload(self, client: TestClient) -> None:
+    def test_should_create_horse_and_return_payload(
+        self, client: TestClient, sqlalchemy_session: Session
+    ) -> None:
         response = client.post(
             '/profiling/horses',
             json={
@@ -62,7 +64,7 @@ class TestCreateHorseController:
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
             },
-            headers=self._auth_headers(client),
+            headers=self._auth_headers(sqlalchemy_session),
         )
 
         assert response.status_code == 201
@@ -81,6 +83,7 @@ class TestCreateHorseController:
     def test_should_return_422_when_birth_month_is_invalid(
         self,
         client: TestClient,
+        sqlalchemy_session: Session,
         birth_month: int,
     ) -> None:
         response = client.post(
@@ -94,13 +97,13 @@ class TestCreateHorseController:
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
             },
-            headers=self._auth_headers(client),
+            headers=self._auth_headers(sqlalchemy_session),
         )
 
         assert response.status_code == 422
 
     def test_should_return_422_when_birth_year_is_in_the_future(
-        self, client: TestClient
+        self, client: TestClient, sqlalchemy_session: Session
     ) -> None:
         response = client.post(
             '/profiling/horses',
@@ -113,12 +116,14 @@ class TestCreateHorseController:
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
             },
-            headers=self._auth_headers(client),
+            headers=self._auth_headers(sqlalchemy_session),
         )
 
         assert response.status_code == 422
 
-    def test_should_return_422_when_breed_is_invalid(self, client: TestClient) -> None:
+    def test_should_return_422_when_breed_is_invalid(
+        self, client: TestClient, sqlalchemy_session: Session
+    ) -> None:
         response = client.post(
             '/profiling/horses',
             json={
@@ -130,12 +135,14 @@ class TestCreateHorseController:
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
             },
-            headers=self._auth_headers(client),
+            headers=self._auth_headers(sqlalchemy_session),
         )
 
         assert response.status_code == 422
 
-    def test_should_return_422_when_name_is_too_short(self, client: TestClient) -> None:
+    def test_should_return_422_when_name_is_too_short(
+        self, client: TestClient, sqlalchemy_session: Session
+    ) -> None:
         response = client.post(
             '/profiling/horses',
             json={
@@ -147,7 +154,7 @@ class TestCreateHorseController:
                 'sex': 'male',
                 'location': {'city': 'Sao Paulo', 'state': 'SP'},
             },
-            headers=self._auth_headers(client),
+            headers=self._auth_headers(sqlalchemy_session),
         )
 
         assert response.status_code == 422

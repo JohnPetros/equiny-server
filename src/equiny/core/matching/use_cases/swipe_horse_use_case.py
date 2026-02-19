@@ -30,6 +30,7 @@ class SwipeHorseUseCase:
             match = swipe.verify_match(reverse_swipe)
             if match is not None:
                 self._matches_repository.add(match)
+                swipe = swipe.become_match()
 
         self._swipes_repository.add(swipe)
         return swipe.dto

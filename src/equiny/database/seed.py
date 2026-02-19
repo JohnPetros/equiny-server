@@ -5,9 +5,11 @@ from equiny.database.sqlalchemy.repositories.profiling import (
     SqlalchemyHorsesRepository,
     SqlalchemyOwnersRepository,
 )
+from equiny.database.sqlalchemy.repositories.matching import SqlalchemyMatchesRepository
 from equiny.database.sqlalchemy.seeders.auth_seeder import AuthSeeder
 from equiny.database.sqlalchemy.seeders.profiling_seeder import ProfilingSeeder
 from equiny.database.sqlalchemy.seeders.storage_seeder import StorageSeeder
+from equiny.database.sqlalchemy.seeders.matching_seeder import MatchingSeeder
 from equiny.database.sqlalchemy.sqlalchemy import Sqlalchemy
 from equiny.providers.hash import PwdlibHashProvider
 from equiny.providers.storage.supabase.supabase_file_storage_provider import (
@@ -43,15 +45,18 @@ def seed() -> None:
         account_repository = SqlalchemyAccountsRepository(session)
         owners_repository = SqlalchemyOwnersRepository(session)
         horses_repository = SqlalchemyHorsesRepository(session)
+        matches_repository = SqlalchemyMatchesRepository(session)
 
         auth_seeder = AuthSeeder(account_repository, hash_provider)
         profiling_seeder = ProfilingSeeder(horses_repository, owners_repository)
         storage_seeder = StorageSeeder(file_storage_provider)
+        matching_seeder = MatchingSeeder(matches_repository)
 
         accounts_ids = auth_seeder.seed()
-        profiling_seeder.seed(accounts_ids)
+        horses_ids = profiling_seeder.seed(accounts_ids)
+        session.commit()
+        matching_seeder.seed(horses_ids)
         storage_seeder.seed()
-
         session.commit()
     finally:
         session.close()

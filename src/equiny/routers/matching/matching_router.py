@@ -1,17 +1,15 @@
 from fastapi import APIRouter
 
-from equiny.rest.controllers.matching import (
-    DismatchHorseController,
-    ListMatchesController,
-    SwipeHorseController,
-)
+from equiny.routers.matching.swipes_router import SwipesRouter
+from equiny.routers.matching.matches_router import MatchesRouter
 
 
 class MatchingRouter:
     @staticmethod
     def register() -> APIRouter:
         router = APIRouter(prefix='/matching', tags=['Matching module'])
-        DismatchHorseController.handle(router)
-        ListMatchesController.handle(router)
-        SwipeHorseController.handle(router)
+
+        router.include_router(SwipesRouter.register())
+        router.include_router(MatchesRouter.register())
+
         return router

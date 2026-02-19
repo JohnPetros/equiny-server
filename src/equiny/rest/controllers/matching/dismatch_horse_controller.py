@@ -1,6 +1,7 @@
 from http import HTTPStatus
+from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from equiny.core.matching.interfaces.matches_repository import MatchesRepository
 from equiny.core.matching.use_cases.dismatch_horse_use_case import DismatchHorseUseCase
@@ -13,13 +14,13 @@ class DismatchHorseController:
     @staticmethod
     def handle(router: APIRouter) -> None:
         @router.delete(
-            '/matches',
+            '/',
             status_code=HTTPStatus.NO_CONTENT,
+            dependencies=[Depends(AuthPipe.verify_jwt)],
         )
         def _(
-            horse_a_id: IdSchema,
-            horse_b_id: IdSchema,
-            _: dict[str, str] = Depends(AuthPipe.verify_jwt),
+            horse_a_id: Annotated[IdSchema, Query()],
+            horse_b_id: Annotated[IdSchema, Query()],
             matches_repo: MatchesRepository = Depends(
                 DatabasePipe.get_matches_repository
             ),
