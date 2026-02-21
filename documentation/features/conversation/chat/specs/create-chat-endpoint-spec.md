@@ -1,8 +1,8 @@
 ---
 title: Criar chat no modulo Conversation
 prd: documentation/features/conversation/chat/prd.md
-status: em progresso
-last_updated_at: 2026-02-19
+status: concluida
+last_updated_at: 2026-02-21
 ---
 
 # 1. Objetivo
@@ -246,3 +246,32 @@ Client
 - `src/equiny/core/matching/use_cases/verify_match_use_case.py` (use case reutilizado no `MatchingPipe`)
 - `src/equiny/core/messaging/use_cases/create_chat_use_case.py` (use case ja existente a ser estendido)
 - `src/equiny/database/sqlalchemy/repositories/matching/sqlalchemy_matches_repository.py` (exemplo de repositorio SQLAlchemy com filtros por par)
+
+# 10. Decisoes finais de implementacao
+
+## 10.1 Ajustes de naming/paths consolidados
+- O contexto foi consolidado em `conversation` (nao em `messaging`) para manter consistencia com o modulo e com os endpoints expostos.
+- Caminhos finais relevantes:
+  - `src/equiny/core/conversation/...`
+  - `src/equiny/database/sqlalchemy/{models,mappers,repositories}/conversation/...`
+  - `src/equiny/rest/controllers/conversation/...`
+  - `src/equiny/routers/conversation/...`
+
+## 10.2 Contrato HTTP final do endpoint de criacao
+- Endpoint final: `POST /conversation/chats`.
+- Body final implementado no controller:
+  - `recipient_id`
+  - `sender_id`
+  - `recipient_horse_id`
+  - `sender_horse_id`
+- `MatchingPipe.verify_match` valida elegibilidade via `VerifyMatchUseCase` e dispara `ChatNotAllowedError` quando nao ha match.
+- Resposta permanece `HTTP 201` com `ChatDto`.
+
+## 10.3 Persistencia e migracao
+- Tabela `chats` criada via migration `alembic/versions/a6e4632d5521_add_chats_table.py`.
+- Modelo `ChatModel` usa `owner_a_id` e `owner_b_id` com `ForeignKey` para `owners.id` e indice unico para o par de donos.
+
+## 10.4 Validacao final executada
+- `uv run poe codecheck` -> passando.
+- `uv run poe typecheck` -> passando.
+- `uv run poe test` -> passando (`70 passed`).

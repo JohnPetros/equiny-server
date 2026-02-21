@@ -1,8 +1,8 @@
 ---
 title: Listar mensagens de chat no modulo Conversation
 prd: documentation/features/conversation/chat/prd.md
-status: em progresso
-last_updated_at: 2026-02-19
+status: concluida
+last_updated_at: 2026-02-21
 ---
 
 # 1. Objetivo
@@ -26,11 +26,12 @@ Entregar o endpoint autenticado `GET /conversation/chats/{chat_id}/messages` com
 # 3. Requisitos
 
 ## 3.1 Funcionais
-- Endpoint deve exigir autenticacao JWT (`Depends(AuthPipe.verify_jwt)`).
+- Endpoint deve exigir autenticacao JWT de forma indireta via `Depends(ProfilingPipe.get_owner_id)`, que depende de `AuthPipe.verify_jwt`.
 - Endpoint deve aceitar `chat_id` na rota e query params `cursor` (opcional) e `limit` (opcional, default `20`, faixa `1..100`).
-- Endpoint deve listar apenas mensagens do chat acessado pelo participante autenticado (`sender_id` vindo do `sub` do JWT).
+- Endpoint deve listar apenas mensagens do chat acessado pelo participante autenticado (`sender_id` sendo o `owner_id` resolvido a partir da conta autenticada).
 - Resposta deve ser `HTTPStatus.OK` com `PaginationResponse[MessageDto]` contendo `items`, `next_cursor` e `has_more`.
 - Mensagens devem ser retornadas em ordem decrescente de envio (mais recente primeiro).
+- Ao listar mensagens, mensagens recebidas pelo participante autenticado devem ser marcadas como visualizadas (`is_viewed_by_recipient=True`).
 
 ## 3.2 Nao funcionais
 - Controller deve permanecer fino: adaptar entrada HTTP, instanciar `UseCase` e delegar execucao.
@@ -95,7 +96,7 @@ Entregar o endpoint autenticado `GET /conversation/chats/{chat_id}/messages` com
 - **Arquivo:** `src/equiny/database/sqlalchemy/models/conversation/message_model.py` **(novo arquivo)**
   - **Model:** `MessageModel`
   - **Tabela:** `messages`
-  - **Campos/indices:** `id` (PK), `chat_id` (`ForeignKey('chats.id')`), `sender_id` (`ForeignKey('owners.id')`), `content` (nullable), `sent_at`, `updated_at`; indice composto para paginação (`chat_id`, `id`).
+  - **Campos/indices:** `id` (PK), `chat_id` (`ForeignKey('chats.id')`), `sender_id` (`ForeignKey('owners.id')`), `content` (nullable), `is_viewed_by_recipient` (default `false`), `sent_at`, `updated_at`; indice composto para paginação (`chat_id`, `id`).
 
 - **Arquivo:** `src/equiny/database/sqlalchemy/models/conversation/attachment_model.py` **(novo arquivo)**
   - **Model:** `AttachmentModel`
@@ -119,7 +120,8 @@ Entregar o endpoint autenticado `GET /conversation/chats/{chat_id}/messages` com
 
 ## 6.3.4 Migracoes (Alembic)
  - **Mudanca de schema:** criacao das tabelas `messages` (relacionada a `chats` e `owners`) e `message_attachments` (relacionada a `messages`), com indice de paginação por `chat_id` e indice de relacionamento por `message_id`.
-- **Nova migration:** `alembic/versions/<timestamp>_add_messages_table.py` **(novo arquivo)**
+- **Nova migration:** `alembic/versions/20260219_190000_add_messages_and_message_attachments_tables.py` **(novo arquivo)**
+- **Nova migration:** `alembic/versions/20260220_120000_add_is_viewed_by_recipient_to_messages.py` **(novo arquivo)**
 
 ## 6.4 Pipes
 - Nenhum novo arquivo de `Pipe` previsto; a DI sera feita pela extensao do `DatabasePipe` existente.

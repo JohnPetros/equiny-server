@@ -1,8 +1,8 @@
 ---
 title: Buscar chat por ID no modulo Conversation
 prd: documentation/features/conversation/chat/prd.md
-status: em progresso
-last_updated_at: 2026-02-19
+status: concluida
+last_updated_at: 2026-02-21
 ---
 
 # 1. Objetivo
