@@ -1,0 +1,24 @@
+@URL = {{BASE_URL}}/storage/upload/attachments
+
+
+### Generate upload URLs for attachments images
+POST {{URL}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+[
+  {
+    "chat_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
+    "message_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
+    "attachment_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
+    "file_kind": "images",
+    "file_name": "image.jpg"
+  },
+  {
+    "chat_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
+    "message_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
+    "attachment_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
+    "file_kind": "images",
+    "file_name": "image.png"
+  }
+]

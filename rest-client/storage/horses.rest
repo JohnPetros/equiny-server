@@ -1,0 +1,14 @@
+@URL = {{BASE_URL}}/storage/upload/horses
+@HORSE_ID = 01KHPD158QDMXWTGENWZK5DFYD
+
+### Generate upload URLs for horse gallery
+POST {{URL}}/{{HORSE_ID}}/gallery
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "files_names": [
+    "image.jpg",
+    "image.png"
+  ]
+}

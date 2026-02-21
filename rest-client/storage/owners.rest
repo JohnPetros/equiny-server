@@ -1,0 +1,12 @@
+@URL = {{BASE_URL}}/storage/upload/owners
+@OWNER_ID = 01KJ07XEQSE53E6G2G2Y5WJFYB
+
+### Generate upload URLs for owner avatar
+POST {{URL}}/{{OWNER_ID}}/avatar
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "file_name": "image.jpg"
+}
+ 
