@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from fastapi import APIRouter, Depends
 
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.profiling.use_cases import UploadImageFilesUseCase
 from equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
 from equiny.core.storage.structures.dtos import FileDto

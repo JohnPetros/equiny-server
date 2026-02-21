@@ -21,7 +21,7 @@ class UpdateHorseController:
         def _(
             horse_id: str,
             body: HorseSchema,
-            owner: Owner = Depends(ProfilingPipe.get_owner),
+            owner: Owner = Depends(ProfilingPipe.get_owner_id),
             repository: HorsesRepository = Depends(DatabasePipe.get_horses_repository),
         ) -> HorseDto:
             use_case = UpdateHorseUseCase(repository)

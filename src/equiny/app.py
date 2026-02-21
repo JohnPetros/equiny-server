@@ -20,6 +20,7 @@ from equiny.core.shared.domain.errors import (
     ValidationError,
 )
 from equiny.routers.auth import AuthRouter
+from equiny.routers.conversation import ConversationRouter
 from equiny.routers.docs import DocsRouter
 from equiny.routers.matching import MatchingRouter
 from equiny.routers.profiling import ProfilingRouter
@@ -60,6 +61,7 @@ class FastAPIApp:
         HandleInngestClientMiddleware.handle(app, inngest)
 
         app.include_router(AuthRouter.register())
+        app.include_router(ConversationRouter.register())
         app.include_router(DocsRouter.register())
         app.include_router(MatchingRouter.register())
         app.include_router(ProfilingRouter.register())
