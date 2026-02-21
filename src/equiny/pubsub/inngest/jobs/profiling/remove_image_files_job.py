@@ -9,14 +9,13 @@ from equiny.core.storage.structures.file_storage_folder import FileStorageFolder
 from equiny.providers.storage.supabase.supabase_file_storage_provider import (
     SupabaseFileStorageProvider,
 )
-from equiny.pubsub.inngest.jobs.job import Job
 
 
 class PayloadSchema(BaseModel):
     image_files_keys: list[str]
 
 
-class RemoveImageFilesJob(Job):
+class RemoveImageFilesJob:
     @staticmethod
     def handle(inngest: Inngest):
         @inngest.create_function(
