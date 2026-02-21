@@ -8,9 +8,16 @@ from alembic import context
 from equiny.database.sqlalchemy.models.auth.account_model import AccountModel
 from equiny.database.sqlalchemy.models.matching.match_model import MatchModel
 from equiny.database.sqlalchemy.models.matching.swipe_model import SwipeModel
+from equiny.database.sqlalchemy.models.conversation.attachment_model import (
+    AttachmentModel,
+)
+from equiny.database.sqlalchemy.models.conversation.chat_model import ChatModel
+from equiny.database.sqlalchemy.models.conversation.message_model import MessageModel
 from equiny.database.sqlalchemy.models.model import Model
 from equiny.database.sqlalchemy.models.profiling.horse_model import HorseModel
-from equiny.database.sqlalchemy.models.profiling.horse_image_model import HorseImageModel
+from equiny.database.sqlalchemy.models.profiling.horse_image_model import (
+    HorseImageModel,
+)
 from equiny.database.sqlalchemy.models.profiling.owner_model import OwnerModel
 from equiny.database.sqlalchemy.sqlalchemy import DATABASE_URL
 
@@ -32,6 +39,9 @@ _ = HorseImageModel
 _ = OwnerModel
 _ = SwipeModel
 _ = MatchModel
+_ = ChatModel
+_ = MessageModel
+_ = AttachmentModel
 
 config.set_main_option('sqlalchemy.url', DATABASE_URL)
 

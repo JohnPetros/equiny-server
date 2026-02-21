@@ -28,7 +28,7 @@ from equiny.database.sqlalchemy.models.profiling.horse_image_model import (
 from equiny.database.sqlalchemy.models.matching.swipe_model import SwipeModel
 from equiny.database.sqlalchemy.models.matching.match_model import MatchModel
 from equiny.core.shared.domain.structures.id import Id
-from equiny.core.profiling.domain.structures.image import Image
+from equiny.core.shared.domain.structures.image import Image
 from equiny.core.profiling.domain.structures.feed_horse import FeedHorse
 from equiny.core.profiling.domain.structures.dtos.feed_horse_dto import FeedHorseDto
 

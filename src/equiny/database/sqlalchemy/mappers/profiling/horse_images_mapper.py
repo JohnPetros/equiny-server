@@ -1,6 +1,6 @@
-from equiny.core.profiling.domain.structures.image import Image
+from equiny.core.shared.domain.structures.image import Image
 from equiny.core.profiling.domain.structures.gallery import Gallery
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.database.sqlalchemy.models.profiling.horse_image_model import (
     HorseImageModel,
 )

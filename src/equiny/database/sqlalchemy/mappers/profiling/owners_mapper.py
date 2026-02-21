@@ -1,6 +1,6 @@
 from equiny.core.profiling.domain.entities.dtos.owner_dto import OwnerDto
 from equiny.core.profiling.domain.entities.owner import Owner
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.database.sqlalchemy.models.profiling.owner_model import OwnerModel
 
 

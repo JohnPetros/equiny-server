@@ -8,7 +8,7 @@ from equiny.core.shared.domain.structures.id import Id
 from equiny.core.profiling.domain.entities import Horse, Owner
 from equiny.fakers.profiling.entities import HorsesFaker, OwnersFaker
 
-from equiny.core.profiling.domain.structures.image import Image
+from equiny.core.shared.domain.structures.image import Image
 from equiny.core.profiling.domain.structures.location import LocationDto
 from equiny.fakers.profiling.structures import ImageFaker
 

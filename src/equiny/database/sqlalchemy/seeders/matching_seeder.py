@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING
+
 from equiny.core.matching.interfaces.matches_repository import MatchesRepository
-from equiny.core.matching.domain.structures.match import Match
 from equiny.core.shared.domain.structures.id import Id
 from equiny.fakers.matching.structures import MatchFaker
+
+if TYPE_CHECKING:
+    from equiny.core.matching.domain.structures.match import Match
 
 
 class MatchingSeeder:
