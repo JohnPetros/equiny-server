@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock, create_autospec
 
 from equiny.core.profiling.domain.errors import HorseNotFoundError
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.profiling.interfaces.repositories import (
     HorsesRepository,
     OwnersRepository,

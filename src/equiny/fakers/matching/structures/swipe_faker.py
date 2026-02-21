@@ -39,7 +39,7 @@ class SwipeFaker:
         return SwipeDto(
             from_horse_id=from_horse_id or IdFaker.fake().value,
             to_horse_id=to_horse_id or IdFaker.fake().value,
-            decision=decision or SwipeDecisionValue.LIKE,
+            decision=decision.value if decision else SwipeDecisionValue.LIKE.value,
             created_at=created_at or datetime.now(),
             is_match=is_match,
         )
