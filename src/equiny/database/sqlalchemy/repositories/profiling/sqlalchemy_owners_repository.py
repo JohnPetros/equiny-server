@@ -52,11 +52,18 @@ class SqlalchemyOwnersRepository(SqlalchemyRepository, OwnersRepository):
             return
 
         owner_dto = owner.dto
+        print('owner_dto.avatar', owner_dto.avatar)
         owner_model.name = owner_dto.name
         owner_model.email = owner_dto.email
         owner_model.account_id = owner_dto.account_id
         owner_model.bio = owner_dto.bio
         owner_model.phone = owner_dto.phone
+        owner_model.avatar_key = (
+            owner_dto.avatar.key if owner_dto.avatar is not None else None
+        )
+        owner_model.avatar_name = (
+            owner_dto.avatar.name if owner_dto.avatar is not None else None
+        )
         owner_model.has_completed_onboarding = owner_dto.has_completed_onboarding
 
     def update_has_completed_onboarding(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from equiny.database.sqlalchemy.models.conversation.chat_model import ChatModel
 from equiny.database.sqlalchemy.repositories.auth import SqlalchemyAccountsRepository
 from equiny.database.sqlalchemy.repositories.profiling import (
     SqlalchemyHorsesRepository,
@@ -15,6 +16,7 @@ from equiny.providers.hash import PwdlibHashProvider
 from equiny.providers.storage.supabase.supabase_file_storage_provider import (
     SupabaseFileStorageProvider,
 )
+from equiny.database.sqlalchemy.models.conversation.message_model import MessageModel
 
 
 def seed() -> None:
@@ -33,6 +35,8 @@ def seed() -> None:
     session = Sqlalchemy.get_session()
     try:
         session.execute(delete(HorseImageModel))
+        session.execute(delete(MessageModel))
+        session.execute(delete(ChatModel))
         session.execute(delete(SwipeModel))
         session.execute(delete(MatchModel))
         session.execute(delete(HorseModel))

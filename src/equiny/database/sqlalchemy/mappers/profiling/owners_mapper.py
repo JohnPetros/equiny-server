@@ -22,8 +22,8 @@ class OwnersMapper:
             name=owner_model.name,
             email=owner_model.email,
             account_id=owner_model.account_id,
-            bio=None,
-            phone=None,
+            bio=owner_model.bio,
+            phone=owner_model.phone,
             avatar=avatar,
             has_completed_onboarding=owner_model.has_completed_onboarding,
         )
@@ -42,5 +42,7 @@ class OwnersMapper:
             account_id=owner.account_id.value,
             avatar_key=avatar_key,
             avatar_name=avatar_name,
+            bio=owner.bio.value if owner.bio is not None else None,
+            phone=owner.phone.value if owner.phone is not None else None,
             has_completed_onboarding=owner.has_completed_onboarding.value,
         )
