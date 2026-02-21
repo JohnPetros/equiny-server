@@ -7,6 +7,8 @@ from equiny.core.profiling.use_cases.upload_image_files_use_case import (
 from equiny.core.shared.domain.errors import ValidationError
 from equiny.core.shared.domain.structures.text import Text
 from equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
+from equiny.core.storage.structures import UploadUrl
+from equiny.core.storage.structures.dtos import UploadUrlDto
 from tests.fakers.storage.structures.file_faker import FileFaker
 
 
@@ -25,12 +27,23 @@ class TestUploadImageFilesUseCase:
 
     def test_should_upload_image_files_and_return_image_dtos(self) -> None:
         files_dto = FileFaker.fake_many(count=2)
-        keys = [Text.create('key-1'), Text.create('key-2')]
-        self.file_storage_provider_mock.upload_many.return_value = keys
+        upload_url = UploadUrl.create(
+            UploadUrlDto(
+                url='https://example.com/upload',
+                token='token',
+                file_path='/images/key-1',
+            )
+        )
+        self.file_storage_provider_mock.generate_upload_url.return_value = upload_url
+        self.file_storage_provider_mock.upload.side_effect = [
+            Text.create('key-1'),
+            Text.create('key-2'),
+        ]
 
         result = self.use_case.execute(files_dto=files_dto)
 
-        self.file_storage_provider_mock.upload_many.assert_called_once()
+        assert self.file_storage_provider_mock.generate_upload_url.call_count == 2
+        assert self.file_storage_provider_mock.upload.call_count == 2
         assert len(result) == 2
         assert result[0].key == 'key-1'
         assert result[0].name == files_dto[0].name
@@ -42,7 +55,8 @@ class TestUploadImageFilesUseCase:
             self.use_case.execute(files_dto=[])
 
         assert 'Pelo menos um arquivo deve ser enviado' in str(exc_info.value)
-        self.file_storage_provider_mock.upload_many.assert_not_called()
+        self.file_storage_provider_mock.generate_upload_url.assert_not_called()
+        self.file_storage_provider_mock.upload.assert_not_called()
 
     def test_should_raise_validation_error_when_file_is_not_an_image(self) -> None:
         files_dto = [
@@ -54,7 +68,8 @@ class TestUploadImageFilesUseCase:
 
         assert 'não é uma imagem válida' in str(exc_info.value)
         assert 'document.pdf' in str(exc_info.value)
-        self.file_storage_provider_mock.upload_many.assert_not_called()
+        self.file_storage_provider_mock.generate_upload_url.assert_not_called()
+        self.file_storage_provider_mock.upload.assert_not_called()
 
     def test_should_raise_validation_error_when_any_file_is_not_an_image(self) -> None:
         files_dto = [
@@ -67,4 +82,5 @@ class TestUploadImageFilesUseCase:
 
         assert 'não é uma imagem válida' in str(exc_info.value)
         assert 'document.pdf' in str(exc_info.value)
-        self.file_storage_provider_mock.upload_many.assert_not_called()
+        self.file_storage_provider_mock.generate_upload_url.assert_not_called()
+        self.file_storage_provider_mock.upload.assert_not_called()

@@ -10,13 +10,13 @@ class FileFaker:
     @staticmethod
     def fake_dto(
         name: str | None = None,
-        folder: str = 'images',
+        kind: str = 'images',
         data: bytes | None = None,
         content_type: str = 'image/jpeg',
     ) -> FileDto:
         return FileDto(
             name=name or f'{FileFaker._faker.uuid4()}.jpg',
-            folder=folder,
+            kind=kind,
             data=data or b'fake-image-data',
             content_type=content_type,
         )
