@@ -1,4 +1,5 @@
 from .file import File
-from .file_storage_folder import FileStorageFolder
+from .file_kind import FileKind
+from .upload_url import UploadUrl
 
-__all__ = ['File', 'FileStorageFolder']
+__all__ = ['File', 'FileKind', 'UploadUrl']
