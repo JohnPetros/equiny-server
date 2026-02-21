@@ -1,7 +1,7 @@
 from faker import Faker
 
 from equiny.core.profiling.domain.structures.dtos import ImageDto
-from equiny.core.profiling.domain.structures.image import Image
+from equiny.core.shared.domain.structures.image import Image
 
 
 class ImageFaker:

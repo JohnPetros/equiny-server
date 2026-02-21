@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.profiling.domain.structures.dtos.gallery_dto import GalleryDto
 
 

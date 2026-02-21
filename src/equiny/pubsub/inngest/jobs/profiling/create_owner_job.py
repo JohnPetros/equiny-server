@@ -5,8 +5,8 @@ from inngest import Inngest, Context, TriggerEvent
 from equiny.core.auth.domain.events import AccountCreatedEvent
 from equiny.core.profiling.use_cases import CreateOwnerUseCase
 from equiny.validation.shared import NameSchema, IdSchema, EmailSchema
-from equiny.pubsub.inngest.jobs.job import Job
 from equiny.database.sqlalchemy.repositories.profiling import SqlalchemyOwnersRepository
+from equiny.database.sqlalchemy import Sqlalchemy
 
 
 class PayloadSchema(BaseModel):
@@ -15,7 +15,7 @@ class PayloadSchema(BaseModel):
     account_id: IdSchema
 
 
-class CreateOwnerJob(Job):
+class CreateOwnerJob:
     @staticmethod
     def handle(inngest: Inngest):
         @inngest.create_function(
@@ -33,7 +33,7 @@ class CreateOwnerJob(Job):
 
     @staticmethod
     async def create_owner(payload: PayloadSchema) -> None:
-        with Job.sqlalchemy_session() as sqlalchemy:
+        with Sqlalchemy.session() as sqlalchemy:
             repository = SqlalchemyOwnersRepository(sqlalchemy)
             use_case = CreateOwnerUseCase(repository)
             use_case.execute(

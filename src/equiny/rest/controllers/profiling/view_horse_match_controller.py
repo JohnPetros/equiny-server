@@ -28,7 +28,7 @@ class ViewHorseMatchController:
         def _(
             from_horse_id: IdSchema,
             to_horse_id: IdSchema,
-            owner: Annotated[Owner, Depends(ProfilingPipe.get_owner)],
+            owner: Annotated[Owner, Depends(ProfilingPipe.get_owner_id)],
             repository: repository,
         ) -> HorseMatchDto:
             use_case = ViewHorseMatchUseCase(repository)

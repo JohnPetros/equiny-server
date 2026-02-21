@@ -15,6 +15,7 @@ class SwipeSchema(BaseModel):
         return SwipeDto(
             from_horse_id=self.from_horse_id,
             to_horse_id=self.to_horse_id,
-            decision=self.decision,
+            decision=self.decision.value,
             created_at=datetime.now(),
+            is_match=False,
         )

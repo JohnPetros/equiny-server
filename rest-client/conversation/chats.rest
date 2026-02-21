@@ -1,0 +1,29 @@
+@URL = {{BASE_URL}}/conversation/chats
+@CHAT_ID = 01KHVQX8M2QDQ06AR60QJ42WA5
+
+### Create chat
+POST {{URL}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "sender_id": "01KHTZSZVV7FPHTQP2J0S0W1W4",
+  "recipient_id": "01KHTZSZVV7FPHTQP2J0S0W1W6",
+  "sender_horse_id": "01KHPD158QDMXWTGENWZK5DFYD",
+  "recipient_horse_id": "01KHPDT8C9BM21QXZPT8QF2QYT"
+}
+
+### Fetch chats
+GET {{URL}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### Fetch chat
+GET {{URL}}/{{CHAT_ID}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### List messages
+GET {{URL}}/{{CHAT_ID}}/messages?limit=20
+Content-Type: application/json
+Authorization: Bearer {{JWT}}

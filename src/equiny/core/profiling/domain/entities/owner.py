@@ -7,7 +7,7 @@ from equiny.core.shared.domain.structures.id import Id
 from equiny.core.shared.domain.structures.email import Email
 from equiny.core.shared.domain.structures.text import Text
 from equiny.core.shared.domain.structures.phone import Phone
-from equiny.core.profiling.domain.structures.image import Image
+from equiny.core.shared.domain.structures.image import Image
 
 
 @entity

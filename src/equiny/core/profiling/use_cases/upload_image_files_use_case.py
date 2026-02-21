@@ -1,7 +1,7 @@
 from equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
 from equiny.core.storage.structures.dtos import FileDto
 from equiny.core.storage.structures.file import File
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.shared.domain.errors import ValidationError
 
 

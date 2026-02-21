@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from fastapi import APIRouter, Depends
 
-from equiny.core.profiling.domain.entities.owner import Owner
+from equiny.core.shared.domain.structures.id import Id
 from equiny.core.profiling.domain.structures.dtos import GalleryDto
 from equiny.core.profiling.interfaces.repositories import (
     HorsesRepository,
@@ -21,12 +21,12 @@ class CreateHorseGalleryController:
         @router.post(
             '/{horse_id}/gallery',
             status_code=HTTPStatus.CREATED,
-            response_model=GallerySchema,
+            response_model=GalleryDto,
         )
         def _(
             body: GallerySchema,
             horse_id: str,
-            owner: Owner = Depends(ProfilingPipe.get_owner),
+            owner_id: Id = Depends(ProfilingPipe.get_owner_id),
             horses_repository: HorsesRepository = Depends(
                 DatabasePipe.get_horses_repository
             ),
@@ -35,4 +35,4 @@ class CreateHorseGalleryController:
             ),
         ) -> GalleryDto:
             use_case = CreateHorseGalleryUseCase(horses_repository, owners_repository)
-            return use_case.execute(horse_id, owner.id.value, body.to_dto())
+            return use_case.execute(horse_id, owner_id.value, body.to_dto())

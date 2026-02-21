@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 from equiny.core.profiling.domain.entities.dtos import OwnerDto
 from equiny.core.profiling.domain.entities.owner import Owner
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.validation.profiling.gallery_schema import ImageSchema
 from equiny.validation.shared import EmailSchema, NameSchema
 

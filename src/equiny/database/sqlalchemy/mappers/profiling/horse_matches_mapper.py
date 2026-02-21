@@ -2,7 +2,7 @@ from datetime import datetime
 
 from equiny.core.profiling.domain.structures.horse_match import HorseMatch
 from equiny.core.profiling.domain.structures.dtos.horse_match_dto import HorseMatchDto
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.profiling.domain.structures.dtos.location_dto import LocationDto
 from equiny.database.sqlalchemy.models.profiling.horse_model import HorseModel
 
@@ -29,6 +29,11 @@ class HorseMatchesMapper:
             state=horse_model.location_state,
         )
 
+        owner_horse_image = ImageDto(
+            key=horse_model.images[0].key if horse_model.images else '',
+            name=horse_model.images[0].name if horse_model.images else '',
+        )
+
         return HorseMatch.create(
             HorseMatchDto(
                 owner_id=owner_id,
@@ -36,6 +41,8 @@ class HorseMatchesMapper:
                 owner_avatar=owner_avatar,
                 owner_location=owner_location,
                 owner_horse_id=horse_model.id,
+                owner_horse_name=horse_model.name,
+                owner_horse_image=owner_horse_image,
                 created_at=created_at,
                 is_viewed=is_viewed,
             )

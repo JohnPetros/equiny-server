@@ -12,7 +12,7 @@ Entregar o endpoint autenticado `PUT /profiling/owners` para atualizar os dados 
 ## 2.1 In-scope
 - Criar endpoint `PUT /profiling/owners` no contexto `profiling/owners`.
 - Criar schema de validacao para payload de update do owner e conversao para `OwnerDto`.
-- Reutilizar `ProfilingPipe.get_owner` para resolver owner autenticado (sem `owner_id` em path/query/body).
+- Reutilizar `ProfilingPipe.get_owner_id` para resolver owner autenticado (sem `owner_id` em path/query/body).
 - Reutilizar `UpdateOwnerUseCase` com ajuste para garantir validacao de existencia antes do `replace`.
 - Registrar controller no `OwnersRouter` e exportar no pacote de controllers.
 
@@ -28,7 +28,7 @@ Entregar o endpoint autenticado `PUT /profiling/owners` para atualizar os dados 
 ## 3.1 Funcionais
 - Expor `PUT /profiling/owners` com autenticacao obrigatoria.
 - Aceitar payload com os campos editaveis do owner (`name`, `email`).
-- Resolver owner autenticado via `Depends(ProfilingPipe.get_owner)`.
+- Resolver owner autenticado via `Depends(ProfilingPipe.get_owner_id)`.
 - Converter payload para `OwnerDto` com `id`, `account_id` e `has_completed_onboarding` herdados do owner autenticado.
 - Executar `UpdateOwnerUseCase` com `OwnersRepository` injetado por `DatabasePipe`.
 - Retornar `OwnerDto` atualizado com `HTTPStatus.OK`.
@@ -41,7 +41,7 @@ Entregar o endpoint autenticado `PUT /profiling/owners` para atualizar os dados 
 - Reuso de componentes existentes (`UpdateOwnerUseCase`, `OwnersRepository`, `OwnerDto`, `ProfilingPipe`).
 
 # 4. Regras de negocio e invariantes
-- O owner alvo do update e sempre o owner da conta autenticada (`JWT.sub` -> `ProfilingPipe.get_owner`).
+- O owner alvo do update e sempre o owner da conta autenticada (`JWT.sub` -> `ProfilingPipe.get_owner_id`).
 - `id` e `account_id` nao sao mutaveis por contrato HTTP.
 - `has_completed_onboarding` nao deve ser alterado por este endpoint.
 - Update so deve persistir se owner existir; ausencia deve resultar em erro de dominio (`OwnerNotFoundError`) e resposta `404`.
@@ -128,7 +128,7 @@ Entregar o endpoint autenticado `PUT /profiling/owners` para atualizar os dados 
   - **Rota (relativa):** `/`
   - **`status_code`:** `HTTPStatus.OK`
   - **`response_model`:** `OwnerDto`
-  - **Dependencias:** `Depends(ProfilingPipe.get_owner)`, `Depends(DatabasePipe.get_owners_repository)`
+  - **Dependencias:** `Depends(ProfilingPipe.get_owner_id)`, `Depends(DatabasePipe.get_owner_ids_repository)`
   - **Responsabilidade:** receber `OwnerSchema`, converter para `OwnerDto`, chamar `UpdateOwnerUseCase` e retornar DTO atualizado.
 
 ## 6.6 Routers
@@ -169,7 +169,7 @@ Entregar o endpoint autenticado `PUT /profiling/owners` para atualizar os dados 
 ## 9.1 Fluxo de dados (ASCII)
 ```text
 Client -> PUT /profiling/owners -> ProfilingRouter -> OwnersRouter -> UpdateOwnerController
-  -> Depends(ProfilingPipe.get_owner) -> Depends(DatabasePipe.get_owners_repository)
+  -> Depends(ProfilingPipe.get_owner_id) -> Depends(DatabasePipe.get_owner_ids_repository)
   -> OwnerSchema.to_dto(owner)
   -> UpdateOwnerUseCase.execute(owner_dto)
   -> OwnersRepository.find_by_id(...) -> OwnersRepository.replace(...)

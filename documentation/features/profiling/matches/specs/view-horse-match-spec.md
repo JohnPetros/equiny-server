@@ -90,7 +90,7 @@ Entregar o endpoint `GET /profiling/horses/{from_horse_id}/matches/{to_horse_id}
   - **Método HTTP:** `PATCH`
   - **`status_code`:** `HTTPStatus.OK`
   - **`response_model`:** `HorseMatchDto`
-  - **Dependencias:** `Depends(AuthPipe.verify_jwt)`, `Depends(ProfilingPipe.get_owner)`, `Depends(DatabasePipe.get_horses_repository)`
+  - **Dependencias:** `Depends(AuthPipe.verify_jwt)`, `Depends(ProfilingPipe.get_owner_id)`, `Depends(DatabasePipe.get_horses_repository)`
   - **Assinatura/contratos:** `def _(from_horse_id: IdSchema, to_horse_id: IdSchema, owner: Owner, repository: HorsesRepository) -> HorseMatchDto`
   - **Fluxo:** receber `owner` do ProfilingPipe -> instanciar `ViewHorseMatchUseCase` -> executar `execute(owner.id.value, from_horse_id, to_horse_id)` -> retornar `HorseMatchDto`.
 
@@ -144,7 +144,7 @@ Entregar o endpoint `GET /profiling/horses/{from_horse_id}/matches/{to_horse_id}
 ## 9.1 Fluxo de dados (ASCII)
 ```text
 Client -> ProfilingRouter -> HorsesRouter -> ViewHorseMatchController
-  -> Depends(AuthPipe.verify_jwt) + Depends(ProfilingPipe.get_owner) + Depends(DatabasePipe.get_horses_repository)
+  -> Depends(AuthPipe.verify_jwt) + Depends(ProfilingPipe.get_owner_id) + Depends(DatabasePipe.get_horses_repository)
   -> ViewHorseMatchUseCase.execute(owner_id, from_horse_id, to_horse_id)
   -> HorsesRepository.find_by_id_and_owner_id(from_horse_id, owner_id)
   -> HorsesRepository.find_horse_match_by_to_horse_id(from_horse_id, to_horse_id)

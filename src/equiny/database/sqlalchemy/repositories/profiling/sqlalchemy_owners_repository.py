@@ -28,6 +28,10 @@ class SqlalchemyOwnersRepository(SqlalchemyRepository, OwnersRepository):
             return None
         return OwnersMapper.to_entity(owner_model)
 
+    def find_all(self) -> list[Owner]:
+        owner_models = self.sqlalchemy.query(OwnerModel).all()
+        return [OwnersMapper.to_entity(owner_model) for owner_model in owner_models]
+
     def find_by_account_id(self, account_id: Id) -> Owner | None:
         owner_model = (
             self.sqlalchemy.query(OwnerModel)

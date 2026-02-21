@@ -8,7 +8,7 @@ from equiny.core.profiling.domain.events.image_files_removed_event import (
     ImageFilesRemovedEvent,
 )
 from equiny.core.profiling.domain.structures.dtos.gallery_dto import GalleryDto
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.profiling.domain.structures.gallery import Gallery
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.core.profiling.use_cases.update_horse_gallery_use_case import (

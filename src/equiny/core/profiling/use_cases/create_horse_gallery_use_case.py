@@ -1,7 +1,7 @@
 from equiny.core.profiling.domain.entities.horse import Horse
 from equiny.core.profiling.domain.errors.horse_not_found_error import HorseNotFoundError
 from equiny.core.profiling.domain.structures.dtos.gallery_dto import GalleryDto
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.profiling.interfaces.repositories.horsers_repository import (
     HorsesRepository,
 )

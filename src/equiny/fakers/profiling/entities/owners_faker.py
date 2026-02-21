@@ -2,7 +2,7 @@ from faker import Faker
 
 from equiny.core.profiling.domain.entities.dtos import OwnerDto
 from equiny.core.profiling.domain.entities.owner import Owner
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.fakers.shared.structures.id_faker import IdFaker
 
 

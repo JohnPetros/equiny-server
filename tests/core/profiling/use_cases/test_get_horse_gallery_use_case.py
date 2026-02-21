@@ -5,7 +5,7 @@ import pytest
 from equiny.core.auth.domain.errors import GalleryNotFoundError
 from equiny.core.profiling.domain.errors import HorseNotFoundError
 from equiny.core.profiling.domain.structures.dtos.gallery_dto import GalleryDto
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.profiling.domain.structures.gallery import Gallery
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.core.profiling.use_cases.get_horse_gallery import GetHorseGalleryUseCase

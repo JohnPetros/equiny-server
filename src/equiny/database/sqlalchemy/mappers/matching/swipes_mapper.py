@@ -1,6 +1,5 @@
 from equiny.core.matching.domain.structures.dtos.swipe_dto import SwipeDto
 from equiny.core.matching.domain.structures.swipe import Swipe
-from equiny.core.matching.domain.structures.swipe_decision import SwipeDecisionValue
 from equiny.database.sqlalchemy.models.matching.swipe_model import SwipeModel
 
 
@@ -10,8 +9,9 @@ class SwipesMapper:
         dto = SwipeDto(
             from_horse_id=model.from_horse_id,
             to_horse_id=model.to_horse_id,
-            decision=SwipeDecisionValue(model.decision),
+            decision=model.decision,
             created_at=model.created_at,
+            is_match=False,
         )
         return Swipe.create(dto)
 
@@ -21,5 +21,5 @@ class SwipesMapper:
         return SwipeModel(
             from_horse_id=dto.from_horse_id,
             to_horse_id=dto.to_horse_id,
-            decision=dto.decision.value,
+            decision=dto.decision,
         )

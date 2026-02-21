@@ -9,6 +9,10 @@ from equiny.core.auth.interfaces.repositories.accounts_repository import (
 )
 from equiny.core.matching.interfaces.matches_repository import MatchesRepository
 from equiny.core.matching.interfaces.swipes_repository import SwipesRepository
+from equiny.core.conversation.interfaces.chats_repository import ChatsRepository
+from equiny.core.conversation.interfaces.messages_repository import (
+    MessagesRepository,
+)
 from equiny.database.sqlalchemy.repositories.auth import SqlalchemyAccountsRepository
 from equiny.core.profiling.interfaces.repositories import (
     HorsesRepository,
@@ -17,6 +21,10 @@ from equiny.core.profiling.interfaces.repositories import (
 from equiny.database.sqlalchemy.repositories.matching import (
     SqlalchemyMatchesRepository,
     SqlalchemySwipesRepository,
+)
+from equiny.database.sqlalchemy.repositories.conversation import (
+    SqlalchemyChatsRepository,
+    SqlalchemyMessagesRepository,
 )
 from equiny.database.sqlalchemy.repositories.profiling import (
     SqlalchemyHorsesRepository,
@@ -58,3 +66,15 @@ class DatabasePipe:
         sqlalchemy: Annotated[Session, Depends(get_sqlalchemy_session)],
     ) -> MatchesRepository:
         return SqlalchemyMatchesRepository(sqlalchemy)
+
+    @staticmethod
+    def get_chats_repository(
+        sqlalchemy: Annotated[Session, Depends(get_sqlalchemy_session)],
+    ) -> ChatsRepository:
+        return SqlalchemyChatsRepository(sqlalchemy)
+
+    @staticmethod
+    def get_messages_repository(
+        sqlalchemy: Annotated[Session, Depends(get_sqlalchemy_session)],
+    ) -> MessagesRepository:
+        return SqlalchemyMessagesRepository(sqlalchemy)

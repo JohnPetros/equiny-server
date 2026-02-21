@@ -1,4 +1,6 @@
 from sqlalchemy import create_engine
+from contextlib import contextmanager
+from collections.abc import Generator
 from sqlalchemy.orm import sessionmaker, Session
 
 from equiny.constants import ENV
@@ -25,3 +27,17 @@ class Sqlalchemy:
     @staticmethod
     def get_session() -> Session:
         return SessionLocal()
+
+    @contextmanager
+    @staticmethod
+    def session() -> Generator[Session]:
+        session = Sqlalchemy.get_session()
+        try:
+            yield session
+        except Exception:
+            session.rollback()
+            raise
+        else:
+            session.commit()
+        finally:
+            session.close()

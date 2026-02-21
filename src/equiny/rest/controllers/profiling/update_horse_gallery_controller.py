@@ -25,7 +25,7 @@ class UpdateHorseGalleryController:
         def _(
             body: GallerySchema,
             horse_id: str,
-            owner: Owner = Depends(ProfilingPipe.get_owner),
+            owner: Owner = Depends(ProfilingPipe.get_owner_id),
             horses_repository: HorsesRepository = Depends(
                 DatabasePipe.get_horses_repository
             ),
