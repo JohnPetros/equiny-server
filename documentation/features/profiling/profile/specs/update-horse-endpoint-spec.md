@@ -26,7 +26,7 @@ Entregar o endpoint autenticado `PUT /profiling/horses/{horse_id}` para atualiza
 
 ## 3.1 Funcionais
 - Expor `PUT /profiling/horses/{horse_id}` em `/profiling/horses`.
-- Endpoint deve exigir autenticacao e resolver dono via `Depends(ProfilingPipe.get_owner)`.
+- Endpoint deve exigir autenticacao e resolver dono via `Depends(ProfilingPipe.get_owner_id)`.
 - Endpoint deve aceitar payload de cavalo e converter para `HorseDto` com `to_dto()`.
 - Atualizacao deve ocorrer apenas para cavalo que pertence ao dono autenticado.
 - Retornar `HorseDto` atualizado com `HTTP 200`.
@@ -121,7 +121,7 @@ Entregar o endpoint autenticado `PUT /profiling/horses/{horse_id}` para atualiza
   - **Rota (relativa):** `/{horse_id}`
   - **`status_code`:** `HTTPStatus.OK`
   - **`response_model`:** `HorseDto`
-  - **Dependencias:** `Depends(ProfilingPipe.get_owner)`, `Depends(DatabasePipe.get_horses_repository)`
+  - **Dependencias:** `Depends(ProfilingPipe.get_owner_id)`, `Depends(DatabasePipe.get_horses_repository)`
   - **Responsabilidade:** adaptar payload para `HorseDto`, delegar para `UpdateHorseUseCase` e retornar resultado.
 
 ## 6.6 Routers
@@ -185,7 +185,7 @@ Client
   -> PUT /profiling/horses/{horse_id}
   -> HorsesRouter
   -> UpdateHorseController
-       -> Depends(ProfilingPipe.get_owner)
+       -> Depends(ProfilingPipe.get_owner_id)
        -> Depends(DatabasePipe.get_horses_repository)
        -> HorseSchema.to_dto()
   -> UpdateHorseUseCase.execute(horse_id, owner_id, horse_dto)

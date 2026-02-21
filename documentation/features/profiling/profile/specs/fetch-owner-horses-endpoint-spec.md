@@ -5,7 +5,7 @@ last_updated_at: 2026-02-16
 ---
 
 # 1. Objetivo
-Entregar o endpoint autenticado `GET /profiling/owners/me/horses` para retornar os cavalos do owner autenticado, conectando o fluxo completo `REST` -> `Pipe/Depends` -> `UseCase` -> `Repository` -> `SQLAlchemy` -> `PostgreSQL` com resposta tipada em `list[HorseDto]`. A entrega deve reutilizar o `GetOwnerHorsesUseCase` ja existente, obtendo `owner_id` via `ProfilingPipe.get_owner` e completando os pontos faltantes de exposicao HTTP e persistencia.
+Entregar o endpoint autenticado `GET /profiling/owners/me/horses` para retornar os cavalos do owner autenticado, conectando o fluxo completo `REST` -> `Pipe/Depends` -> `UseCase` -> `Repository` -> `SQLAlchemy` -> `PostgreSQL` com resposta tipada em `list[HorseDto]`. A entrega deve reutilizar o `GetOwnerHorsesUseCase` ja existente, obtendo `owner_id` via `ProfilingPipe.get_owner_id` e completando os pontos faltantes de exposicao HTTP e persistencia.
 
 # 2. Escopo
 
@@ -27,7 +27,7 @@ Entregar o endpoint autenticado `GET /profiling/owners/me/horses` para retornar 
 
 ## 3.1 Funcionais
 - Expor `GET /profiling/owners/me/horses`.
-- Endpoint deve exigir autenticacao e resolver owner via `Depends(ProfilingPipe.get_owner)`.
+- Endpoint deve exigir autenticacao e resolver owner via `Depends(ProfilingPipe.get_owner_id)`.
 - Endpoint deve repassar `owner.id.value` para `GetOwnerHorsesUseCase.execute(owner_id)`.
 - O `UseCase` deve retornar `list[HorseDto]` a partir de `HorsesRepository.find_many_by_owner(Id.create(owner_id))`.
 - Em sucesso, retornar `HTTP 200` com array de `HorseDto`.
@@ -40,7 +40,7 @@ Entregar o endpoint autenticado `GET /profiling/owners/me/horses` para retornar 
 - O endpoint deve seguir padrao arquitetural do projeto: dependencias via `Depends(...)` e `Pipe`.
 
 # 4. Regras de negocio e invariantes
-- O identificador do owner deve ser derivado exclusivamente do `ProfilingPipe.get_owner`.
+- O identificador do owner deve ser derivado exclusivamente do `ProfilingPipe.get_owner_id`.
 - O endpoint exige autenticacao e resolucao de owner antes de executar o caso de uso.
 - A listagem de cavalos e derivada exclusivamente do vinculo `Horse.owner_id` na persistencia.
 - O retorno e sempre uma colecao (`list[HorseDto]`), inclusive quando vazia.
@@ -51,7 +51,7 @@ Entregar o endpoint autenticado `GET /profiling/owners/me/horses` para retornar 
 > ⚠️ Inclua apenas itens realmente relevantes para implementar a mudanca.
 
 ## 5.1 Core (`src/equiny/core/`)
-- **`GetOwnerHorsesUseCase`** (`src/equiny/core/profiling/use_cases/get_owner_horses_use_case.py`) - caso de uso ja criado para listar cavalos por owner, pronto para reutilizacao.
+- **`GetOwnerHorsesUseCase`** (`src/equiny/core/profiling/use_cases/get_owner_id_horses_use_case.py`) - caso de uso ja criado para listar cavalos por owner, pronto para reutilizacao.
 - **`HorsesRepository`** (`src/equiny/core/profiling/interfaces/repositories/horsers_repository.py`) - contrato ja define `find_many_by_owner(owner_id: Id) -> list[Horse]`.
 - **`HorseDto`** (`src/equiny/core/profiling/domain/entities/dtos/horse_dto.py`) - DTO de saida da listagem.
 
@@ -62,7 +62,7 @@ Entregar o endpoint autenticado `GET /profiling/owners/me/horses` para retornar 
 
 ## 5.3 REST/Controllers (`src/equiny/rest/`)
 - **`FetchHorseController`** (`src/equiny/rest/controllers/profiling/fetch_horse_controller.py`) - referencia de endpoint `GET` com `response_model=HorseDto` e uso de `DatabasePipe`.
-- **`FetchOwnerController`** (`src/equiny/rest/controllers/profiling/fetch_onwer_controller.py`) - referencia de endpoint que resolve owner autenticado via `ProfilingPipe.get_owner`.
+- **`FetchOwnerController`** (`src/equiny/rest/controllers/profiling/fetch_onwer_controller.py`) - referencia de endpoint que resolve owner autenticado via `ProfilingPipe.get_owner_id`.
 
 ## 5.4 Routers (`src/equiny/routers/`)
 - **`OwnersRouter`** (`src/equiny/routers/profiling/owners_router.py`) - ponto de composicao das rotas de proprietario (`/owners`).
@@ -120,7 +120,7 @@ Entregar o endpoint autenticado `GET /profiling/owners/me/horses` para retornar 
   - **Rota (relativa):** `/me/horses`
   - **`status_code`:** `HTTPStatus.OK`
   - **`response_model`:** `list[HorseDto]`
-  - **Dependencias:** `Depends(ProfilingPipe.get_owner)`, `Depends(DatabasePipe.get_horses_repository)`
+  - **Dependencias:** `Depends(ProfilingPipe.get_owner_id)`, `Depends(DatabasePipe.get_horses_repository)`
   - **Responsabilidade:** obter owner autenticado no Pipe, delegar para o caso de uso com `owner.id.value` e retornar lista tipada.
 
 ## 6.6 Routers
@@ -145,7 +145,7 @@ Entregar o endpoint autenticado `GET /profiling/owners/me/horses` para retornar 
   - **Justificativa:** expor endpoint no recurso correto (`/profiling/owners`).
   - **Camada:** `routers`
 
-- **Arquivo:** `src/equiny/core/profiling/use_cases/get_owner_horses_use_case.py`
+- **Arquivo:** `src/equiny/core/profiling/use_cases/get_owner_id_horses_use_case.py`
   - **Mudanca:** manter assinatura atual e padronizar nomenclatura interna (`horsers` -> `horses`) para clareza sem alterar contrato.
   - **Justificativa:** melhoria de legibilidade mantendo compatibilidade funcional.
   - **Camada:** `core`
@@ -165,7 +165,7 @@ Client
   -> ProfilingRouter (/profiling)
   -> OwnersRouter (/owners)
   -> FetchOwnerHorsesController
-       -> Depends(ProfilingPipe.get_owner)
+       -> Depends(ProfilingPipe.get_owner_id)
        -> Depends(DatabasePipe.get_horses_repository)
   -> GetOwnerHorsesUseCase.execute(owner.id.value)
   -> HorsesRepository.find_many_by_owner(Id)
@@ -180,5 +180,5 @@ Client
 - `src/equiny/rest/controllers/profiling/fetch_horse_controller.py` (padrao de `GET` com `DatabasePipe`)
 - `src/equiny/rest/controllers/profiling/fetch_onwer_controller.py` (padrao de resolucao de owner autenticado via `ProfilingPipe`)
 - `src/equiny/routers/profiling/owners_router.py` (ponto de registro do novo controller)
-- `src/equiny/core/profiling/use_cases/get_owner_horses_use_case.py` (caso de uso reutilizado)
+- `src/equiny/core/profiling/use_cases/get_owner_id_horses_use_case.py` (caso de uso reutilizado)
 - `src/equiny/database/sqlalchemy/repositories/profiling/sqlalchemy_horsers_repository.py` (repositorio alvo para implementar a busca)

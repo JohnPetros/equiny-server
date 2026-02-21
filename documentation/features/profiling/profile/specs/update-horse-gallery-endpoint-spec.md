@@ -27,7 +27,7 @@ Entregar o endpoint autenticado `PUT /profiling/horses/{horse_id}/gallery` para 
 # 3. Requisitos
 
 ## 3.1 Funcionais
-- O endpoint deve exigir autenticacao via `Depends(ProfilingPipe.get_owner)`.
+- O endpoint deve exigir autenticacao via `Depends(ProfilingPipe.get_owner_id)`.
 - O endpoint deve receber `horse_id` no path e `GallerySchema` no body.
 - O endpoint deve substituir a galeria inteira do cavalo (sem merge parcial).
 - O endpoint deve retornar `HTTPStatus.OK` com `GallerySchema` (espelhando a galeria persistida).
@@ -125,7 +125,7 @@ Entregar o endpoint autenticado `PUT /profiling/horses/{horse_id}/gallery` para 
   - **Rota (relativa):** `/{horse_id}/gallery`
   - **`status_code`:** `HTTPStatus.OK`
   - **`response_model`:** `GallerySchema`
-  - **Dependencias:** `Depends(ProfilingPipe.get_owner)`, `Depends(DatabasePipe.get_horses_repository)`, `Depends(PubSubPipe.get_broker)`
+  - **Dependencias:** `Depends(ProfilingPipe.get_owner_id)`, `Depends(DatabasePipe.get_horses_repository)`, `Depends(PubSubPipe.get_broker)`
 
 ## 6.6 Routers
 - Nenhum novo router; apenas registrar controller no `HorsesRouter` existente.
@@ -211,7 +211,7 @@ Client
   -> PUT /profiling/horses/{horse_id}/gallery
   -> HorsesRouter
   -> UpdateHorseGalleryController
-  -> Depends(ProfilingPipe.get_owner, DatabasePipe.get_horses_repository, PubSubPipe.get_broker)
+  -> Depends(ProfilingPipe.get_owner_id, DatabasePipe.get_horses_repository, PubSubPipe.get_broker)
   -> UpdateHorseGalleryUseCase
   -> SqlalchemyHorsesRepository.replace_gallery
   -> PostgreSQL (horse_images)
