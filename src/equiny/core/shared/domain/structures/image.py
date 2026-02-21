@@ -1,6 +1,6 @@
 from equiny.core.shared.domain.abstracts.structure import Structure
 from equiny.core.shared.domain.decorators import structure
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.shared.domain.structures.text import Text
 
 

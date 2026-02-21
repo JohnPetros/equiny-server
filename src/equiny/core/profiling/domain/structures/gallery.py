@@ -1,7 +1,7 @@
 from equiny.core.shared.domain.decorators import structure
 from equiny.core.shared.domain.abstracts import Structure
 from equiny.core.profiling.domain.structures.dtos.gallery_dto import GalleryDto
-from equiny.core.profiling.domain.structures.image import Image
+from equiny.core.shared.domain.structures.image import Image
 
 
 @structure

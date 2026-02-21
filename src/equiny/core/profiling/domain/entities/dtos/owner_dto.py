@@ -1,4 +1,4 @@
-from equiny.core.profiling.domain.structures.dtos.image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.shared.domain.decorators.dto import dto
 
 

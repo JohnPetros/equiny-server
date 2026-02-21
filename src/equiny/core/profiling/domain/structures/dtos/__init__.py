@@ -1,5 +1,5 @@
 from .location_dto import LocationDto
-from .image_dto import ImageDto
+from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from .gallery_dto import GalleryDto
 from .feed_horse_dto import FeedHorseDto
 from .horse_match_dto import HorseMatchDto
