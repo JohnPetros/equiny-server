@@ -65,9 +65,9 @@ e do contrato (ports/DTOs) que ele consome.
 
 Ao finalizar cada micro-tarefa, rode validacoes antes de seguir:
 
-- Lint/format: `uv run poe codecheck`
-- Typecheck: `uv run poe typecheck`
-- Testes: `uv run poe test`
+- Lint/format: `poe codecheck`
+- Typecheck: `poe typecheck`
+- Testes: `poe test`
 
 Criterio de aceite: corrija imediatamente falhas de lint/type/tests; nao avance
 com o repo quebrado.

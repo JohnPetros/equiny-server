@@ -8,7 +8,7 @@ no `equiny-server` (Clean/Hexagonal: `core` puro, `rest` como borda HTTP).
 ### Framework
 
 - Ferramenta: `pytest`
-- Comando padrao (task runner): `uv run poe test` (executa `pytest -s -x -vv`)
+- Comando padrao (task runner): `poe test` (executa `pytest -s -x -vv`)
 
 ### Configuracao
 
@@ -66,6 +66,6 @@ no `equiny-server` (Clean/Hexagonal: `core` puro, `rest` como borda HTTP).
 
 ## Comandos rapidos (uso local)
 
-- Rodar tudo: `uv run poe test`
+- Rodar tudo: `poe test`
 - Rodar um arquivo: `uv run pytest -q tests/rest/controllers/profiling/test_create_horse_controller.py`
 - Rodar um teste especifico: `uv run pytest -q -k "should_create"`

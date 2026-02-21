@@ -11,6 +11,7 @@ class OwnersFaker:
 
     @staticmethod
     def fake(
+        id: str | None = None,
         name: str | None = None,
         email: str | None = None,
         account_id: str | None = None,
@@ -21,6 +22,7 @@ class OwnersFaker:
     ) -> Owner:
         return Owner.create(
             OwnersFaker.fake_dto(
+                id=id,
                 has_completed_onboarding=has_completed_onboarding,
                 name=name,
                 email=email,
@@ -33,6 +35,7 @@ class OwnersFaker:
 
     @staticmethod
     def fake_dto(
+        id: str | None = None,
         name: str | None = None,
         email: str | None = None,
         account_id: str | None = None,
@@ -42,7 +45,7 @@ class OwnersFaker:
         has_completed_onboarding: bool = False,
     ) -> OwnerDto:
         return OwnerDto(
-            id=IdFaker.fake().value,
+            id=id or IdFaker.fake().value,
             name=name or OwnersFaker._faker.name(),
             email=email or OwnersFaker._faker.email(),
             account_id=account_id or IdFaker.fake().value,

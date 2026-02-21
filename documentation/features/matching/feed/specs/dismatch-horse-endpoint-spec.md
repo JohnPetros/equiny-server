@@ -179,15 +179,15 @@ Client
 
 ```bash
 # Lint/format
-$ uv run poe codecheck
+$ poe codecheck
 All checks passed!
 
 # Type check
-$ uv run poe typecheck
+$ poe typecheck
 0 errors, 0 warnings, 0 informations
 
 # Tests
-$ uv run poe test
+$ poe test
 48 passed
 ```
 

@@ -6,8 +6,8 @@ from fastapi import FastAPI
 from equiny.constants import ENV
 from equiny.pubsub.inngest.jobs.profiling import (
     CreateOwnerJob,
-    RemoveImageFilesJob,
 )
+from equiny.pubsub.inngest.jobs.storage import RemoveFilesJob
 
 
 class InngestPubSub:
@@ -24,7 +24,7 @@ class InngestPubSub:
             inngest,
             functions=[
                 CreateOwnerJob.handle(inngest),
-                RemoveImageFilesJob.handle(inngest),
+                RemoveFilesJob.handle(inngest),
             ],
         )
 
@@ -34,5 +34,10 @@ class InngestPubSub:
     def register_profiling_jobs(inngest: Inngest):
         return [
             CreateOwnerJob.handle(inngest),
-            RemoveImageFilesJob.handle(inngest),
+        ]
+
+    @staticmethod
+    def register_storage_jobs(inngest: Inngest):
+        return [
+            RemoveFilesJob.handle(inngest),
         ]

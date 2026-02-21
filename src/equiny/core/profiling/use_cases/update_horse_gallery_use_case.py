@@ -1,13 +1,13 @@
 from equiny.core.profiling.domain.entities.horse import Horse
 from equiny.core.profiling.domain.errors.horse_not_found_error import HorseNotFoundError
-from equiny.core.profiling.domain.events.image_files_removed_event import (
-    ImageFilesRemovedEvent,
-)
 from equiny.core.shared.domain.structures.id import Id
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.core.profiling.domain.structures.gallery import Gallery, GalleryDto
 from equiny.core.auth.domain.errors import GalleryNotFoundError
 from equiny.core.shared.interfaces.broker import Broker
+from equiny.core.profiling.domain.events.image_files_removed_event import (
+    ImagesFilesRemovedEvent,
+)
 
 
 class UpdateHorseGalleryUseCase:
@@ -27,8 +27,8 @@ class UpdateHorseGalleryUseCase:
         self._repository.add_many_images(horse.id, gallery.images)
 
         if removed_images:
-            event = ImageFilesRemovedEvent(
-                [image.key.value for image in removed_images]
+            event = ImagesFilesRemovedEvent(
+                files_paths=[image.key.value for image in removed_images]
             )
             self._broker.publish(event)
 

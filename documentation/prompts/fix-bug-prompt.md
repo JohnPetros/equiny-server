@@ -36,9 +36,9 @@ Diretrizes de execucao:
 
 Ao finalizar cada micro-tarefa, rode validacoes antes de seguir:
 
-- Lint/format: `uv run poe codecheck`
-- Typecheck: `uv run poe typecheck`
-- Testes: `uv run poe test` (ou subset primeiro, quando fizer sentido)
+- Lint/format: `poe codecheck`
+- Typecheck: `poe typecheck`
+- Testes: `poe test` (ou subset primeiro, quando fizer sentido)
 
 Criterio: nao avance com lint/type/test quebrados.
 
@@ -52,12 +52,12 @@ Checklist:
 | 2 | Funcionalidade | Bug nao ocorre mais no cenario de reproducao |
 | 3 | Regressao | Suite relevante continua passando |
 | 4 | Efeitos colaterais | Nenhuma mudanca inesperada de comportamento |
-| 5 | Qualidade | `uv run poe codecheck`, `uv run poe typecheck`, `uv run poe test` passam |
+| 5 | Qualidade | `poe codecheck`, `poe typecheck`, `poe test` passam |
 
 Procedimento:
 
 1) Releia o bug report e confirme que nada ficou faltando.
 2) Rode o(s) teste(s) que cobriam/reproduziam o bug e confirme que agora passam.
-3) Rode a suite completa: `uv run poe test`.
+3) Rode a suite completa: `poe test`.
 
 Se qualquer item falhar, volte para a etapa 3 e ajuste antes de concluir.

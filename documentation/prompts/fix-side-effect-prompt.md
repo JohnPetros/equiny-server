@@ -16,8 +16,8 @@ Diretrizes de execucao:
 
 1) Diagnostico estatico
 
-- Rode lint/format: `uv run poe codecheck` (ruff)
-- Rode typecheck: `uv run poe typecheck` (pyright)
+- Rode lint/format: `poe codecheck` (ruff)
+- Rode typecheck: `poe typecheck` (pyright)
 - Priorize:
   - erros de sintaxe/import
   - contracts quebrados (assinaturas/ports)
@@ -30,7 +30,7 @@ Diretrizes de execucao:
 
 3) Validacao com testes
 
-- Rode testes: `uv run poe test`.
+- Rode testes: `poe test`.
 - Se o impacto for localizado, rode um subconjunto primeiro e depois o suite completo.
 - Criterio de sucesso: sem falhas em lint/type e testes verdes.
 

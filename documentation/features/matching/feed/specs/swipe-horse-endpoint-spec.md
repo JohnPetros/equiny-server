@@ -305,9 +305,9 @@ Client
 - **Constraint de swipe:** Implementado com `UniqueConstraint('from_horse_id', 'to_horse_id', name='uq_swipe_pair')`
 
 ## 10.4 Validacao
-- `uv run poe codecheck`: All checks passed, 234 files formatted
-- `uv run poe typecheck`: 0 errors, 0 warnings, 0 informations
-- `uv run poe test`: 41 passed
+- `poe codecheck`: All checks passed, 234 files formatted
+- `poe typecheck`: 0 errors, 0 warnings, 0 informations
+- `poe test`: 41 passed
 - Migration aplicada com sucesso
 /create-pr specs: documentation/features/matching/feed/specs/swipe-horse-endpoint-spec.md
 documentation/features/matching/feed/specs/dismatch-horse-endpoint-spec.md issue

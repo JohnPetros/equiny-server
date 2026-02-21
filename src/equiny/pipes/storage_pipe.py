@@ -25,7 +25,7 @@ class StoragePipe:
         return [
             FileDto(
                 name=uploaded_file.filename or 'unnamed',
-                folder='images',
+                kind='images',
                 data=uploaded_file.file.read(),
                 content_type=uploaded_file.content_type or 'application/octet-stream',
             )

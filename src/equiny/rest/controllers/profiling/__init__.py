@@ -10,7 +10,6 @@ from .fetch_onwer_controller import FetchOwnerController
 from .update_horse_controller import UpdateHorseController
 from .update_horse_gallery_controller import UpdateHorseGalleryController
 from .update_owner_controller import UpdateOwnerController
-from .upload_image_files_controller import UploadImageFilesController
 from .view_horse_match_controller import ViewHorseMatchController
 
 __all__ = [
@@ -26,6 +25,5 @@ __all__ = [
     'UpdateHorseController',
     'UpdateHorseGalleryController',
     'UpdateOwnerController',
-    'UploadImageFilesController',
     'ViewHorseMatchController',
 ]

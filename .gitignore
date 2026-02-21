@@ -185,3 +185,6 @@ pyrightconfig.json
 .serena
 opencode.jsonc
 prompt.md
+
+# Terminal Paste Image folder
+.cp-images/

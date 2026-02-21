@@ -1,6 +1,10 @@
 from fastapi import APIRouter
 
-from equiny.rest.controllers.profiling import UploadImageFilesController
+from equiny.rest.controllers.storage import (
+    GenerateUploadUrlForOwnerAvatarController,
+    GenerateUploadUrlsForAttachmentsController,
+    GenerateUploadUrlsForHorseGalleryController,
+)
 
 
 class StorageRouter:
@@ -8,6 +12,8 @@ class StorageRouter:
     def register() -> APIRouter:
         router = APIRouter(prefix='/storage', tags=['Storage module'])
 
-        UploadImageFilesController.handle(router)
+        GenerateUploadUrlForOwnerAvatarController.handle(router)
+        GenerateUploadUrlsForAttachmentsController.handle(router)
+        GenerateUploadUrlsForHorseGalleryController.handle(router)
 
         return router
