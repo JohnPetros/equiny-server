@@ -16,7 +16,7 @@
 ### Quando ler
 
 - **SEMPRE** que realizar qualquer alteração ou escrita de código.
-- Antes de executar tarefas de validação (`uv run poe codecheck` ou `uv run poe typecheck`).
+- Antes de executar tarefas de validação (`poe codecheck` ou `poe typecheck`).
 - Ao padronizar estilo de código em features novas ou refactors.
 - Ao revisar consistência de nomenclatura e organização de arquivos.
 - Ao preparar PR com mudanças amplas para evitar divergência de estilo.

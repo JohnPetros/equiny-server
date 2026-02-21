@@ -18,20 +18,20 @@ O projeto adota um conjunto estrito de ferramentas para garantir reprodutibilida
 ### Scripts e Automação
 - **Ferramenta:** `poethepoet` (task runner)
 - **Regra:** Todas as tarefas recorrentes (testes, lint, migrations) devem ser encapsuladas como tasks no `pyproject.toml`.
-- **Uso:** Execute via `uv run poe <task>`.
+- **Uso:** Execute via `poe <task>`.
 - **Proibição:** Evite criar scripts shell (`.sh`) soltos na raiz se a tarefa puder ser definida como uma task do Poe.
 
 ### Qualidade de Código (Linting e Formatação)
 - **Ferramenta:** `ruff`
 - **Regra:** O código deve estar formatado e lintado de acordo com as regras do `ruff` configuradas em `pyproject.toml`.
 - **CI/CD:** O pipeline falhará se `ruff check` ou `ruff format --check` reportarem erros.
-- **Task:** Use `uv run poe codecheck` para aplicar correções automáticas e verificar a formatação.
+- **Task:** Use `poe codecheck` para aplicar correções automáticas e verificar a formatação.
 
 ### Checagem Estática de Tipos
 - **Ferramenta:** `pyright`
 - **Regra:** Todo código novo deve passar na checagem estática de tipos.
 - **Tipagem:** Utilize type hints explícitos. Evite `Any` a menos que estritamente necessário.
-- **Task:** Use `uv run poe typecheck`.
+- **Task:** Use `poe typecheck`.
 
 ## Organização de Imports
 

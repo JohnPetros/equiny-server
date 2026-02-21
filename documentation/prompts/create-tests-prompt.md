@@ -38,7 +38,7 @@ Entrada:
 ### 3) Stack de testes
 
 - Runner/framework: `pytest`
-- Execucao padrao: `uv run poe test` (usa `pytest -s -x -vv`)
+- Execucao padrao: `poe test` (usa `pytest -s -x -vv`)
 - Mocking:
   - preferencia: `unittest.mock.create_autospec(<Interface>, instance=True)` (use cases)
   - fixture util: `mocker` (pytest-mock), quando fizer sentido
@@ -83,7 +83,7 @@ Entrada:
 4) Rode localmente:
 
 ```bash
-uv run poe test
+poe test
 ```
 
 Ou apenas um arquivo:

@@ -55,10 +55,10 @@ src/equiny/database/
 | Ferramenta | Propósito | Comando |
 |------------|-----------|---------|
 | **Docker Compose** | Container PostgreSQL | `docker compose up -d postgres` |
-| **Alembic** | Migrações de schema | `uv run poe db:migrate "mensagem"` |
-| | Aplicar migrations | `uv run poe db:upgrade` |
-| | Reverter migration | `uv run poe db:downgrade` |
-| | Ver revisão atual | `uv run poe db:current` |
+| **Alembic** | Migrações de schema | `poe db:migrate "mensagem"` |
+| | Aplicar migrations | `poe db:upgrade` |
+| | Reverter migration | `poe db:downgrade` |
+| | Ver revisão atual | `poe db:current` |
 
 ---
 
@@ -66,7 +66,7 @@ src/equiny/database/
 
 1. **Análise**: Entender a entidade/DTO do domínio que precisa ser persistida
 2. **Modelo**: Criar/atualizar o `Model` SQLAlchemy correspondente
-3. **Migration**: Gerar migration via `uv run poe db:migrate "descrição"`
+3. **Migration**: Gerar migration via `poe db:migrate "descrição"`
 4. **Mapper**: Implementar mapper para tradução entre modelos e entidades
 5. **Repositório**: Criar implementação concreta da interface do `core`
 6. **Integração**: Exportar no `__init__.py` e integrar no controller

@@ -16,9 +16,9 @@ Diretrizes de execucao:
 
 1. Validacao final de qualidade (comandos do repo)
 
-- Lint/format: `uv run poe codecheck`
-- Typecheck: `uv run poe typecheck`
-- Testes: `uv run poe test`
+- Lint/format: `poe codecheck`
+- Typecheck: `poe typecheck`
+- Testes: `poe test`
 
 2. Verificacao de requisitos
 

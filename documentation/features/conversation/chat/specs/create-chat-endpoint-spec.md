@@ -272,6 +272,6 @@ Client
 - Modelo `ChatModel` usa `owner_a_id` e `owner_b_id` com `ForeignKey` para `owners.id` e indice unico para o par de donos.
 
 ## 10.4 Validacao final executada
-- `uv run poe codecheck` -> passando.
-- `uv run poe typecheck` -> passando.
-- `uv run poe test` -> passando (`70 passed`).
+- `poe codecheck` -> passando.
+- `poe typecheck` -> passando.
+- `poe test` -> passando (`70 passed`).

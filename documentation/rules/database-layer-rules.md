@@ -29,7 +29,7 @@ Submodulos principais:
 ### Migrações (Alembic)
 - **Ferramenta:** `alembic` (via `poethepoet`)
 - **Regra:** Alterações de esquema DEVEM ser versionadas via migrations. Nunca altere o banco diretamente.
-- **Tasks Disponíveis (via `uv run poe`):**
+- **Tasks Disponíveis (via `poe`):**
   - `db:migrate "mensagem"`: Gera nova migration com base nas alterações dos modelos.
   - `db:upgrade`: Aplica as migrations pendentes (até `head`).
   - `db:downgrade`: Reverte a última migration aplicada.

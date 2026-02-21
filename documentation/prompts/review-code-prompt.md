@@ -24,8 +24,8 @@ Diretrizes de execucao:
 
 2) Qualidade estatica (comandos do repo)
 
-- Lint/format: `uv run poe codecheck` (ruff)
-- Typecheck: `uv run poe typecheck` (pyright)
+- Lint/format: `poe codecheck` (ruff)
+- Typecheck: `poe typecheck` (pyright)
 - Priorize falhas que quebram build/execucao (type errors, import cycles, lint blocking).
 
 3) Alinhamento com regras do projeto (leitura progressiva)
@@ -43,10 +43,10 @@ Diretrizes de execucao:
 
 4) Validacao final
 
-- Testes: `uv run poe test`
+- Testes: `poe test`
 - Se tocar em controllers/endpoints, garanta que testes REST continuam passando.
 
 Criterio de sucesso:
 
-- `uv run poe codecheck`, `uv run poe typecheck` e `uv run poe test` passam.
+- `poe codecheck`, `poe typecheck` e `poe test` passam.
 - Revisao confirma aderencia a arquitetura (Clean/Hex) e consistencia de padroes.

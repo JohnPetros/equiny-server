@@ -178,12 +178,12 @@ Entregar o endpoint autenticado `PUT /profiling/horses/{horse_id}/gallery` para 
   - **Camada:** `core`
 
 - **Arquivo:** `src/equiny/providers/storage/supabase/supabase_file_storage_provider.py`
-  - **Mudanca:** implementar `remove_many(folder, file_keys)` para cumprir o contrato atualizado de storage.
+  - **Mudanca:** implementar `remove_files(folder, file_keys)` para cumprir o contrato atualizado de storage.
   - **Justificativa:** permitir limpeza de arquivos removidos via job de evento.
   - **Camada:** `database`
 
 - **Arquivo:** `src/equiny/core/storage/interfaces/file_storage_provider.py`
-  - **Mudanca:** contrato **ja atualizado** com `remove_many(folder: FileStorageFolder, file_keys: list[Text])`.
+  - **Mudanca:** contrato **ja atualizado** com `remove_files(folder: FileStorageFolder, file_keys: list[Text])`.
   - **Justificativa:** manter job desacoplado de SDK especifico e aderente a porta de dominio (confirmar aderencia dos adapters).
   - **Camada:** `core`
 
@@ -217,7 +217,7 @@ Client
   -> PostgreSQL (horse_images)
   -> Broker.publish(ImageFilesRemovedEvent)
   -> Inngest (RemoveImageFilesJob)
-  -> FileStorageProvider.remove_many
+  -> FileStorageProvider.remove_files
 ```
 
 ## 9.2 Referencias internas
