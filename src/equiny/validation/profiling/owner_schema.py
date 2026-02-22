@@ -28,4 +28,5 @@ class OwnerSchema(BaseModel):
             phone=self.phone,
             avatar=avatar,
             has_completed_onboarding=owner_dto.has_completed_onboarding,
+            last_presence_at=owner_dto.last_presence_at,
         )

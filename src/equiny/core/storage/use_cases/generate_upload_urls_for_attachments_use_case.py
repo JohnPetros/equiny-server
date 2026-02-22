@@ -17,7 +17,7 @@ class GenerateUploadUrlsForAttachmentsUseCase:
     ) -> ListResponse[UploadUrlDto]:
         file_paths = [
             Text.create(
-                f'conversation/chats/{attachment_dto.chat_id}/messages/{attachment_dto.message_id}/attachments/{attachment_dto.attachment_id}/{attachment_dto.file_kind}/{FileName.create(attachment_dto.file_name).randomize.value}'
+                f'/conversation/chats/{attachment_dto.chat_id}/messages/{attachment_dto.message_id}/attachments/{attachment_dto.attachment_id}/{attachment_dto.file_kind}/{FileName.create(attachment_dto.file_name).randomize.value}'
             )
             for attachment_dto in attachment_dtos
         ]

@@ -10,3 +10,7 @@ class Datetime(Structure):
     @classmethod
     def create(cls, datetime: datetime) -> 'Datetime':
         return Datetime(value=datetime)
+
+    @classmethod
+    def create_at_now(cls) -> 'Datetime':
+        return Datetime(value=datetime.now())

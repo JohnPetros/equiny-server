@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey
@@ -22,6 +23,7 @@ class OwnerModel(Model):
     avatar_key: Mapped[str | None] = mapped_column(nullable=True)
     avatar_name: Mapped[str | None] = mapped_column(nullable=True)
     has_completed_onboarding: Mapped[bool] = mapped_column(default=False)
+    last_presence_at: Mapped[datetime | None] = mapped_column(nullable=True)
 
     account: Mapped['AccountModel'] = relationship(back_populates='owners')
     horses: Mapped[list['HorseModel']] = relationship(back_populates='owner')

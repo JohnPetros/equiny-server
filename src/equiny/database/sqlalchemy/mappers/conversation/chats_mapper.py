@@ -26,6 +26,7 @@ class ChatsMapper:
             id=recipient_model.id,
             name=recipient_model.name,
             avatar=ChatsMapper._build_avatar_dto(recipient_model),
+            last_presence_at=recipient_model.last_presence_at,
         )
         dto = ChatDto(
             id=model.id,
@@ -67,5 +68,5 @@ class ChatsMapper:
             ],
             sent_at=model.sent_at,
             updated_at=model.updated_at,
-            is_viewed_by_recipient=model.is_viewed_by_recipient,
+            is_read_by_recipient=model.is_read_by_recipient,
         )

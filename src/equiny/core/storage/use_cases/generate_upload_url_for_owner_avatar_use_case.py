@@ -10,7 +10,7 @@ class GenerateUploadUrlForOwnerAvatarUseCase:
 
     def execute(self, owner_id: str, file_name: str) -> UploadUrlDto:
         file_path = Text.create(
-            f'profiling/owners/{owner_id}/avatar/{FileName.create(file_name).randomize.value}'
+            f'/profiling/owners/{owner_id}/avatar/{FileName.create(file_name).randomize.value}'
         )
         upload_url = self._provider.generate_upload_url(file_path)
         return upload_url.dto

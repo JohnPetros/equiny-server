@@ -19,7 +19,7 @@ class SqlalchemyChatsRepository(SqlalchemyRepository, ChatsRepository):
         self.sqlalchemy.add(model)
 
     def find_many_by_sender_id(self, sender_id: Id) -> list[Chat]:
-        unread_messages_count = self._build_unread_messages_count(sender_id.value)
+        unread_messages_count = self._count_unread_messages(sender_id.value)
 
         rows = (
             self.sqlalchemy.query(ChatModel, unread_messages_count)
@@ -66,22 +66,6 @@ class SqlalchemyChatsRepository(SqlalchemyRepository, ChatsRepository):
         last_message = self._find_last_message_by_chat_id(model.id)
         return ChatsMapper.to_entity(model, sender_id.value, last_message=last_message)
 
-    def find_by_id_and_sender_id(self, chat_id: Id, sender_id: Id) -> Chat | None:
-        model = (
-            self.sqlalchemy.query(ChatModel)
-            .options(joinedload(ChatModel.owner_a), joinedload(ChatModel.owner_b))
-            .filter(
-                ChatModel.id == chat_id.value,
-                (ChatModel.owner_a_id == sender_id.value)
-                | (ChatModel.owner_b_id == sender_id.value),
-            )
-            .first()
-        )
-        if model is None:
-            return None
-        last_message = self._find_last_message_by_chat_id(model.id)
-        return ChatsMapper.to_entity(model, sender_id.value, last_message=last_message)
-
     def find_by_id_and_participant_id(
         self, chat_id: Id, participant_id: Id
     ) -> Chat | None:
@@ -102,12 +86,15 @@ class SqlalchemyChatsRepository(SqlalchemyRepository, ChatsRepository):
             model, participant_id.value, last_message=last_message
         )
 
-    def _build_unread_messages_count(self, sender_id: str) -> Label[int]:
+    def find_by_id_and_sender_id(self, chat_id: Id, sender_id: Id) -> Chat | None:
+        return self.find_by_id_and_participant_id(chat_id, sender_id)
+
+    def _count_unread_messages(self, sender_id: str) -> Label[int]:
         return (
             func.count(MessageModel.id)
             .filter(
                 MessageModel.sender_id != sender_id,
-                MessageModel.is_viewed_by_recipient.is_(False),
+                MessageModel.is_read_by_recipient.is_(False),
             )
             .label('unread_messages_count')
         )

@@ -5,7 +5,7 @@ import pytest
 from equiny.core.auth.domain.errors import GalleryNotFoundError
 from equiny.core.profiling.domain.errors import HorseNotFoundError
 from equiny.core.profiling.domain.events.image_files_removed_event import (
-    ImageFilesRemovedEvent,
+    ImagesFilesRemovedEvent,
 )
 from equiny.core.profiling.domain.structures.dtos.gallery_dto import GalleryDto
 from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
@@ -74,7 +74,7 @@ class TestUpdateHorseGalleryUseCase:
         assert saved_horse_id == horse.id
         assert [image.dto for image in saved_images] == new_gallery_dto.images
         assert result == new_gallery_dto
-        assert isinstance(published_event, ImageFilesRemovedEvent)
+        assert isinstance(published_event, ImagesFilesRemovedEvent)
         assert published_event.payload['image_files_keys'] == ['image-key-2']
 
     def test_should_update_gallery_without_publishing_event_when_no_images_are_removed(

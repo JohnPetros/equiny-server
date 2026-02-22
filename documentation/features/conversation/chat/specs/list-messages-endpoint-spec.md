@@ -31,7 +31,7 @@ Entregar o endpoint autenticado `GET /conversation/chats/{chat_id}/messages` com
 - Endpoint deve listar apenas mensagens do chat acessado pelo participante autenticado (`sender_id` sendo o `owner_id` resolvido a partir da conta autenticada).
 - Resposta deve ser `HTTPStatus.OK` com `PaginationResponse[MessageDto]` contendo `items`, `next_cursor` e `has_more`.
 - Mensagens devem ser retornadas em ordem decrescente de envio (mais recente primeiro).
-- Ao listar mensagens, mensagens recebidas pelo participante autenticado devem ser marcadas como visualizadas (`is_viewed_by_recipient=True`).
+- Ao listar mensagens, mensagens recebidas pelo participante autenticado devem ser marcadas como lidas (`is_read_by_recipient=True`).
 
 ## 3.2 Nao funcionais
 - Controller deve permanecer fino: adaptar entrada HTTP, instanciar `UseCase` e delegar execucao.
@@ -96,7 +96,7 @@ Entregar o endpoint autenticado `GET /conversation/chats/{chat_id}/messages` com
 - **Arquivo:** `src/equiny/database/sqlalchemy/models/conversation/message_model.py` **(novo arquivo)**
   - **Model:** `MessageModel`
   - **Tabela:** `messages`
-  - **Campos/indices:** `id` (PK), `chat_id` (`ForeignKey('chats.id')`), `sender_id` (`ForeignKey('owners.id')`), `content` (nullable), `is_viewed_by_recipient` (default `false`), `sent_at`, `updated_at`; indice composto para paginação (`chat_id`, `id`).
+  - **Campos/indices:** `id` (PK), `chat_id` (`ForeignKey('chats.id')`), `sender_id` (`ForeignKey('owners.id')`), `content` (nullable), `is_read_by_recipient` (default `false`), `sent_at`, `updated_at`; indice composto para paginação (`chat_id`, `id`).
 
 - **Arquivo:** `src/equiny/database/sqlalchemy/models/conversation/attachment_model.py` **(novo arquivo)**
   - **Model:** `AttachmentModel`
@@ -122,6 +122,7 @@ Entregar o endpoint autenticado `GET /conversation/chats/{chat_id}/messages` com
  - **Mudanca de schema:** criacao das tabelas `messages` (relacionada a `chats` e `owners`) e `message_attachments` (relacionada a `messages`), com indice de paginação por `chat_id` e indice de relacionamento por `message_id`.
 - **Nova migration:** `alembic/versions/20260219_190000_add_messages_and_message_attachments_tables.py` **(novo arquivo)**
 - **Nova migration:** `alembic/versions/20260220_120000_add_is_viewed_by_recipient_to_messages.py` **(novo arquivo)**
+- **Nova migration:** `alembic/versions/20260222_100000_rename_is_viewed_to_is_read.py` **(novo arquivo - renomeia coluna para `is_read_by_recipient`)**
 
 ## 6.4 Pipes
 - Nenhum novo arquivo de `Pipe` previsto; a DI sera feita pela extensao do `DatabasePipe` existente.

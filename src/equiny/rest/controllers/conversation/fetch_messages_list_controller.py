@@ -14,7 +14,7 @@ from equiny.pipes.database_pipe import DatabasePipe
 from equiny.validation.shared.id_schema import IdSchema
 
 
-class ListMessagesController:
+class FetchMessagesListController:
     @staticmethod
     def handle(router: APIRouter) -> None:
         @router.get(

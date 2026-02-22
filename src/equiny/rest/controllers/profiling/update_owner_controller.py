@@ -3,7 +3,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends
 
 from equiny.core.profiling.domain.entities.dtos import OwnerDto
-from equiny.core.profiling.domain.structures.dtos import ImageDto
+from equiny.core.shared.domain.structures.dtos import ImageDto
 from equiny.core.shared.domain.structures.id import Id
 from equiny.core.profiling.interfaces.repositories import OwnersRepository
 from equiny.core.profiling.use_cases import UpdateOwnerUseCase

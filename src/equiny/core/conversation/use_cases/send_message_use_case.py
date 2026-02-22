@@ -13,15 +13,22 @@ class SendMessageUseCase:
     def __init__(
         self,
         chats_repository: ChatsRepository,
-        chat_messages_repository: MessagesRepository,
+        messages_repository: MessagesRepository,
     ) -> None:
         self._chats_repository = chats_repository
-        self._chat_messages_repository = chat_messages_repository
+        self._messages_repository = messages_repository
 
-    def execute(self, chat_message: MessageDto, chat_id: str) -> MessageDto:
+    def execute(
+        self, chat_message: MessageDto, chat_id: str, is_recipient_connected: bool
+    ) -> MessageDto:
         message = Message.create(chat_message)
         chat = self._find_chat(Id.create(chat_id), message.sender_id)
-        self._chat_messages_repository.add(message, chat.id)
+
+        if is_recipient_connected:
+            message.become_read()
+
+        self._messages_repository.add(message, chat.id)
+
         return message.dto
 
     def _find_chat(self, chat_id: Id, sender_id: Id) -> Chat:

@@ -17,6 +17,13 @@ services:
       timeout: 5s
       retries: 10
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
   inngest:
     image: inngest/inngest:v0.27.0
     command: "inngest dev -u http://host.docker.internal:8080/api/inngest"
@@ -24,6 +31,7 @@ services:
       - "8288:8288"
     depends_on:
       - postgres
+      - redis
 
 volumes:
   equiny_postgres_data:

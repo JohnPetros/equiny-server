@@ -19,7 +19,7 @@ class MessageModel(Model):
     chat_id: Mapped[str] = mapped_column(ForeignKey('chats.id'), index=True)
     sender_id: Mapped[str] = mapped_column(ForeignKey('owners.id'), index=True)
     content: Mapped[str | None]
-    is_viewed_by_recipient: Mapped[bool] = mapped_column(default=False)
+    is_read_by_recipient: Mapped[bool] = mapped_column(default=False)
     sent_at: Mapped[datetime] = mapped_column(index=True)
 
     attachments: Mapped[list['AttachmentModel']] = relationship(

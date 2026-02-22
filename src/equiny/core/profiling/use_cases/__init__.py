@@ -10,6 +10,9 @@ from .update_owner_use_case import UpdateOwnerUseCase
 from .get_horse_feed_use_case import GetHorseFeedUseCase
 from .list_horse_matches_use_case import ListHorseMatchesUseCase
 from .get_owner_use_case import GetOwnerUseCase
+from .get_owner_presence_use_case import GetOwnerPresenceUseCase
+from .register_owner_presense_use_case import RegisterOwnerPresenceUseCase
+from .unregister_owner_presence_use_case import UnregisterOwnerPresenceUseCase
 
 __all__ = [
     'CreateHorseUseCase',
@@ -24,4 +27,7 @@ __all__ = [
     'GetHorseFeedUseCase',
     'ListHorseMatchesUseCase',
     'GetOwnerUseCase',
+    'GetOwnerPresenceUseCase',
+    'RegisterOwnerPresenceUseCase',
+    'UnregisterOwnerPresenceUseCase',
 ]

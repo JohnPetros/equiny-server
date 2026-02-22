@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends
 from equiny.core.conversation.domain.entities.dtos.chat_dto import ChatDto
 from equiny.core.conversation.interfaces.chats_repository import ChatsRepository
 from equiny.core.conversation.use_cases.get_chat_use_case import GetChatUseCase
-from equiny.pipes.conversation_pipe import ConversationPipe
 from equiny.pipes.database_pipe import DatabasePipe
 from equiny.pipes.profiling_pipe import ProfilingPipe
 from equiny.validation.shared.id_schema import IdSchema
@@ -23,7 +22,6 @@ class FetchChatController:
         def _(
             chat_id: IdSchema,
             owner_id: Id = Depends(ProfilingPipe.get_owner_id),
-            _: None = Depends(ConversationPipe.verify_chat_participant),
             repository: ChatsRepository = Depends(DatabasePipe.get_chats_repository),
         ) -> ChatDto:
             use_case = GetChatUseCase(repository)

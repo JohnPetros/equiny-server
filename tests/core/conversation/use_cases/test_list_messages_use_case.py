@@ -71,7 +71,7 @@ class TestListMessagesUseCase:
             Id.create(chat.id.value),
             Id.create(sender_id),
         )
-        self.messages_repository_mock.mark_viewed_by_recipient.assert_called_once_with(
+        self.messages_repository_mock.mark_read_by_recipient.assert_called_once_with(
             chat.id,
             Id.create(sender_id),
         )
@@ -93,5 +93,5 @@ class TestListMessagesUseCase:
         with pytest.raises(ChatNotFoundError):
             self.use_case.execute(chat_id=chat_id, sender_id=sender_id)
 
-        self.messages_repository_mock.mark_viewed_by_recipient.assert_not_called()
+        self.messages_repository_mock.mark_read_by_recipient.assert_not_called()
         self.messages_repository_mock.find_many_by_chat_id_and_sender_id.assert_not_called()

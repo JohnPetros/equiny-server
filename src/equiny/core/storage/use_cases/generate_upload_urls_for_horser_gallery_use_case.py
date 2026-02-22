@@ -16,7 +16,7 @@ class GenerateUploadUrlsForHorseGalleryUseCase:
         for file_name in file_names:
             file_paths.append(
                 Text.create(
-                    f'profiling/horses/{horse_id}/gallery/{FileName.create(file_name).randomize.value}'
+                    f'/profiling/horses/{horse_id}/gallery/{FileName.create(file_name).randomize.value}'
                 )
             )
         upload_urls = self._provider.generate_upload_urls(file_paths)

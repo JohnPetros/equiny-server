@@ -28,8 +28,8 @@ class Sqlalchemy:
     def get_session() -> Session:
         return SessionLocal()
 
-    @contextmanager
     @staticmethod
+    @contextmanager
     def session() -> Generator[Session]:
         session = Sqlalchemy.get_session()
         try:

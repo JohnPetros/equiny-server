@@ -30,6 +30,7 @@ from equiny.database.sqlalchemy.repositories.profiling import (
     SqlalchemyHorsesRepository,
     SqlalchemyOwnersRepository,
 )
+from equiny.database.sqlalchemy.sqlalchemy import Sqlalchemy
 
 
 def get_sqlalchemy_session(request: Request) -> Session:
@@ -78,3 +79,7 @@ class DatabasePipe:
         sqlalchemy: Annotated[Session, Depends(get_sqlalchemy_session)],
     ) -> MessagesRepository:
         return SqlalchemyMessagesRepository(sqlalchemy)
+
+    @staticmethod
+    def get_sqlalchemy() -> Sqlalchemy:
+        return Sqlalchemy()
