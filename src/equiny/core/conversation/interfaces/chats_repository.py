@@ -18,14 +18,14 @@ class ChatsRepository(Protocol):
         sender_id: Id,
     ) -> Chat | None: ...
 
-    def find_by_id_and_sender_id(
-        self,
-        chat_id: Id,
-        sender_id: Id,
-    ) -> Chat | None: ...
-
     def find_by_id_and_participant_id(
         self,
         chat_id: Id,
         participant_id: Id,
+    ) -> Chat | None: ...
+
+    def find_by_id_and_sender_id(
+        self,
+        chat_id: Id,
+        sender_id: Id,
     ) -> Chat | None: ...
