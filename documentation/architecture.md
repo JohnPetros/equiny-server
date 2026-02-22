@@ -21,6 +21,7 @@ Principais tecnologias e bibliotecas utilizadas no projeto:
 -   **Web Framework:** FastAPI
 -   **Servidor ASGI:** Uvicorn (via `fastapi[standard]`)
 -   **Banco de Dados:** PostgreSQL
+-   **Cache:** Redis
 -   **ORM:** SQLAlchemy (Síncrono)
 -   **Driver Banco de Dados:** Psycopg 3 (`psycopg[binary]`)
 -   **Migrações:** Alembic
@@ -131,6 +132,18 @@ Define os contratos de dados para entrada e saída da API (Data Transfer Objects
     -   O Use Case retorna o resultado (Entidade/DTO) para o Controller.
     -   O Controller converte o resultado para o Response Model (Pydantic).
     -   O FastAPI serializa e envia a resposta JSON para o cliente.
+
+## Fluxo WebSocket (Presence)
+
+1.  **Conexão:** Cliente abre `WS /profiling/owners/{owner_id}/presence?token=<jwt>`.
+2.  **Room (`websocket/rooms`)**:
+    -   Valida JWT via `AuthPipe.verify_jwt_from_query`.
+    -   Resolve owner autenticado via `OwnersRepository.find_by_account_id`.
+    -   Garante consistência entre `owner_id` da rota e owner do token.
+3.  **Use Cases (`core`)**:
+    -   `RegisterOwnerPresenceUseCase` grava presença no cache (`CacheProvider`).
+    -   `UnregisterOwnerPresenceUseCase` remove presença no disconnect.
+4.  **Broadcast:** `Ws.broadcast(...)` publica payload serializável para sockets conectados.
 
 ## Inversão de Dependência
 

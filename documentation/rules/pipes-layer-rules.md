@@ -54,6 +54,7 @@ Responsabilidade por modulo:
 
 - `ProvidersPipe.get_hash_provider() -> HashProvider`
 - `ProvidersPipe.get_jwt_provider() -> JoseJwtProvider`
+- `ProvidersPipe.get_cache_provider() -> CacheProvider`
 
 Regra: providers simples podem ser instanciados aqui. Prefira tipar o retorno por interface quando possivel.
 
