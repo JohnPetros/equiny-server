@@ -25,3 +25,10 @@ class AuthPipe:
             raise AuthError('Jwt não encontrado')
 
         return jwt_provider.decode(token)
+
+    @staticmethod
+    def verify_jwt_from_query(
+        token: str,
+        jwt_provider: JwtProvider = Depends(ProvidersPipe.get_jwt_provider),
+    ) -> dict[str, str]:
+        return jwt_provider.decode(token)
