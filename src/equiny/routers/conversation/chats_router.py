@@ -3,8 +3,8 @@ from fastapi import APIRouter
 from equiny.rest.controllers.conversation import (
     CreateChatController,
     FetchChatController,
-    ListChatsController,
-    ListMessagesController,
+    FetchChatsListController,
+    FetchMessagesListController,
 )
 from equiny.websocket.rooms.conversation import ChatRoom
 
@@ -16,8 +16,8 @@ class ChatsRouter:
 
         CreateChatController.handle(router)
         FetchChatController.handle(router)
-        ListChatsController.handle(router)
-        ListMessagesController.handle(router)
+        FetchChatsListController.handle(router)
+        FetchMessagesListController.handle(router)
         ChatRoom.handle(router)
 
         return router

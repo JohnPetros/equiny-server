@@ -1,7 +1,13 @@
 @URL = http://localhost:8080/profiling/owners
+@OWNER_ID = 01KJ07XEQSE53E6G2G2Y5WJFYB
 
 ### Get Owner
 GET {{URL}}/me
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### Get Owner Presence
+GET {{URL}}/{{OWNER_ID}}/presence
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 

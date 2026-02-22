@@ -5,21 +5,22 @@ from equiny.core.conversation.domain.entities.dtos.chat_dto import ChatDto
 from equiny.core.conversation.interfaces.chats_repository import ChatsRepository
 from equiny.core.conversation.use_cases.list_chats_use_case import ListChatsUseCase
 from equiny.core.shared.domain.structures.id import Id
+from equiny.core.shared.responses.list_response import ListResponse
 from equiny.pipes.database_pipe import DatabasePipe
 from equiny.pipes.profiling_pipe import ProfilingPipe
 
 
-class ListChatsController:
+class FetchChatsListController:
     @staticmethod
     def handle(router: APIRouter) -> None:
         @router.get(
             '/',
             status_code=HTTPStatus.OK,
-            response_model=list[ChatDto],
+            response_model=ListResponse[ChatDto],
         )
         def _(
             owner_id: Id = Depends(ProfilingPipe.get_owner_id),
             repository: ChatsRepository = Depends(DatabasePipe.get_chats_repository),
-        ) -> list[ChatDto]:
+        ) -> ListResponse[ChatDto]:
             use_case = ListChatsUseCase(repository)
             return use_case.execute(owner_id.value)

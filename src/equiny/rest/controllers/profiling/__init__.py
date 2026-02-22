@@ -6,6 +6,7 @@ from .fetch_horse_feed_controller import FetchHorseFeedController
 from .fetch_horse_gallery_controller import FetchHorseGalleryController
 from .list_horse_matches_controller import ListHorseMatchesController
 from .fetch_owner_horses_controller import FetchOwnerHorsesController
+from .fetch_owner_presence_controller import FetchOwnerPresenceController
 from .fetch_onwer_controller import FetchOwnerController
 from .update_horse_controller import UpdateHorseController
 from .update_horse_gallery_controller import UpdateHorseGalleryController
@@ -21,6 +22,7 @@ __all__ = [
     'FetchHorseGalleryController',
     'ListHorseMatchesController',
     'FetchOwnerHorsesController',
+    'FetchOwnerPresenceController',
     'FetchOwnerController',
     'UpdateHorseController',
     'UpdateHorseGalleryController',
