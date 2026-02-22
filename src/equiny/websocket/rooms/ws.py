@@ -1,5 +1,6 @@
 from typing import Any
 from dataclasses import asdict
+from collections import defaultdict
 
 from fastapi import WebSocket
 from fastapi.encoders import jsonable_encoder
@@ -7,25 +8,28 @@ from starlette.websockets import WebSocketDisconnect
 
 
 class Ws:
-    _sockets: set[WebSocket]
+    _channels: defaultdict[str, set[WebSocket]]
 
     def __init__(self) -> None:
-        self._sockets: set[WebSocket] = set()
+        self._channels = defaultdict(set)
 
-    async def connect(self, socket: WebSocket) -> None:
+    def count_sockets(self, key: str) -> int:
+        return len(self._channels[key])
+
+    async def connect(self, key: str, socket: WebSocket) -> None:
         await socket.accept()
-        self._sockets.add(socket)
+        self._channels[key].add(socket)
 
-    def disconnect(self, socket: WebSocket) -> None:
-        self._sockets.discard(socket)
+    def disconnect(self, key: str, socket: WebSocket) -> None:
+        self._channels[key].discard(socket)
 
-    async def broadcast(self, data: Any) -> None:
+    async def broadcast(self, key: str, data: Any) -> None:
         dead_sockets: list[WebSocket] = []
-        for socket in self._sockets:
+        for socket in self._channels[key]:
             try:
                 await socket.send_json(jsonable_encoder(asdict(data)))
             except (WebSocketDisconnect, RuntimeError):
                 dead_sockets.append(socket)
 
         for socket in dead_sockets:
-            self.disconnect(socket)
+            self.disconnect(key, socket)
