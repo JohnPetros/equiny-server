@@ -27,7 +27,7 @@ class ListMessagesUseCase:
         limit: int = 20,
     ) -> PaginationResponse[MessageDto]:
         chat = self._find_chat(Id.create(chat_id), Id.create(sender_id))
-        self._messages_repository.mark_viewed_by_recipient(
+        self._messages_repository.mark_read_by_recipient(
             chat.id,
             Id.create(sender_id),
         )
