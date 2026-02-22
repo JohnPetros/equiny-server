@@ -19,19 +19,20 @@ class MessagesMapper:
             ],
             sent_at=model.sent_at,
             updated_at=model.updated_at,
-            is_viewed_by_recipient=model.is_viewed_by_recipient,
+            is_read_by_recipient=model.is_read_by_recipient,
         )
         return Message.create(dto)
 
     @staticmethod
     def to_model(message: Message, chat_id: str) -> MessageModel:
         dto = message.dto
+        print('dto', dto)
         model = MessageModel(
             id=dto.id,
             chat_id=chat_id,
             sender_id=dto.sender_id,
             content=dto.content,
-            is_viewed_by_recipient=dto.is_viewed_by_recipient or False,
+            is_read_by_recipient=dto.is_read_by_recipient or False,
             sent_at=dto.sent_at,
         )
         model.attachments = [

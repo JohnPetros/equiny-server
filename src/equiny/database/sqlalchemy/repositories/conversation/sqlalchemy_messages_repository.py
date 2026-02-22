@@ -71,13 +71,13 @@ class SqlalchemyMessagesRepository(SqlalchemyRepository, MessagesRepository):
             has_more=has_more,
         )
 
-    def mark_viewed_by_recipient(self, chat_id: Id, recipient_id: Id) -> None:
+    def mark_read_by_recipient(self, chat_id: Id, recipient_id: Id) -> None:
         (
             self.sqlalchemy.query(MessageModel)
             .filter(
                 MessageModel.chat_id == chat_id.value,
                 MessageModel.sender_id != recipient_id.value,
-                MessageModel.is_viewed_by_recipient.is_(False),
+                MessageModel.is_read_by_recipient.is_(False),
             )
-            .update({MessageModel.is_viewed_by_recipient: True})
+            .update({MessageModel.is_read_by_recipient: True})
         )

@@ -52,7 +52,6 @@ class SqlalchemyOwnersRepository(SqlalchemyRepository, OwnersRepository):
             return
 
         owner_dto = owner.dto
-        print('owner_dto.avatar', owner_dto.avatar)
         owner_model.name = owner_dto.name
         owner_model.email = owner_dto.email
         owner_model.account_id = owner_dto.account_id
@@ -65,6 +64,7 @@ class SqlalchemyOwnersRepository(SqlalchemyRepository, OwnersRepository):
             owner_dto.avatar.name if owner_dto.avatar is not None else None
         )
         owner_model.has_completed_onboarding = owner_dto.has_completed_onboarding
+        owner_model.last_presence_at = owner_dto.last_presence_at
 
     def update_has_completed_onboarding(
         self,

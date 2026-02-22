@@ -26,6 +26,7 @@ class OwnersMapper:
             phone=owner_model.phone,
             avatar=avatar,
             has_completed_onboarding=owner_model.has_completed_onboarding,
+            last_presence_at=owner_model.last_presence_at,
         )
 
     @staticmethod
@@ -45,4 +46,9 @@ class OwnersMapper:
             bio=owner.bio.value if owner.bio is not None else None,
             phone=owner.phone.value if owner.phone is not None else None,
             has_completed_onboarding=owner.has_completed_onboarding.value,
+            last_presence_at=(
+                owner.last_presence_at.value
+                if owner.last_presence_at is not None
+                else None
+            ),
         )
