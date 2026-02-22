@@ -5,6 +5,7 @@ class Env(BaseSettings):
     HOST: str = '127.0.0.1'
     PORT: int = 8080
     DATABASE_URL: str = 'postgresql://equiny:equiny@localhost:5432/equiny'
+    REDIS_URL: str = 'redis://localhost:6379/0'
     INNGEST_SIGNING_KEY: str
     JWT_SECRET: str
     SUPABASE_URL: str

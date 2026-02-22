@@ -12,4 +12,4 @@ class MessageDto:
     attachments: list[AttachmentDto]
     sent_at: datetime | None = None
     updated_at: datetime | None = None
-    is_viewed_by_recipient: bool | None = None
+    is_read_by_recipient: bool | None = None

@@ -1,3 +1,4 @@
+from datetime import datetime
 from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
 from equiny.core.shared.domain.decorators.dto import dto
 
@@ -12,3 +13,4 @@ class OwnerDto:
     phone: str | None = None
     avatar: ImageDto | None = None
     has_completed_onboarding: bool
+    last_presence_at: datetime | None = None

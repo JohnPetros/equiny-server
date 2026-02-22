@@ -16,7 +16,7 @@ class Message(Entity):
     sender_id: Id
     attachments: list[Attachment]
     sent_at: Datetime
-    is_viewed_by_recipient: Logical
+    is_read_by_recipient: Logical
     updated_at: Datetime | None = None
 
     @classmethod
@@ -29,9 +29,12 @@ class Message(Entity):
                 Attachment.create(attachment) for attachment in dto.attachments
             ],
             sent_at=Datetime.create(dto.sent_at or datetime.now()),
-            is_viewed_by_recipient=Logical.create(dto.is_viewed_by_recipient or False),
+            is_read_by_recipient=Logical.create(dto.is_read_by_recipient or False),
             updated_at=Datetime.create(dto.updated_at) if dto.updated_at else None,
         )
+
+    def become_read(self) -> None:
+        self.is_read_by_recipient = Logical.create_true()
 
     @property
     def dto(self) -> MessageDto:
@@ -42,5 +45,5 @@ class Message(Entity):
             attachments=[attachment.dto for attachment in self.attachments],
             sent_at=self.sent_at.value,
             updated_at=self.updated_at.value if self.updated_at else None,
-            is_viewed_by_recipient=self.is_viewed_by_recipient.value,
+            is_read_by_recipient=self.is_read_by_recipient.value,
         )
