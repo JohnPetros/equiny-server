@@ -25,11 +25,11 @@ from equiny.routers.docs import DocsRouter
 from equiny.routers.matching import MatchingRouter
 from equiny.routers.profiling import ProfilingRouter
 from equiny.routers.storage import StorageRouter
+from equiny.routers.websocket_router import WebSocketRouter
 from equiny.rest.middlewares import (
     HandleSqlalchemySessionMiddleware,
     HandleInngestClientMiddleware,
 )
-
 from equiny.pubsub.inngest.inngest_pubsub import InngestPubSub
 
 
@@ -60,6 +60,7 @@ class FastAPIApp:
         HandleSqlalchemySessionMiddleware.handle(app)
         HandleInngestClientMiddleware.handle(app, inngest)
 
+        app.include_router(WebSocketRouter.register())
         app.include_router(AuthRouter.register())
         app.include_router(ConversationRouter.register())
         app.include_router(DocsRouter.register())
