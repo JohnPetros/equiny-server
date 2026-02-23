@@ -21,7 +21,6 @@ class MatchingPipe:
         repository: matches_repository,
     ) -> None:
         body = await request.json()
-        print('request', body)
         use_case = VerifyMatchUseCase(repository)
         has_match = use_case.execute(
             body['recipient_horse_id'], body['sender_horse_id']
