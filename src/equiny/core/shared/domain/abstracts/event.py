@@ -1,15 +1,15 @@
 from abc import ABC
-from dataclasses import dataclass, asdict
-from typing import Any
+from dataclasses import asdict, dataclass
+from typing import Any, cast
 
 
 @dataclass(frozen=True)
-class Event(ABC):
+class Event[Payload](ABC):
     name: str
-    _payload: Any | None = None
+    payload: Payload
 
     @property
-    def payload(self) -> dict[str, Any]:
-        if self._payload is None:
+    def payload_data(self) -> dict[str, Any]:
+        if self.payload is None:
             return {}
-        return asdict(self._payload)
+        return asdict(cast('Any', self.payload))
