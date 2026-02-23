@@ -6,7 +6,6 @@ from equiny.rest.controllers.profiling import (
     FetchOwnerPresenceController,
     UpdateOwnerController,
 )
-from equiny.websocket.rooms.profiling import OwnersPresenceRoom
 
 
 class OwnersRouter:
@@ -18,6 +17,5 @@ class OwnersRouter:
         FetchOwnerHorsesController.handle(router)
         FetchOwnerPresenceController.handle(router)
         UpdateOwnerController.handle(router)
-        OwnersPresenceRoom.handle(router)
 
         return router
