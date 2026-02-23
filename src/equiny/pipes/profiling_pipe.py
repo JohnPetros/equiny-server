@@ -10,12 +10,12 @@ from equiny.pipes.database_pipe import DatabasePipe
 class ProfilingPipe:
     @staticmethod
     def get_owner_id(
-        jwt_payload: dict[str, str] = Depends(AuthPipe.verify_jwt),
+        jwt: dict[str, str] = Depends(AuthPipe.verify_jwt),
         owners_repository: OwnersRepository = Depends(
             DatabasePipe.get_owners_repository
         ),
     ) -> Id:
-        account_id = Id.create(jwt_payload['sub'])
+        account_id = Id.create(jwt['sub'])
         owner = owners_repository.find_by_account_id(account_id)
         if owner is None:
             raise AuthError('Owner não encontrado para a conta autenticada')
