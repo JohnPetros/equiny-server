@@ -6,7 +6,6 @@ from equiny.rest.controllers.conversation import (
     FetchChatsListController,
     FetchMessagesListController,
 )
-from equiny.websocket.rooms.conversation import ChatRoom
 
 
 class ChatsRouter:
@@ -18,6 +17,5 @@ class ChatsRouter:
         FetchChatController.handle(router)
         FetchChatsListController.handle(router)
         FetchMessagesListController.handle(router)
-        ChatRoom.handle(router)
 
         return router
