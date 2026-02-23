@@ -8,7 +8,7 @@ class Payload:
     files_paths: list[str]
 
 
-class ImagesFilesRemovedEvent(Event):
+class ImagesFilesRemovedEvent(Event[Payload]):
     name: str = 'profiling/images.files.removed'
 
     def __init__(self, files_paths: list[str]) -> None:
