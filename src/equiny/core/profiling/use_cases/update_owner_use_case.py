@@ -27,7 +27,6 @@ class UpdateOwnerUseCase:
             and current_owner.avatar is not None
             and owner.avatar.key.value != current_owner.avatar.key.value
         ):
-            print('oiiiii', owner.avatar)
             self._publish_image_files_removed_event(current_owner.avatar)
 
         self._repository.replace(owner)

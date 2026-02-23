@@ -1,4 +1,5 @@
 from equiny.core.conversation.domain.entities.chat import Chat
+from equiny.core.conversation.domain.events import MessageReceivedEvent
 from equiny.core.conversation.interfaces.messages_repository import (
     MessagesRepository,
 )
@@ -7,6 +8,7 @@ from equiny.core.conversation.domain.entities.message import Message
 from equiny.core.conversation.interfaces.chats_repository import ChatsRepository
 from equiny.core.shared.domain.structures.id import Id
 from equiny.core.conversation.domain.errors import ChatNotFoundError
+from equiny.core.shared.interfaces.broker import Broker
 
 
 class SendMessageUseCase:
@@ -14,20 +16,19 @@ class SendMessageUseCase:
         self,
         chats_repository: ChatsRepository,
         messages_repository: MessagesRepository,
+        broker: Broker,
     ) -> None:
         self._chats_repository = chats_repository
         self._messages_repository = messages_repository
+        self._broker = broker
 
-    def execute(
-        self, chat_message: MessageDto, chat_id: str, is_recipient_connected: bool
-    ) -> MessageDto:
+    def execute(self, chat_message: MessageDto, chat_id: str) -> MessageDto:
         message = Message.create(chat_message)
         chat = self._find_chat(Id.create(chat_id), message.sender_id)
 
-        if is_recipient_connected:
-            message.become_read()
-
         self._messages_repository.add(message, chat.id)
+
+        self._broker.publish(MessageReceivedEvent(message.dto, chat_id))
 
         return message.dto
 
