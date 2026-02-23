@@ -26,7 +26,6 @@ class MessagesMapper:
     @staticmethod
     def to_model(message: Message, chat_id: str) -> MessageModel:
         dto = message.dto
-        print('dto', dto)
         model = MessageModel(
             id=dto.id,
             chat_id=chat_id,
