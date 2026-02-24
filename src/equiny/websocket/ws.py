@@ -31,6 +31,13 @@ class Ws:
     def leave_room(self, room_key: str, socket_key: str) -> None:
         self._rooms[room_key].discard(socket_key)
 
+    async def send(self, socket_key: str, data: Any) -> None:
+        try:
+            socket = self._sockets[socket_key]
+            await socket.send_json(jsonable_encoder(asdict(data)))
+        except (WebSocketDisconnect, RuntimeError):
+            await self._sockets[socket_key].close()
+
     async def emit(self, room_key: str, data: Any) -> None:
         dead_sockets: list[WebSocket] = []
         print(self._rooms)

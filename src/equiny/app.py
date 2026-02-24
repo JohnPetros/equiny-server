@@ -1,5 +1,6 @@
-from typing import Any
 from collections.abc import Sequence
+from contextlib import asynccontextmanager
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
@@ -30,7 +31,18 @@ from equiny.rest.middlewares import (
     HandleSqlalchemySessionMiddleware,
     HandleInngestClientMiddleware,
 )
-from equiny.pubsub.inngest.inngest_pubsub import InngestPubSub
+from equiny.pubsub.inngest import InngestPubSub
+from equiny.pubsub.redis import redis_pubsub
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await redis_pubsub.start()
+    app.state.redis_pubsub = redis_pubsub
+    try:
+        yield
+    finally:
+        await redis_pubsub.stop()
 
 
 class FastAPIApp:
@@ -39,6 +51,7 @@ class FastAPIApp:
         app = FastAPI(
             docs_url=None,
             redoc_url=None,
+            lifespan=lifespan,
         )
 
         app.add_exception_handler(AppError, FastAPIApp.handle_exception)

@@ -1,3 +1,5 @@
+from fastapi import Request
+
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
 from equiny.core.shared.interfaces.cache_provider import CacheProvider
 from equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
@@ -8,6 +10,10 @@ from equiny.providers.cache.redis import RedisCacheProvider
 
 
 class ProvidersPipe:
+    @staticmethod
+    def get_cache_provider_from_request(_: Request) -> CacheProvider:
+        return RedisCacheProvider()
+
     @staticmethod
     def get_hash_provider() -> HashProvider:
         return PwdlibHashProvider()
