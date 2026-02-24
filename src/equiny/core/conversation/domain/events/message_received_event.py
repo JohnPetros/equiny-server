@@ -6,15 +6,17 @@ from equiny.core.shared.domain.abstracts import Event
 @dataclass
 class Payload:
     message: MessageDto
+    recipient_id: str
     chat_id: str
 
 
 class MessageReceivedEvent(Event[Payload]):
     name: str = 'conversation/message.received'
 
-    def __init__(self, message: MessageDto, chat_id: str) -> None:
+    def __init__(self, message: MessageDto, recipient_id: str, chat_id: str) -> None:
         payload = Payload(
             message=message,
+            recipient_id=recipient_id,
             chat_id=chat_id,
         )
         super().__init__(MessageReceivedEvent.name, payload)
