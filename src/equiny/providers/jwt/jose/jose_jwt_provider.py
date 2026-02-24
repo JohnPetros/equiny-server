@@ -3,7 +3,7 @@ from typing import Any
 
 from jose import JWTError, jwt
 
-from equiny.constants import ENV
+from equiny.constants import Env
 from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
 from equiny.core.shared.domain.errors import AuthError
 
@@ -20,13 +20,13 @@ class JoseJwtProvider(JwtProvider):
             'iat': now_time,
             'exp': expiration_time,
         }
-        return jwt.encode(payload, ENV.JWT_SECRET)
+        return jwt.encode(payload, Env.JWT_SECRET)
 
     def decode(self, token: str) -> dict[str, str]:
         try:
             decoded: dict[str, Any] = jwt.decode(
                 token,
-                ENV.JWT_SECRET,
+                Env.JWT_SECRET,
                 algorithms=[self._ALGORITHM],
             )
         except JWTError as jwt_error:

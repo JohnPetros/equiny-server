@@ -1,4 +1,4 @@
-from storage3._sync.file_api import SyncBucketProxy
+from typing import Any
 from supabase import Client, create_client
 
 from equiny.core.shared.domain.errors import AppError
@@ -7,15 +7,15 @@ from equiny.core.storage.interfaces.file_storage_provider import FileStorageProv
 from equiny.core.storage.structures import UploadUrl
 from equiny.core.storage.structures.dtos import UploadUrlDto
 from equiny.core.storage.structures.file import File
-from equiny.constants import ENV
+from equiny.constants import Env
 
 
 class SupabaseFileStorageProvider(FileStorageProvider):
-    _BUCKET = ENV.SUPABASE_STORAGE_BUCKET
+    _BUCKET = Env.SUPABASE_STORAGE_BUCKET
     _supabase: Client
 
     def __init__(self) -> None:
-        self._supabase = create_client(ENV.SUPABASE_URL, ENV.SUPABASE_KEY)
+        self._supabase = create_client(Env.SUPABASE_URL, Env.SUPABASE_KEY)
 
     def generate_upload_url(self, file_path: Text) -> UploadUrl:
         try:
@@ -95,9 +95,7 @@ class SupabaseFileStorageProvider(FileStorageProvider):
                 f'Falha ao remover todos os arquivos: {error!s}',
             ) from error
 
-    def _list_all_file_paths(
-        self, storage: SyncBucketProxy, path: str = ''
-    ) -> list[str]:
+    def _list_all_file_paths(self, storage: Any, path: str = '') -> list[str]:
         results: list[str] = []
         offset = 0
         limit = 100

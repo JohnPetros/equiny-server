@@ -3,12 +3,12 @@ from contextlib import contextmanager
 from collections.abc import Generator
 from sqlalchemy.orm import sessionmaker, Session
 
-from equiny.constants import ENV
+from equiny.constants import Env
 
 DATABASE_URL = (
-    ENV.DATABASE_URL.replace('postgresql://', 'postgresql+psycopg://', 1)
-    if ENV.DATABASE_URL.startswith('postgresql://')
-    else ENV.DATABASE_URL
+    Env.DATABASE_URL.replace('postgresql://', 'postgresql+psycopg://', 1)
+    if Env.DATABASE_URL.startswith('postgresql://')
+    else Env.DATABASE_URL
 )
 
 engine = create_engine(
