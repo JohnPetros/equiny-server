@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
@@ -19,13 +18,6 @@ class BodySchema(Schema):
     account_password: str
 
 
-repository = Annotated[
-    AccountsRepository, Depends(DatabasePipe.get_accounts_repository)
-]
-hash_provider = Annotated[HashProvider, Depends(ProvidersPipe.get_hash_provider)]
-broker = Annotated[Broker, Depends(PubSubPipe.get_broker)]
-
-
 class SignUpAccountController:
     @staticmethod
     def handle(router: APIRouter) -> None:
@@ -34,9 +26,11 @@ class SignUpAccountController:
         )
         def _(
             body: BodySchema,
-            repository: repository,
-            hash_provider: hash_provider,
-            broker: broker,
+            repository: AccountsRepository = Depends(
+                DatabasePipe.get_accounts_repository
+            ),
+            hash_provider: HashProvider = Depends(ProvidersPipe.get_hash_provider),
+            broker: Broker = Depends(PubSubPipe.get_broker_from_request),
         ) -> SignUpResultDto:
             use_case = SignUpAccountUseCase(
                 repository=repository,

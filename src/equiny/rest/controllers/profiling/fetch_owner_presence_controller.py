@@ -24,7 +24,9 @@ class FetchOwnerPresenceController:
         def _(
             owner_id: IdSchema,
             repository: OwnersRepository = Depends(DatabasePipe.get_owners_repository),
-            cache_provider: CacheProvider = Depends(ProvidersPipe.get_cache_provider),
+            cache_provider: CacheProvider = Depends(
+                ProvidersPipe.get_cache_provider_from_request
+            ),
         ) -> OwnerPresenceDto:
             use_case = GetOwnerPresenceUseCase(
                 cache_provider=cache_provider,

@@ -38,7 +38,7 @@ class UpdateOwnerController:
             body: BodySchema,
             owner_id: Id = Depends(ProfilingPipe.get_owner_id),
             repository: OwnersRepository = Depends(DatabasePipe.get_owners_repository),
-            broker: Broker = Depends(PubSubPipe.get_broker),
+            broker: Broker = Depends(PubSubPipe.get_broker_from_request),
         ) -> OwnerDto:
             use_case = UpdateOwnerUseCase(repository, broker)
             return use_case.execute(
