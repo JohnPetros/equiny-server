@@ -28,7 +28,9 @@ class SendMessageUseCase:
 
         self._messages_repository.add(message, chat.id)
 
-        self._broker.publish(MessageReceivedEvent(message.dto, chat_id))
+        self._broker.publish(
+            MessageReceivedEvent(message.dto, chat.recipient.id.value, chat_id)
+        )
 
         return message.dto
 
