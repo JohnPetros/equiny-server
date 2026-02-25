@@ -1,5 +1,5 @@
+import contextlib
 from typing import Any
-from dataclasses import asdict
 from collections import defaultdict
 
 from fastapi import WebSocket
@@ -8,22 +8,22 @@ from starlette.websockets import WebSocketDisconnect
 
 
 class Ws:
-    _sockets: defaultdict[str, WebSocket]
+    _sockets: dict[str, WebSocket]
     _rooms: defaultdict[str, set[str]]
 
     def __init__(self) -> None:
-        self._sockets = defaultdict()
+        self._sockets = {}
         self._rooms = defaultdict(set)
 
     def count_sockets(self, key: str) -> int:
-        return len(self._sockets[key])
+        return 1 if key in self._sockets else 0
 
     async def connect(self, key: str, socket: WebSocket) -> None:
         await socket.accept()
         self._sockets[key] = socket
 
     def disconnect(self, key: str, socket: WebSocket) -> None:
-        del self._sockets[key]
+        self._sockets.pop(key, None)
 
     def enter_room(self, room_key: str, socket_key: str) -> None:
         self._rooms[room_key].add(socket_key)
@@ -32,22 +32,30 @@ class Ws:
         self._rooms[room_key].discard(socket_key)
 
     async def send(self, socket_key: str, data: Any) -> None:
+        socket = self._sockets.get(socket_key)
+        if socket is None:
+            return
+
         try:
-            socket = self._sockets[socket_key]
-            await socket.send_json(jsonable_encoder(asdict(data)))
+            await socket.send_json(jsonable_encoder(data))
         except (WebSocketDisconnect, RuntimeError):
-            await self._sockets[socket_key].close()
+            self._sockets.pop(socket_key, None)
+            with contextlib.suppress(RuntimeError):
+                await socket.close()
 
     async def emit(self, room_key: str, data: Any) -> None:
-        dead_sockets: list[WebSocket] = []
-        print(self._rooms)
-        print(self._rooms[room_key])
+        dead_sockets: list[tuple[str, WebSocket]] = []
         for socket_key in self._rooms[room_key]:
-            try:
-                socket = self._sockets[socket_key]
-                await socket.send_json(jsonable_encoder(asdict(data)))
-            except (WebSocketDisconnect, RuntimeError):
-                dead_sockets.append(self._sockets[socket_key])
+            socket = self._sockets.get(socket_key)
+            if socket is None:
+                continue
 
-        for socket in dead_sockets:
-            await socket.close()
+            try:
+                await socket.send_json(jsonable_encoder(data))
+            except (WebSocketDisconnect, RuntimeError):
+                dead_sockets.append((socket_key, socket))
+
+        for socket_key, socket in dead_sockets:
+            self._sockets.pop(socket_key, None)
+            with contextlib.suppress(RuntimeError):
+                await socket.close()
