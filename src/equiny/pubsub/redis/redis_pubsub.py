@@ -17,6 +17,7 @@ WsAction = Literal['emit', 'send']
 class RedisPubSub:
     pubsub: PubSub | None = None
     client: Redis | None = None
+    task: asyncio.Task[None] | None = None
     app_channel: str = 'equiny'
 
     async def start(self) -> None:
@@ -51,15 +52,21 @@ class RedisPubSub:
                     timeout=1.0,
                 ),
             )
+            print(f'message - {message}')
             if not message:
                 await asyncio.sleep(0.01)
                 continue
 
-            print('message', message)
-            data = message['data']
-            action = cast('str', data['action'])
-            connection_key = data['connection_key']
-            event = data['event']
+            data = self._parse_data(message.get('data'))
+            if data is None:
+                continue
+
+            action = cast('str | None', data.get('action'))
+            connection_key = cast('str | None', data.get('connection_key'))
+            event = data.get('event')
+
+            if action is None or connection_key is None:
+                continue
 
             match action:
                 case 'emit':
@@ -81,3 +88,23 @@ class RedisPubSub:
         await self.client.publish(  # type: ignore[reportUnknownMemberType]
             f'{self.app_channel}:{connection_key}', json.dumps(data)
         )
+
+    @staticmethod
+    def _parse_data(data: Any) -> dict[str, Any] | None:
+        if isinstance(data, (bytes, bytearray)):
+            data = data.decode()
+
+        if isinstance(data, str):
+            try:
+                decoded = json.loads(data)
+            except json.JSONDecodeError:
+                return None
+
+            if isinstance(decoded, dict):
+                return cast('dict[str, Any]', decoded)
+            return None
+
+        if isinstance(data, dict):
+            return cast('dict[str, Any]', data)
+
+        return None
