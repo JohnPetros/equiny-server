@@ -29,11 +29,11 @@ class RegisterOwnerPresenceUseCase:
         self._cache_provider.set(
             f'{CACHE_KEYS.OWNERS_PRESENCE}:{owner_id}', owner.id.value
         )
-        horse_matches = self._horses_repository.find_horse_matches_by_owner_id(owner.id)
+        owner_matches = self._find_owner_matches(owner.id)
         self._broker.publish(
             OwnerPresenceRegisteredEvent(
                 owner.id.value,
-                [match.owner_id.value for match in horse_matches],
+                owner_matches,
             )
         )
 
@@ -42,3 +42,7 @@ class RegisterOwnerPresenceUseCase:
         if owner is None:
             raise OwnerNotFoundError
         return owner
+
+    def _find_owner_matches(self, owner_id: Id) -> list[str]:
+        horse_matches = self._horses_repository.find_horse_matches_by_owner_id(owner_id)
+        return [match.owner_id.value for match in horse_matches]

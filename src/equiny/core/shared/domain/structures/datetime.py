@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from equiny.core.shared.domain.decorators import structure
 from equiny.core.shared.domain.abstracts import Structure
 
@@ -8,9 +8,13 @@ class Datetime(Structure):
     value: datetime
 
     @classmethod
-    def create(cls, datetime: datetime) -> 'Datetime':
-        return Datetime(value=datetime)
+    def create(cls, value: datetime | str) -> 'Datetime':
+        if isinstance(value, str):
+            value = datetime.fromisoformat(value)
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=UTC)
+        return cls(value=value)
 
     @classmethod
     def create_at_now(cls) -> 'Datetime':
-        return Datetime(value=datetime.now())
+        return cls(value=datetime.now(UTC))
