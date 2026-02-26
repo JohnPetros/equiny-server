@@ -2,7 +2,7 @@
   "rest-client.environmentVariables": {
     "DEV": {
       "BASE_URL": "http://localhost:8080",
-      "JWT": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMUtKMEVNQkJXVFpRRkFFNFQ4WVoyRVRRNiIsImlhdCI6MTc3MTgxMTI5NCwiZXhwIjoxNzcxODE0ODk0fQ.uvNx_cKQEr-6sksObYODxp6ZRyXlCMIs9lMUK49ubQE"
+      "JWT": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMUtKRDBBMzZCNUpUUUg3WDc1NUJEOUMwRiIsImlhdCI6MTc3MjExOTExNCwiZXhwIjoxNzcyMTIyNzE0fQ.SI8vK3s9xw5UcZFfKQR8h6ZE1Z-Cl08opi2b4ynm7oA"
     }
   }
 }
