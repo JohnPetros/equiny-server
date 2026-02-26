@@ -1,22 +1,21 @@
 from redis import Redis
 
-from equiny.constants import ENV
 from equiny.core.shared.interfaces.cache_provider import CacheProvider
+from equiny.constants import Env
 
 
 class RedisCacheProvider(CacheProvider):
     _redis: Redis
 
     def __init__(self) -> None:
-        self._redis = Redis.from_url(  # pyright: ignore[reportUnknownMemberType]
-            ENV.REDIS_URL,
-            decode_responses=True,
-        )
+        self._redis = Redis.from_url(Env.REDIS_URL)  # type: ignore[reportUnknownMemberType]
 
     def get(self, key: str) -> str | None:
         value = self._redis.get(key)
-        if isinstance(value, str):
-            return value
+        if value is None:
+            return None
+        if isinstance(value, bytes):
+            return value.decode('utf-8')
         return None
 
     def set(self, key: str, value: str) -> None:

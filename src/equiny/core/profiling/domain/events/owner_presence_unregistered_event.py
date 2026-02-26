@@ -3,15 +3,17 @@ from equiny.core.shared.domain.abstracts import Event
 
 
 @dataclass
-class Payload:
+class _Payload:
     owner_id: str
+    owner_matches: list[str]
 
 
-class OwnerPresenceUnregisteredEvent(Event[Payload]):
+class OwnerPresenceUnregisteredEvent(Event[_Payload]):
     NAME: str = 'profiling/owner.presence.unregistered'
 
-    def __init__(self, owner_id: str) -> None:
-        payload = Payload(
+    def __init__(self, owner_id: str, owner_matches: list[str]) -> None:
+        payload = _Payload(
             owner_id=owner_id,
+            owner_matches=owner_matches,
         )
         super().__init__(OwnerPresenceUnregisteredEvent.NAME, payload)

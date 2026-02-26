@@ -9,7 +9,7 @@ class Payload:
     account_email: str
 
 
-class AccountCreatedEvent(Event):
+class AccountCreatedEvent(Event[Payload]):
     name: str = 'auth/account.created'
 
     def __init__(

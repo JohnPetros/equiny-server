@@ -1,37 +1,39 @@
 from typing import Any
-from equiny.constants import ROOMS_KEYS
-from equiny.core.profiling.domain.events import OwnerEnteredEvent, OwnerLeftEvent
-from equiny.core.profiling.interfaces.repositories import OwnersRepository
+from equiny.core.profiling.domain.events import OwnerEnteredEvent, OwnerExitedEvent
+from equiny.core.profiling.interfaces.repositories import (
+    HorsesRepository,
+    OwnersRepository,
+)
 from equiny.core.profiling.use_cases import (
     RegisterOwnerPresenceUseCase,
     UnregisterOwnerPresenceUseCase,
 )
 from equiny.core.shared.domain.errors.app_error import AppError
 from equiny.core.shared.interfaces.cache_provider import CacheProvider
+from equiny.core.shared.interfaces.broker import Broker
 from equiny.validation.shared import IdSchema
 from equiny.validation.shared.schema import Schema
-from equiny.websocket.profiling.profiling_broker import ProfilingBroker
-from equiny.websocket.ws import Ws
 
 
 class ProfilingChannel:
     def __init__(
         self,
-        ws: Ws,
+        broker: Broker,
         cache_provider: CacheProvider,
-        repository: OwnersRepository,
+        owners_repository: OwnersRepository,
+        horses_repository: HorsesRepository,
     ) -> None:
-        self._ws = ws
+        self._broker = broker
         self._cache_provider = cache_provider
-        self._repository = repository
-        self._broker = ProfilingBroker(ws)
+        self._owners_repository = owners_repository
+        self._horses_repository = horses_repository
 
     def handle(self, event_name: str, event_payload: Any) -> None:
         match event_name:
-            case OwnerEnteredEvent.name:
+            case OwnerEnteredEvent.NAME:
                 self._on_owner_entered(event_payload)
-            case OwnerLeftEvent.name:
-                self._on_owner_left(event_payload)
+            case OwnerExitedEvent.NAME:
+                self._on_owner_exited(event_payload)
             case _:
                 raise AppError('WebSocket Error', f'Event {event_name} not supported')
 
@@ -42,31 +44,25 @@ class ProfilingChannel:
         payload = PayloadSchema.model_validate(event_payload)
         owner_id = payload.owner_id
 
-        self._ws.enter_room(
-            f'{ROOMS_KEYS.INBOX}:{owner_id}',
-            owner_id,
-        )
         use_case = RegisterOwnerPresenceUseCase(
             self._cache_provider,
-            self._repository,
+            self._owners_repository,
+            self._horses_repository,
             self._broker,
         )
         use_case.execute(owner_id)
 
-    def _on_owner_left(self, event_payload: Any) -> None:
+    def _on_owner_exited(self, event_payload: Any) -> None:
         class PayloadSchema(Schema):
             owner_id: IdSchema
 
         payload = PayloadSchema.model_validate(event_payload)
         owner_id = payload.owner_id
 
-        self._ws.leave_room(
-            f'{ROOMS_KEYS.INBOX}:{owner_id}',
-            owner_id,
-        )
         use_case = UnregisterOwnerPresenceUseCase(
             self._cache_provider,
-            self._repository,
+            self._owners_repository,
+            self._horses_repository,
             self._broker,
         )
         use_case.execute(owner_id)

@@ -56,7 +56,7 @@ class Owner(Entity):
             ),
         )
 
-    def leave_presence(self) -> None:
+    def exit_presence(self) -> None:
         self.last_presence_at = Datetime.create_at_now()
 
     def set_account_id(self, account_id: Id) -> None:

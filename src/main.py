@@ -9,9 +9,9 @@ app = FastAPIApp.register()
 
 
 def main() -> None:
-    from equiny.constants import ENV
+    from equiny.constants import Env
 
-    run('main:app', host=ENV.HOST, port=ENV.PORT, reload=True)
+    run('main:app', host=Env.HOST, port=Env.PORT, reload=True)
 
 
 if __name__ == '__main__':

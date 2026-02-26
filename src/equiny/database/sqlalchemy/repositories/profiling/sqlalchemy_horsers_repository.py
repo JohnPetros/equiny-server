@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import case
+from sqlalchemy.orm import aliased, selectinload
 
 from equiny.core.profiling.domain.entities.horse import Horse
 from equiny.core.profiling.domain.structures.horse_match import HorseMatch
@@ -100,6 +101,42 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
                 else match_model.has_horse_b_viewed,
             )
             for horse_model, match_model in matches_rows
+        ]
+
+    def find_horse_matches_by_owner_id(self, owner_id: Id) -> list[HorseMatch]:
+        horse_a = aliased(HorseModel)
+        horse_b = aliased(HorseModel)
+        paired_horse = aliased(HorseModel)
+
+        paired_horse_id = case(
+            (horse_a.owner_id == owner_id.value, horse_b.id),
+            else_=horse_a.id,
+        )
+
+        is_viewed = case(
+            (horse_a.owner_id == owner_id.value, MatchModel.has_horse_a_viewed),
+            else_=MatchModel.has_horse_b_viewed,
+        )
+
+        matches_rows = (
+            self.sqlalchemy.query(paired_horse, MatchModel.created_at, is_viewed)
+            .select_from(MatchModel)
+            .join(horse_a, horse_a.id == MatchModel.horse_a_id)
+            .join(horse_b, horse_b.id == MatchModel.horse_b_id)
+            .join(paired_horse, paired_horse.id == paired_horse_id)
+            .options(
+                selectinload(paired_horse.owner),
+            )
+            .filter(
+                (horse_a.owner_id == owner_id.value)
+                | (horse_b.owner_id == owner_id.value)
+            )
+            .order_by(MatchModel.created_at.desc())
+            .all()
+        )
+        return [
+            HorseMatchesMapper.to_structure(horse_model, created_at, viewed)
+            for horse_model, created_at, viewed in matches_rows
         ]
 
     def find_horse_match_by_to_horse_id(

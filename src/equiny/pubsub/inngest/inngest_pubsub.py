@@ -3,7 +3,7 @@ from logging import getLogger
 from inngest import Inngest, fast_api
 from fastapi import FastAPI
 
-from equiny.constants import ENV
+from equiny.constants import Env
 from equiny.pubsub.inngest.jobs.profiling import (
     CreateOwnerJob,
 )
@@ -16,7 +16,7 @@ class InngestPubSub:
         inngest = Inngest(
             app_id='Equiny PubSub',
             logger=getLogger('uvicorn'),
-            signing_key=ENV.INNGEST_SIGNING_KEY,
+            signing_key=Env.INNGEST_SIGNING_KEY,
         )
 
         fast_api.serve(
