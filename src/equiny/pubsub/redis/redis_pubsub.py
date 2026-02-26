@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import json
 import contextlib
 from dataclasses import asdict
@@ -11,7 +12,7 @@ from equiny.core.shared.domain.abstracts.event import Event
 from equiny.constants import Env
 from equiny.websocket import ws
 
-WsAction = Literal['emit', 'send']
+WsAction = Literal['emit', 'broadcast']
 
 
 class RedisPubSub:
@@ -52,7 +53,6 @@ class RedisPubSub:
                     timeout=1.0,
                 ),
             )
-            print(f'message - {message}')
             if not message:
                 await asyncio.sleep(0.01)
                 continue
@@ -62,32 +62,42 @@ class RedisPubSub:
                 continue
 
             action = cast('str | None', data.get('action'))
-            connection_key = cast('str | None', data.get('connection_key'))
+            socket_key = cast('str | None', data.get('socket_key'))
             event = data.get('event')
 
-            if action is None or connection_key is None:
+            if action is None or socket_key is None:
                 continue
 
             match action:
                 case 'emit':
-                    await ws.emit(connection_key, event)
-                case 'send':
-                    await ws.send(connection_key, event)
+                    await ws.emit(socket_key, event)
                 case _:
                     pass
 
     async def publish(
-        self, connection_key: str, action: WsAction, event: Event[Any]
+        self, socket_key: str, action: WsAction, event: Event[Any]
     ) -> None:
         if self.client is None:
             return
         data: dict[str, Any] = {}
         data['action'] = action
-        data['connection_key'] = connection_key
-        data['event'] = asdict(event)
+        data['socket_key'] = socket_key
+        data['event'] = self._parse_event(event)
         await self.client.publish(  # type: ignore[reportUnknownMemberType]
-            f'{self.app_channel}:{connection_key}', json.dumps(data)
+            f'{self.app_channel}:{socket_key}', json.dumps(data)
         )
+
+    def _parse_event(self, event: Event[Any]) -> dict[str, Any]:
+        def _make_json_serializable(obj: Any) -> Any:
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            if isinstance(obj, dict):
+                return {k: _make_json_serializable(v) for k, v in obj.items()}  # type: ignore[reportUnknownReturnType]
+            if isinstance(obj, (list, tuple)):
+                return [_make_json_serializable(i) for i in obj]  # type: ignore[reportUnknownReturnType]
+            return obj
+
+        return cast('dict[str, Any]', _make_json_serializable(asdict(event)))
 
     @staticmethod
     def _parse_data(data: Any) -> dict[str, Any] | None:

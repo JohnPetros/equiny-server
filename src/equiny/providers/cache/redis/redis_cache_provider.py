@@ -12,8 +12,10 @@ class RedisCacheProvider(CacheProvider):
 
     def get(self, key: str) -> str | None:
         value = self._redis.get(key)
-        if isinstance(value, str):
-            return value
+        if value is None:
+            return None
+        if isinstance(value, bytes):
+            return value.decode('utf-8')
         return None
 
     def set(self, key: str, value: str) -> None:

@@ -15,15 +15,15 @@ class RedisConversationBroker(RedisBroker):
     def _publish_message_received_event(self, event: MessageReceivedEvent) -> None:
         create_task(
             self.pubsub.publish(
-                connection_key=event.payload.recipient_id,
-                action='send',
+                socket_key=event.payload.recipient_id,
+                action='emit',
                 event=event,
             )
         )
         create_task(
             self.pubsub.publish(
-                connection_key=event.payload.message.sender_id,
-                action='send',
+                socket_key=event.payload.message.sender_id,
+                action='emit',
                 event=event,
             )
         )

@@ -11,10 +11,6 @@ from equiny.providers.cache.redis import RedisCacheProvider
 
 class ProvidersPipe:
     @staticmethod
-    def get_cache_provider_from_request(_: Request) -> CacheProvider:
-        return RedisCacheProvider()
-
-    @staticmethod
     def get_hash_provider() -> HashProvider:
         return PwdlibHashProvider()
 

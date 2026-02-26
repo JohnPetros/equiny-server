@@ -23,8 +23,8 @@ class RedisProfilingBroker(RedisBroker):
         for owner_match in event.payload.owner_matches:
             create_task(
                 self.pubsub.publish(
-                    connection_key=owner_match,
-                    action='send',
+                    socket_key=owner_match,
+                    action='emit',
                     event=event,
                 )
             )
@@ -32,10 +32,11 @@ class RedisProfilingBroker(RedisBroker):
     def _publish_owner_presence_unregistered_event(
         self, event: OwnerPresenceUnregisteredEvent
     ) -> None:
-        create_task(
-            self.pubsub.publish(
-                connection_key=event.payload.owner_id,
-                action='send',
-                event=event,
+        for owner_match in event.payload.owner_matches:
+            create_task(
+                self.pubsub.publish(
+                    socket_key=owner_match,
+                    action='emit',
+                    event=event,
+                )
             )
-        )
