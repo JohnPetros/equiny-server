@@ -1,5 +1,5 @@
 @URL = http://localhost:8080/profiling/owners
-@OWNER_ID = 01KJ07XEQSE53E6G2G2Y5WJFYB
+@OWNER_ID = 01KJ08668AER5YJPV71V56BHYH
 
 ### Get Owner
 GET {{URL}}/me
