@@ -1,5 +1,5 @@
 from typing import Any
-from equiny.core.profiling.domain.events import OwnerEnteredEvent, OwnerLeftEvent
+from equiny.core.profiling.domain.events import OwnerEnteredEvent, OwnerExitedEvent
 from equiny.core.profiling.interfaces.repositories import (
     HorsesRepository,
     OwnersRepository,
@@ -30,10 +30,10 @@ class ProfilingChannel:
 
     def handle(self, event_name: str, event_payload: Any) -> None:
         match event_name:
-            case OwnerEnteredEvent.name:
+            case OwnerEnteredEvent.NAME:
                 self._on_owner_entered(event_payload)
-            case OwnerLeftEvent.name:
-                self._on_owner_left(event_payload)
+            case OwnerExitedEvent.NAME:
+                self._on_owner_exited(event_payload)
             case _:
                 raise AppError('WebSocket Error', f'Event {event_name} not supported')
 
@@ -52,7 +52,7 @@ class ProfilingChannel:
         )
         use_case.execute(owner_id)
 
-    def _on_owner_left(self, event_payload: Any) -> None:
+    def _on_owner_exited(self, event_payload: Any) -> None:
         class PayloadSchema(Schema):
             owner_id: IdSchema
 
@@ -62,6 +62,7 @@ class ProfilingChannel:
         use_case = UnregisterOwnerPresenceUseCase(
             self._cache_provider,
             self._owners_repository,
+            self._horses_repository,
             self._broker,
         )
         use_case.execute(owner_id)

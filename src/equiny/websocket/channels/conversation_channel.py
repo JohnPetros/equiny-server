@@ -9,6 +9,7 @@ from equiny.core.conversation.interfaces.messages_repository import MessagesRepo
 from equiny.core.conversation.use_cases.send_message_use_case import SendMessageUseCase
 from equiny.core.shared.domain.errors.app_error import AppError
 from equiny.core.shared.interfaces.broker import Broker
+from equiny.core.shared.interfaces.cache_provider import CacheProvider
 from equiny.validation.shared.id_schema import IdSchema
 from equiny.validation.shared.schema import Schema
 
@@ -19,10 +20,12 @@ class ConversationChannel:
         broker: Broker,
         chats_repository: ChatsRepository,
         messages_repository: MessagesRepository,
+        cache_provider: CacheProvider,
     ) -> None:
         self._broker = broker
         self._chats_repository = chats_repository
         self._messages_repository = messages_repository
+        self._cache_provider = cache_provider
 
     def handle(self, event_name: str, event_payload: Any) -> None:
         print(f'Event name: {event_name}')
@@ -43,6 +46,7 @@ class ConversationChannel:
         use_case = SendMessageUseCase(
             self._chats_repository,
             self._messages_repository,
+            self._cache_provider,
             self._broker,
         )
         use_case.execute(

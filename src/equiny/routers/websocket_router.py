@@ -66,7 +66,10 @@ class WebSocketRouter:
                                 sqlalchemy_session
                             )
                             channel = ConversationChannel(
-                                broker, chats_repository, messages_repository
+                                broker,
+                                chats_repository,
+                                messages_repository,
+                                cache_provider,
                             )
                             channel.handle(json.name, json.payload)
                     elif json.is_from_profiling_module():
