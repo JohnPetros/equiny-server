@@ -1,6 +1,11 @@
 from typing import Any
 
+from pydantic import Field
+
 from equiny.core.conversation.domain.entities.dtos.chat_message_dto import MessageDto
+from equiny.core.conversation.domain.structures.dtos.attachment_dto import (
+    AttachmentDto,
+)
 from equiny.core.conversation.domain.events import (
     MessageSentEvent,
 )
@@ -36,10 +41,17 @@ class ConversationChannel:
                 raise AppError('WebSocket Error', f'Event {event_name} not supported')
 
     def _on_message_sent(self, event_payload: Any) -> None:
+        class AttachmentSchema(Schema):
+            key: str
+            name: str
+            kind: str
+            size: float
+
         class PayloadSchema(Schema):
             message_content: str
             chat_id: IdSchema
             sender_id: IdSchema
+            attachments: list[AttachmentSchema] = Field(default_factory=list)
 
         payload = PayloadSchema.model_validate(event_payload)
 
@@ -53,7 +65,15 @@ class ConversationChannel:
             MessageDto(
                 content=payload.message_content,
                 sender_id=payload.sender_id,
-                attachments=[],
+                attachments=[
+                    AttachmentDto(
+                        key=attachment.key,
+                        name=attachment.name,
+                        kind=attachment.kind,
+                        size=attachment.size,
+                    )
+                    for attachment in payload.attachments
+                ],
             ),
             payload.chat_id,
         )

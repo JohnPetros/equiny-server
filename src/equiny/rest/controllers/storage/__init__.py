@@ -1,4 +1,4 @@
-from .generate_attachment_image_upload_url_controller import (
+from .generate_upload_url_for_attachments_controller import (
     GenerateUploadUrlsForAttachmentsController,
 )
 from .generate_upload_url_for_owner_avatar_controller import (

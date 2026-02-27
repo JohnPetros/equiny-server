@@ -1,24 +1,14 @@
-@URL = {{BASE_URL}}/storage/upload/attachments
+@URL = {{BASE_URL}}/storage/upload/chats/01KJD0TXF53RBZJ4R3QK431AKN/messages/01KJECM4CT4VR8TCXGZAHTVH68/attachments
 
 
-### Generate upload URLs for attachments images
+### Generate upload URLs for attachments
 POST {{URL}}
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
-[
-  {
-    "chat_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
-    "message_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
-    "attachment_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
-    "file_kind": "images",
-    "file_name": "image.jpg"
-  },
-  {
-    "chat_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
-    "message_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
-    "attachment_id": "01KHVQX8M2QDQ06AR60QJ42WA5",
-    "file_kind": "images",
-    "file_name": "image.png"
-  }
-]
+{
+  "files_names": [
+    "image.jpg",
+    "image.png"
+  ]
+}

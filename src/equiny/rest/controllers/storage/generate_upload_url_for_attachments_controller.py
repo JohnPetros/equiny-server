@@ -7,31 +7,27 @@ from equiny.core.shared.domain.structures.text import Text
 from equiny.core.storage.structures.dtos import AttachmentDto
 from equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
 from equiny.core.storage.structures.dtos import UploadUrlDto
-from equiny.core.storage.structures.file_kind import FileKind
 from equiny.core.storage.structures.file_name import FileName
-from equiny.pipes.auth_pipe import AuthPipe
 from equiny.pipes.conversation_pipe import ConversationPipe
 from equiny.pipes.providers_pipe import ProvidersPipe
 from equiny.validation.shared import IdSchema, Schema
 
 
 class BodySchema(Schema):
-    files_names: list[str]
+    attachments: list[AttachmentDto]
 
 
 class GenerateUploadUrlsForAttachmentsController:
     @staticmethod
     def handle(router: APIRouter) -> None:
         @router.post(
-            '/upload/chats/{chat_id}/messages/{message_id}/attachments/{attachment_id}/images',
+            '/upload/chats/{chat_id}/messages/{message_id}/attachments',
             status_code=HTTPStatus.CREATED,
             response_model=ListResponse[UploadUrlDto],
-            dependencies=[Depends(AuthPipe.verify_jwt)],
         )
         def _(
             chat_id: IdSchema,
             message_id: IdSchema,
-            attachment_id: IdSchema,
             body: BodySchema,
             *,
             _: None = Depends(ConversationPipe.verify_chat_participant),
@@ -41,17 +37,14 @@ class GenerateUploadUrlsForAttachmentsController:
         ) -> ListResponse[UploadUrlDto]:
             attachments = [
                 AttachmentDto(
-                    chat_id=chat_id,
-                    message_id=message_id,
-                    attachment_id=attachment_id,
-                    file_kind=FileKind.create_as_images().dto,
-                    file_name=file_name,
+                    kind=attachment.kind,
+                    name=attachment.name,
                 )
-                for file_name in body.files_names
+                for attachment in body.attachments
             ]
             files_paths = [
                 Text.create(
-                    f'conversation/chats/{attachment.chat_id}/messages/{attachment.message_id}/attachments/{attachment.attachment_id}/{attachment.file_kind}/{FileName.create(attachment.file_name).randomize.value}'
+                    f'conversation/chats/{chat_id}/messages/{message_id}/attachments/{attachment.kind}/{FileName.create(attachment.name).randomize.value}'
                 )
                 for attachment in attachments
             ]
