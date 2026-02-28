@@ -14,14 +14,14 @@ class RedisConversationBroker(RedisBroker):
 
     def _publish_message_received_event(self, event: MessageReceivedEvent) -> None:
         create_task(
-            self.pubsub.publish(
+            self.pubsub.publish_for_socket(
                 socket_key=event.payload.recipient_id,
                 action='emit',
                 event=event,
             )
         )
         create_task(
-            self.pubsub.publish(
+            self.pubsub.publish_for_socket(
                 socket_key=event.payload.message.sender_id,
                 action='emit',
                 event=event,
