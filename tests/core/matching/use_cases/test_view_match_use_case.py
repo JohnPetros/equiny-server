@@ -31,7 +31,7 @@ class TestViewHorseMatchUseCase:
             is_viewed=False,
         )
         self.repository_mock.find_by_id_and_owner_id.return_value = horse
-        self.repository_mock.find_horse_match_by_to_horse_id.return_value = horse_match
+        self.repository_mock.find_horse_match_by_horses.return_value = horse_match
 
         result = self.use_case.execute(
             owner_id=owner_id,
@@ -44,7 +44,7 @@ class TestViewHorseMatchUseCase:
         call_args = self.repository_mock.find_by_id_and_owner_id.call_args[0]
         assert call_args[0].value == from_horse_id
         assert call_args[1].value == owner_id
-        self.repository_mock.find_horse_match_by_to_horse_id.assert_called_once_with(
+        self.repository_mock.find_horse_match_by_horses.assert_called_once_with(
             horse.id, horse_match.owner_horse_id
         )
         self.repository_mock.replace_horse_match.assert_called_once()
@@ -67,7 +67,7 @@ class TestViewHorseMatchUseCase:
             )
 
         self.repository_mock.find_by_id_and_owner_id.assert_called_once()
-        self.repository_mock.find_horse_match_by_to_horse_id.assert_not_called()
+        self.repository_mock.find_horse_match_by_horses.assert_not_called()
         self.repository_mock.replace_horse_match.assert_not_called()
 
     def test_should_raise_horse_match_not_found_error_when_match_does_not_exist(
@@ -78,7 +78,7 @@ class TestViewHorseMatchUseCase:
         to_horse_id = IdFaker.fake().value
         horse = HorsesFaker.fake(id=from_horse_id)
         self.repository_mock.find_by_id_and_owner_id.return_value = horse
-        self.repository_mock.find_horse_match_by_to_horse_id.return_value = None
+        self.repository_mock.find_horse_match_by_horses.return_value = None
 
         with pytest.raises(HorseMatchNotFoundError):
             self.use_case.execute(
@@ -91,10 +91,8 @@ class TestViewHorseMatchUseCase:
         call_args = self.repository_mock.find_by_id_and_owner_id.call_args[0]
         assert call_args[0].value == from_horse_id
         assert call_args[1].value == owner_id
-        self.repository_mock.find_horse_match_by_to_horse_id.assert_called_once()
-        match_call_args = (
-            self.repository_mock.find_horse_match_by_to_horse_id.call_args[0]
-        )
+        self.repository_mock.find_horse_match_by_horses.assert_called_once()
+        match_call_args = self.repository_mock.find_horse_match_by_horses.call_args[0]
         assert match_call_args[0] == horse.id
         assert match_call_args[1].value == to_horse_id
         self.repository_mock.replace_horse_match.assert_not_called()

@@ -55,8 +55,8 @@ class TestSignUpAccountUseCase:
         assert result.email == 'owner@example.com'
         assert not hasattr(result, 'password')
         assert published_event.name == 'auth/account.created'
-        assert published_event.payload['account_id'] == result.id
-        assert published_event.payload['owner_name'] == 'John Owner'
+        assert published_event.payload.account_id == result.id
+        assert published_event.payload.owner_name == 'John Owner'
 
         self.repository_mock.assert_has_calls(
             [
