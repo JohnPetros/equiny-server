@@ -7,6 +7,7 @@ from equiny.core.shared.domain.errors import ValidationError
 
 class FileKindValue(Enum):
     IMAGES = 'images'
+    DOCUMENTS = 'documents'
 
 
 @structure
