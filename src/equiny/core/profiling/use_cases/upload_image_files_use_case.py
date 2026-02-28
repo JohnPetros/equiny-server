@@ -14,11 +14,12 @@ class UploadImageFilesUseCase:
         if len(files_dto) == 0:
             raise ValidationError('Pelo menos um arquivo deve ser enviado')
 
-        images: list[ImageDto] = []
         for file_dto in files_dto:
             if not file_dto.content_type.startswith('image/'):
                 raise ValidationError(f'{file_dto.name} não é uma imagem válida')
 
+        images: list[ImageDto] = []
+        for file_dto in files_dto:
             file = File.create(file_dto)
             upload_url = self._file_storage_provider.generate_upload_url(
                 Text.create(file.name.value)

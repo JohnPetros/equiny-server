@@ -22,7 +22,6 @@ class GetOwnerPresenceUseCase:
             raise OwnerNotFoundError
 
         cache_key = f'{CACHE_KEYS.OWNERS_PRESENCE}:{owner.id.value}'
-        print(f'Cache key: {self._cache_provider.get(cache_key)}')
         is_online = self._cache_provider.get(cache_key) is not None
         owner_presence = OwnerPresence.create(
             OwnerPresenceDto(
