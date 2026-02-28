@@ -1,5 +1,5 @@
 @URL = {{BASE_URL}}/conversation/chats
-@CHAT_ID = 01KJ2SNGNT87YKA31M31S77T86
+@CHAT_ID = 01KJD0TXF53RBZJ4R3QK431AKN
 
 ### Create chat
 POST {{URL}}
@@ -7,14 +7,11 @@ Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
 {
-  "sender_id": "01KJ07XEQSE53E6G2G2Y5WJFYB",
-  "recipient_id": "01KJ07ZXYEXJZJSMAPH1PYEWK5",
-  "sender_horse_id": "01KHPD158QDMXWTGENWZK5DFYD",
-  "recipient_horse_id": "01KHPDT8C9BM21QXZPT8QF2QYT"
+  "recipient_id": "01KJ07ZXYEXJZJSMAPH1PYEWK5"
 }
 
 ### Fetch chats list
-GET {{URL}}
+GET {{URL}}/list
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 

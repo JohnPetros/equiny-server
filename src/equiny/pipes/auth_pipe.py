@@ -24,6 +24,8 @@ class AuthPipe:
         if not token:
             raise AuthError('Jwt não encontrado')
 
+        print('token', token)
+
         return jwt_provider.decode(token)
 
     @staticmethod

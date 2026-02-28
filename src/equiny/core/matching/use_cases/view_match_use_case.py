@@ -31,7 +31,7 @@ class ViewHorseMatchUseCase:
         return horse
 
     def _find_horse_match(self, from_horse_id: Id, to_horse_id: Id) -> HorseMatch:
-        horse_match = self._repository.find_horse_match_by_to_horse_id(
+        horse_match = self._repository.find_horse_match_by_horses(
             from_horse_id, to_horse_id
         )
         if horse_match is None:

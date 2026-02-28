@@ -75,7 +75,7 @@ class TestUpdateHorseGalleryUseCase:
         assert [image.dto for image in saved_images] == new_gallery_dto.images
         assert result == new_gallery_dto
         assert isinstance(published_event, ImagesFilesRemovedEvent)
-        assert published_event.payload['image_files_keys'] == ['image-key-2']
+        assert published_event.payload.image_files_keys == ['image-key-2']
 
     def test_should_update_gallery_without_publishing_event_when_no_images_are_removed(
         self,

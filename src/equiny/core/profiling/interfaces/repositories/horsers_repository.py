@@ -36,7 +36,7 @@ class HorsesRepository(Protocol):
 
     def find_many_by_owner(self, owner_id: Id) -> list[Horse]: ...
 
-    def find_horse_match_by_to_horse_id(
+    def find_horse_match_by_horses(
         self, from_horse_id: Id, to_horse_id: Id
     ) -> HorseMatch | None: ...
 
