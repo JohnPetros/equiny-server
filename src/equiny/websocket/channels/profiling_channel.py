@@ -1,5 +1,10 @@
 from typing import Any
-from equiny.core.profiling.domain.events import OwnerEnteredEvent, OwnerExitedEvent
+from equiny.core.profiling.domain.events import (
+    OwnerEnteredEvent,
+    OwnerExitedEvent,
+    OwnerPresenceRegisteredEvent,
+    OwnerPresenceUnregisteredEvent,
+)
 from equiny.core.profiling.interfaces.repositories import (
     HorsesRepository,
     OwnersRepository,
@@ -9,6 +14,7 @@ from equiny.core.profiling.use_cases import (
     UnregisterOwnerPresenceUseCase,
 )
 from equiny.core.shared.domain.errors.app_error import AppError
+from equiny.core.shared.domain.structures.id import Id
 from equiny.core.shared.interfaces.cache_provider import CacheProvider
 from equiny.core.shared.interfaces.broker import Broker
 from equiny.validation.shared import IdSchema
@@ -47,10 +53,14 @@ class ProfilingChannel:
         use_case = RegisterOwnerPresenceUseCase(
             self._cache_provider,
             self._owners_repository,
-            self._horses_repository,
-            self._broker,
         )
         use_case.execute(owner_id)
+
+        owner_matches = self._horses_repository.find_horse_matches_by_owner_id(
+            Id.create(owner_id)
+        )
+        match_owner_ids = [match.owner_id.value for match in owner_matches]
+        self._broker.publish(OwnerPresenceRegisteredEvent(owner_id, match_owner_ids))
 
     def _on_owner_exited(self, event_payload: Any) -> None:
         class PayloadSchema(Schema):
@@ -62,7 +72,11 @@ class ProfilingChannel:
         use_case = UnregisterOwnerPresenceUseCase(
             self._cache_provider,
             self._owners_repository,
-            self._horses_repository,
-            self._broker,
         )
         use_case.execute(owner_id)
+
+        owner_matches = self._horses_repository.find_horse_matches_by_owner_id(
+            Id.create(owner_id)
+        )
+        match_owner_ids = [match.owner_id.value for match in owner_matches]
+        self._broker.publish(OwnerPresenceUnregisteredEvent(owner_id, match_owner_ids))

@@ -8,6 +8,7 @@ from equiny.core.conversation.domain.structures.dtos.attachment_dto import (
 )
 from equiny.core.conversation.domain.events import (
     MessageSentEvent,
+    MessageReceivedEvent,
 )
 from equiny.core.conversation.interfaces.chats_repository import ChatsRepository
 from equiny.core.conversation.interfaces.messages_repository import MessagesRepository
@@ -58,10 +59,8 @@ class ConversationChannel:
         use_case = SendMessageUseCase(
             self._chats_repository,
             self._messages_repository,
-            self._cache_provider,
-            self._broker,
         )
-        use_case.execute(
+        message_dto = use_case.execute(
             MessageDto(
                 content=payload.message_content,
                 sender_id=payload.sender_id,
@@ -76,4 +75,8 @@ class ConversationChannel:
                 ],
             ),
             payload.chat_id,
+        )
+
+        self._broker.publish(
+            MessageReceivedEvent(message_dto, payload.sender_id, payload.chat_id)
         )
