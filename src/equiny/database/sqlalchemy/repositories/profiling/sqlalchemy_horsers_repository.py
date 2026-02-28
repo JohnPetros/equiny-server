@@ -139,11 +139,11 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
             for horse_model, created_at, viewed in matches_rows
         ]
 
-    def find_horse_match_by_to_horse_id(
+    def find_horse_match_by_horses(
         self, from_horse_id: Id, to_horse_id: Id
     ) -> HorseMatch | None:
         match_model = (
-            self.sqlalchemy.query(HorseModel, MatchModel.created_at)
+            self.sqlalchemy.query(MatchModel)
             .filter(
                 (
                     (MatchModel.horse_a_id == from_horse_id.value)
@@ -158,7 +158,26 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         )
         if match_model is None:
             return None
-        return HorseMatchesMapper.to_structure(match_model[0], match_model[1])
+
+        owner_horse_model = (
+            self.sqlalchemy.query(HorseModel)
+            .filter(HorseModel.id == to_horse_id.value)
+            .first()
+        )
+        if owner_horse_model is None:
+            return None
+
+        is_viewed = (
+            match_model.has_horse_a_viewed
+            if match_model.horse_a_id == from_horse_id.value
+            else match_model.has_horse_b_viewed
+        )
+
+        return HorseMatchesMapper.to_structure(
+            owner_horse_model,
+            match_model.created_at,
+            is_viewed,
+        )
 
     def add_many_images(self, horse_id: Id, images: list[Image]) -> None:
         image_models = HorseImagesMapper.to_models(images, horse_id)
