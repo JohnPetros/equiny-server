@@ -1,4 +1,4 @@
----
+.---
 description: Concluir spec com validacao de qualidade, requisitos e documentacao
 ---
 
@@ -39,7 +39,7 @@ Diretrizes de execucao:
 
 - Marque a spec como concluida e atualize a data de ultima atualizacao (se o documento usar esse campo).
 
-5. Resumo final para PR
+5. Resumo final
 
 - Liste o que foi entregue (por camada/modulo).
 - Destaque mudancas de contrato (HTTP/DTOs), migracoes e riscos.

@@ -133,6 +133,28 @@ Define os contratos de dados para entrada e saída da API (Data Transfer Objects
     -   O Controller converte o resultado para o Response Model (Pydantic).
     -   O FastAPI serializa e envia a resposta JSON para o cliente.
 
+## PubSub Layer (`src/equiny/pubsub`)
+
+Responsável pela comunicação assíncrona e em tempo real baseada em eventos.
+
+-   **Sub-camadas:**
+    -   **`inngest/`** — broker para jobs assíncronos disparados via Inngest (ex: envio de e-mails, push notifications).
+    -   **`redis/`** — broker para entrega em tempo real via Redis Pub/Sub → WebSocket.
+-   **Brokers Redis (`redis/brokers/`):**
+    -   `RedisBroker` — classe base que recebe `RedisPubSub` e implementa o protocolo `Broker`.
+    -   `RedisConversationBroker` — roteia `MessageReceivedEvent` para o socket do destinatário.
+    -   `RedisProfilingBroker` — roteia eventos de presença para sockets de owners relacionados.
+    -   `RedisMatchingBroker` — roteia `HorseMatchNotifiedEvent` para o socket do owner de cada lado do match (via `asyncio.create_task`).
+-   **`RedisPubSub` (`redis/redis_pubsub.py`):**
+    -   Gerencia conexão Redis com dispatch por `handler`.
+    -   `publish_for_socket(socket_key, action, event)` — publica no canal `equiny:socket:{socket_key}`.
+    -   `publish_for_job(event)` — publica para jobs internos.
+    -   `reader()` — lê mensagens Redis e despacha: `handler == 'socket'` → `ws.emit()`; `handler == 'job'` → jobs internos.
+-   **Regras:**
+    -   Brokers não devem conter regras de negócio.
+    -   Usar `asyncio.create_task` para não bloquear a resposta HTTP.
+    -   `core` nunca deve depender de brokers Redis ou Inngest diretamente — apenas do protocolo `Broker`.
+
 ## Fluxo WebSocket (Presence)
 
 1.  **Conexão:** Cliente abre `WS /profiling/owners/{owner_id}/presence?token=<jwt>`.
@@ -144,6 +166,22 @@ Define os contratos de dados para entrada e saída da API (Data Transfer Objects
     -   `RegisterOwnerPresenceUseCase` grava presença no cache (`CacheProvider`).
     -   `UnregisterOwnerPresenceUseCase` remove presença no disconnect.
 4.  **Broadcast:** `Ws.broadcast(...)` publica payload serializável para sockets conectados.
+
+## Fluxo WebSocket (Match Notification)
+
+Quando um swipe gera match, ambos os owners são notificados em tempo real:
+
+1.  **Swipe:** `POST /matching/swipes/` → `SwipeHorseController`.
+2.  **Use Case:** `SwipeHorseUseCase` detecta match via `swipe.verify_match(reverse_swipe)`.
+3.  **Notificação:** Compõe e executa `NotifyHorseMatchUseCase(horses_repo, broker)`:
+    -   Busca `HorseMatch` enriquecido para cada lado via `HorsesRepository.find_horse_match_by_horses`.
+    -   Publica dois `HorseMatchNotifiedEvent` (um por owner) via `broker.publish()`.
+4.  **Broker:** `RedisMatchingBroker.publish()` extrai `owner_id` do evento e chama `asyncio.create_task(redis_pubsub.publish_for_socket(...))`.
+5.  **Redis:** Mensagem publicada no canal `equiny:socket:{owner_id}`.
+6.  **Entrega:** `RedisPubSub.reader()` recebe, verifica `handler == 'socket'`, e chama `ws.emit(socket_key=owner_id, event=...)`.
+7.  **Cliente:** Recebe evento `profiling/horse.match.notified` via WebSocket com `HorseMatchDto` perspectivado para o seu lado do match.
+
+> Se o owner não estiver conectado no momento, a notificação é perdida (sem fila de entrega garantida).
 
 ## Inversão de Dependência
 

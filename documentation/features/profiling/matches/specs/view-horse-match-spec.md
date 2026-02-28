@@ -13,7 +13,7 @@ Entregar o endpoint `GET /profiling/horses/{from_horse_id}/matches/{to_horse_id}
 ## 2.1 In-scope
 - Expor rota HTTP de visualizacao de match no sub-router `profiling/horses`.
 - Criar controller dedicado no contexto `profiling` com autenticacao e injecao de `HorsesRepository`.
-- Implementar no `SqlalchemyHorsesRepository` os metodos pendentes `find_horse_match_by_to_horse_id(...)` e `replace_horse_match(...)` exigidos por `ViewHorseMatchUseCase`.
+- Implementar no `SqlalchemyHorsesRepository` os metodos pendentes `find_horse_match_by_horses(...)` e `replace_horse_match(...)` exigidos por `ViewHorseMatchUseCase`.
 - Persistir estado de visualizacao por lado do match (cavalo A e cavalo B) no banco.
 - Garantir que o endpoint valide posse do `from_horse_id` pelo `owner` autenticado.
 
@@ -52,7 +52,7 @@ Entregar o endpoint `GET /profiling/horses/{from_horse_id}/matches/{to_horse_id}
 - **`ViewHorseMatchUseCase`** (`src/equiny/core/matching/use_cases/view_match_use_case.py`) - orquestra validacao de propriedade do cavalo, busca de match e atualizacao para estado visualizado.
 - **`HorseMatch`** (`src/equiny/core/profiling/domain/structures/horse_match.py`) - estrutura que encapsula `horse`, `is_viewed` e `created_at`, com metodo `view()`.
 - **`HorseMatchNotFoundError`** (`src/equiny/core/profiling/domain/errors/horse_match_not_found_error.py`) - erro de dominio para match inexistente.
-- **`HorsesRepository`** (`src/equiny/core/profiling/interfaces/repositories/horsers_repository.py`) - contrato ja define `find_horse_match_by_to_horse_id(...)` e `replace_horse_match(...)`.
+- **`HorsesRepository`** (`src/equiny/core/profiling/interfaces/repositories/horsers_repository.py`) - contrato ja define `find_horse_match_by_horses(...)` e `replace_horse_match(...)`.
 
 ## 5.2 Database (`src/equiny/database/`)
 - **`SqlalchemyHorsesRepository`** (`src/equiny/database/sqlalchemy/repositories/profiling/sqlalchemy_horsers_repository.py`) - implementacao concreta de `HorsesRepository`; ainda sem os dois metodos usados por `ViewHorseMatchUseCase`.
@@ -104,7 +104,7 @@ Entregar o endpoint `GET /profiling/horses/{from_horse_id}/matches/{to_horse_id}
   - **Camada:** `database`
 
 - **Arquivo:** `src/equiny/database/sqlalchemy/repositories/profiling/sqlalchemy_horsers_repository.py`
-  - **Mudanca:** implementar `find_horse_match_by_to_horse_id(self, to_horse_id: Id) -> HorseMatch | None` e `replace_horse_match(self, from_horse_id: Id, horse_match: HorseMatch) -> None`, incluindo update do campo de visualizacao correto no `MatchModel`.
+  - **Mudanca:** implementar `find_horse_match_by_horses(self, to_horse_id: Id) -> HorseMatch | None` e `replace_horse_match(self, from_horse_id: Id, horse_match: HorseMatch) -> None`, incluindo update do campo de visualizacao correto no `MatchModel`.
   - **Justificativa:** completar contrato de `HorsesRepository` e viabilizar execucao do `ViewHorseMatchUseCase`.
   - **Camada:** `database`
 
@@ -147,7 +147,7 @@ Client -> ProfilingRouter -> HorsesRouter -> ViewHorseMatchController
   -> Depends(AuthPipe.verify_jwt) + Depends(ProfilingPipe.get_owner_id) + Depends(DatabasePipe.get_horses_repository)
   -> ViewHorseMatchUseCase.execute(owner_id, from_horse_id, to_horse_id)
   -> HorsesRepository.find_by_id_and_owner_id(from_horse_id, owner_id)
-  -> HorsesRepository.find_horse_match_by_to_horse_id(from_horse_id, to_horse_id)
+  -> HorsesRepository.find_horse_match_by_horses(from_horse_id, to_horse_id)
   -> HorsesRepository.replace_horse_match(from_horse_id, to_horse_id, viewed_match)
   -> SqlalchemyHorsesRepository (update MatchModel.has_*_viewed)
   -> HTTP 200 com HorseMatchDto
