@@ -1,4 +1,3 @@
-from fastapi import Request
 
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
 from equiny.core.shared.interfaces.cache_provider import CacheProvider
