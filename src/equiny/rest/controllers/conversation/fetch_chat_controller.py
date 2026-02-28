@@ -15,14 +15,14 @@ class FetchChatController:
     @staticmethod
     def handle(router: APIRouter) -> None:
         @router.get(
-            '/{chat_id}',
+            '/',
             status_code=HTTPStatus.OK,
             response_model=ChatDto,
         )
         def _(
             chat_id: IdSchema,
-            owner_id: Id = Depends(ProfilingPipe.get_owner_id),
+            sender_id: Id = Depends(ProfilingPipe.get_owner_id),
             repository: ChatsRepository = Depends(DatabasePipe.get_chats_repository),
         ) -> ChatDto:
             use_case = GetChatUseCase(repository)
-            return use_case.execute(chat_id=chat_id, sender_id=owner_id.value)
+            return use_case.execute(chat_id=chat_id, sender_id=sender_id.value)

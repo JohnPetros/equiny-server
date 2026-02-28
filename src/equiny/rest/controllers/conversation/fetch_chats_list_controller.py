@@ -14,7 +14,7 @@ class FetchChatsListController:
     @staticmethod
     def handle(router: APIRouter) -> None:
         @router.get(
-            '/',
+            '/list',
             status_code=HTTPStatus.OK,
             response_model=ListResponse[ChatDto],
         )
@@ -23,4 +23,4 @@ class FetchChatsListController:
             repository: ChatsRepository = Depends(DatabasePipe.get_chats_repository),
         ) -> ListResponse[ChatDto]:
             use_case = ListChatsUseCase(repository)
-            return use_case.execute(owner_id.value)
+            return ListResponse[ChatDto](items=use_case.execute(owner_id.value))
