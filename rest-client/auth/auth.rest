@@ -4,6 +4,17 @@ POST {{URL}}/sign-in
 Content-Type: application/json
 
 {
-  "account_email": "mariana.duarte@equiny.dev",
+  "account_email": "nosoca6230@pazuric.com",
+  "account_password": "12345678"
+}
+
+### Sign Up
+
+POST {{URL}}/sign-up
+Content-Type: application/json
+
+{
+  "owner_name": "Jonas",
+  "account_email": "nosoca6230@pazuric.com",
   "account_password": "12345678"
 }
