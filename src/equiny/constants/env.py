@@ -11,6 +11,8 @@ class Env(BaseSettings):
     SUPABASE_URL: str
     SUPABASE_KEY: str
     SUPABASE_STORAGE_BUCKET: str
+    ONESIGNAL_APP_ID: str
+    ONESIGNAL_API_KEY: str
 
     model_config = SettingsConfigDict(
         env_file='.env',
