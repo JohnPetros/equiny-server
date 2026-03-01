@@ -4,13 +4,13 @@ from unittest.mock import Mock, create_autospec
 from equiny.core.matching.domain.errors.swipe_already_registered_error import (
     SwipeAlreadyRegisteredError,
 )
+from equiny.core.matching.domain.events.match_created_event import MatchCreatedEvent
 from equiny.core.matching.domain.structures.swipe_decision import SwipeDecisionValue
 from equiny.core.matching.interfaces import SwipesRepository, MatchesRepository
 from equiny.core.matching.use_cases.swipe_horse_use_case import SwipeHorseUseCase
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.core.shared.interfaces.broker import Broker
 from tests.fakers.matching.structures.swipe_faker import SwipeFaker
-from tests.fakers.profiling.structures.horse_match_faker import HorseMatchFaker
 from tests.fakers.shared.structures.id_faker import IdFaker
 
 
@@ -59,10 +59,6 @@ class TestSwipeHorseUseCase:
             None,
             reverse_swipe,
         ]
-        self.horses_repository_mock.find_horse_match_by_horses.return_value = (
-            HorseMatchFaker.fake()
-        )
-
         swipe_dto = SwipeFaker.fake_dto(
             from_horse_id=from_horse_id,
             to_horse_id=to_horse_id,
@@ -76,8 +72,12 @@ class TestSwipeHorseUseCase:
         assert captured_match.horse_a_id.value == from_horse_id
         assert captured_match.horse_b_id.value == to_horse_id
         self.swipes_repository_mock.add.assert_called_once()
-        assert self.horses_repository_mock.find_horse_match_by_horses.call_count == 2
-        self.broker_mock.publish.assert_called()
+        self.horses_repository_mock.find_horse_match_by_horses.assert_not_called()
+        self.broker_mock.publish.assert_called_once()
+        published_event = self.broker_mock.publish.call_args[0][0]
+        assert isinstance(published_event, MatchCreatedEvent)
+        assert published_event.payload.horse_a_id == from_horse_id
+        assert published_event.payload.horse_b_id == to_horse_id
 
     def test_should_not_create_match_when_reverse_swipe_is_dislike(self) -> None:
         from_horse_id = IdFaker.fake().value

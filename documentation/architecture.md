@@ -172,14 +172,15 @@ Responsável pela comunicação assíncrona e em tempo real baseada em eventos.
 Quando um swipe gera match, ambos os owners são notificados em tempo real:
 
 1.  **Swipe:** `POST /matching/swipes/` → `SwipeHorseController`.
-2.  **Use Case:** `SwipeHorseUseCase` detecta match via `swipe.verify_match(reverse_swipe)`.
-3.  **Notificação:** Compõe e executa `NotifyHorseMatchUseCase(horses_repo, broker)`:
-    -   Busca `HorseMatch` enriquecido para cada lado via `HorsesRepository.find_horse_match_by_horses`.
-    -   Publica dois `HorseMatchNotifiedEvent` (um por owner) via `broker.publish()`.
-4.  **Broker:** `RedisMatchingBroker.publish()` extrai `owner_id` do evento e chama `asyncio.create_task(redis_pubsub.publish_for_socket(...))`.
-5.  **Redis:** Mensagem publicada no canal `equiny:socket:{owner_id}`.
-6.  **Entrega:** `RedisPubSub.reader()` recebe, verifica `handler == 'socket'`, e chama `ws.emit(socket_key=owner_id, event=...)`.
-7.  **Cliente:** Recebe evento `profiling/horse.match.notified` via WebSocket com `HorseMatchDto` perspectivado para o seu lado do match.
+2.  **Use Case (`core/matching`):** `SwipeHorseUseCase` detecta match via `swipe.verify_match(reverse_swipe)` e publica `MatchCreatedEvent` via `Broker`.
+3.  **Job assíncrono (Inngest):** `NotifyHorseMatchJob` escuta `MatchCreatedEvent` e executa `NotifyHorseMatchUseCase(horses_repo, owners_repo, broker)`.
+4.  **Notificação de domínio (`core/profiling`):** `NotifyHorseMatchUseCase` busca `HorseMatch` dos dois lados e publica dois `HorseMatchNotifiedEvent` (um por owner destinatário).
+5.  **Broker Redis:** `RedisProfilingBroker.publish()` faz fan-out para:
+    -   socket (`publish_for_socket`) para tempo real;
+    -   job (`publish_for_job`) para push notification.
+6.  **Redis:** mensagens publicadas em `equiny:socket:{owner_id}` e `equiny:job:{event_name}`.
+7.  **Entrega:** `RedisPubSub.reader()` despacha `handler == 'socket'` para `ws.emit(...)` e `handler == 'job'` para jobs internos (ex: envio de push de match).
+8.  **Cliente:** recebe evento `profiling/horse.match.notified` via WebSocket com `HorseMatchDto` perspectivado para o seu lado do match.
 
 > Se o owner não estiver conectado no momento, a notificação é perdida (sem fila de entrega garantida).
 

@@ -1,4 +1,3 @@
-
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
 from equiny.core.shared.interfaces.cache_provider import CacheProvider
 from equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider

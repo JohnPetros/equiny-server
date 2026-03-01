@@ -2,13 +2,11 @@ from equiny.core.matching.domain.structures.dtos.swipe_dto import SwipeDto
 from equiny.core.matching.domain.structures.swipe import Swipe
 from equiny.core.matching.interfaces import SwipesRepository, MatchesRepository
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
-from equiny.core.profiling.use_cases.notify_horse_match_use_case import (
-    NotifyHorseMatchUseCase,
-)
 from equiny.core.shared.interfaces.broker import Broker
 from equiny.core.matching.domain.errors.swipe_already_registered_error import (
     SwipeAlreadyRegisteredError,
 )
+from equiny.core.matching.domain.events.match_created_event import MatchCreatedEvent
 
 
 class SwipeHorseUseCase:
@@ -40,9 +38,12 @@ class SwipeHorseUseCase:
             match = swipe.verify_match(reverse_swipe)
             if match is not None:
                 self._matches_repository.add(match)
-                NotifyHorseMatchUseCase(self._horses_repository, self._broker).execute(
-                    match.horse_a_id.value,
-                    match.horse_b_id.value,
+                self._broker.publish(
+                    MatchCreatedEvent(
+                        match.horse_a_id.value,
+                        match.horse_b_id.value,
+                        match.created_at.value,
+                    )
                 )
                 swipe = swipe.become_match()
 

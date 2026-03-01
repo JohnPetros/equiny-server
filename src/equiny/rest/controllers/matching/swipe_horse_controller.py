@@ -30,7 +30,7 @@ class SwipeHorseController:
                 DatabasePipe.get_matches_repository
             ),
             horses_repo: HorsesRepository = Depends(DatabasePipe.get_horses_repository),
-            broker: Broker = Depends(PubSubPipe.get_redis_matching_broker),
+            broker: Broker = Depends(PubSubPipe.get_broker_from_request),
         ) -> SwipeDto:
             use_case = SwipeHorseUseCase(swipes_repo, matches_repo, horses_repo, broker)
             return use_case.execute(body.to_dto())
