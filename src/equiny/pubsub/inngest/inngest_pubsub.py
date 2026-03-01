@@ -4,6 +4,10 @@ from inngest import Inngest, fast_api
 from fastapi import FastAPI
 
 from equiny.constants import Env
+from equiny.pubsub.inngest.jobs.notification import (
+    ResendEmailVerificationJob,
+    SendEmailVerificationJob,
+)
 from equiny.pubsub.inngest.jobs.profiling import (
     CreateOwnerJob,
     NotifyHorseMatchJob,
@@ -25,6 +29,7 @@ class InngestPubSub:
             inngest,
             functions=[
                 *InngestPubSub.register_profiling_jobs(inngest, app),
+                *InngestPubSub.register_notification_jobs(inngest),
                 *InngestPubSub.register_storage_jobs(inngest),
             ],
         )
@@ -42,4 +47,11 @@ class InngestPubSub:
     def register_storage_jobs(inngest: Inngest):
         return [
             RemoveFilesJob.handle(inngest),
+        ]
+
+    @staticmethod
+    def register_notification_jobs(inngest: Inngest):
+        return [
+            SendEmailVerificationJob.handle(inngest),
+            ResendEmailVerificationJob.handle(inngest),
         ]

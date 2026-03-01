@@ -1,3 +1,4 @@
+import asyncio
 from pydantic import BaseModel
 from inngest import Inngest, Context, TriggerEvent
 
@@ -7,12 +8,14 @@ from equiny.core.profiling.use_cases import CreateOwnerUseCase
 from equiny.validation.shared import NameSchema, IdSchema, EmailSchema
 from equiny.database.sqlalchemy.repositories.profiling import SqlalchemyOwnersRepository
 from equiny.database.sqlalchemy import Sqlalchemy
+from equiny.pubsub.inngest.inngest_broker import InngestBroker
 
 
 class PayloadSchema(BaseModel):
     owner_name: NameSchema
     account_email: EmailSchema
     account_id: IdSchema
+    account_email_verification_token: str
 
 
 class CreateOwnerJob:
@@ -26,18 +29,21 @@ class CreateOwnerJob:
             payload = PayloadSchema.model_validate(context.event.data)
             await context.step.run(
                 'Create owner',
-                lambda: CreateOwnerJob.create_owner(payload),
+                lambda: CreateOwnerJob.create_owner(payload, inngest),
             )
 
         return _
 
     @staticmethod
-    async def create_owner(payload: PayloadSchema) -> None:
-        with Sqlalchemy.session() as sqlalchemy:
-            repository = SqlalchemyOwnersRepository(sqlalchemy)
-            use_case = CreateOwnerUseCase(repository)
+    async def create_owner(payload: PayloadSchema, inngest: Inngest) -> None:
+        with Sqlalchemy.session() as sqlalchemy_session:
+            repository = SqlalchemyOwnersRepository(sqlalchemy_session)
+            broker = InngestBroker(inngest)
+            use_case = CreateOwnerUseCase(repository, broker)
+            await asyncio.sleep(3)
             use_case.execute(
-                account_id=payload.account_id,
                 owner_name=payload.owner_name,
                 owner_email=payload.account_email,
+                owner_email_verification_token=payload.account_email_verification_token,
+                account_id=payload.account_id,
             )
