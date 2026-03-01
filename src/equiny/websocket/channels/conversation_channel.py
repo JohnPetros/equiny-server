@@ -20,6 +20,13 @@ from equiny.validation.shared.id_schema import IdSchema
 from equiny.validation.shared.schema import Schema
 
 
+class _PayloadSchema(Schema):
+    message_content: str
+    chat_id: IdSchema
+    sender_id: IdSchema
+    attachments: list[Any] = Field(default_factory=list)
+
+
 class ConversationChannel:
     def __init__(
         self,
@@ -42,19 +49,7 @@ class ConversationChannel:
                 raise AppError('WebSocket Error', f'Event {event_name} not supported')
 
     def _on_message_sent(self, event_payload: Any) -> None:
-        class AttachmentSchema(Schema):
-            key: str
-            name: str
-            kind: str
-            size: float
-
-        class PayloadSchema(Schema):
-            message_content: str
-            chat_id: IdSchema
-            sender_id: IdSchema
-            attachments: list[AttachmentSchema] = Field(default_factory=list)
-
-        payload = PayloadSchema.model_validate(event_payload)
+        payload = _PayloadSchema.model_validate(event_payload)
 
         use_case = SendMessageUseCase(
             self._chats_repository,
@@ -66,10 +61,10 @@ class ConversationChannel:
                 sender_id=payload.sender_id,
                 attachments=[
                     AttachmentDto(
-                        key=attachment.key,
-                        name=attachment.name,
-                        kind=attachment.kind,
-                        size=attachment.size,
+                        key=str(attachment['key']),
+                        name=str(attachment['name']),
+                        kind=str(attachment['kind']),
+                        size=float(attachment['size']),
                     )
                     for attachment in payload.attachments
                 ],
