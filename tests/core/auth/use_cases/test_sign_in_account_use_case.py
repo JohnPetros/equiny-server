@@ -10,6 +10,7 @@ from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
 from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
 from equiny.core.auth.interfaces.repositories import AccountsRepository
 from equiny.core.auth.use_cases.sign_in_account_use_case import SignInAccountUseCase
+from equiny.core.shared.domain.structures.email import Email
 
 
 class TestSignInAccountUseCase:
@@ -32,6 +33,7 @@ class TestSignInAccountUseCase:
                 id='01ARZ3NDEKTSV4RRFFQ69G5FAV',
                 email='user@example.com',
                 password='hashed-password',
+                is_verified=False,
             )
         )
         self.repository_mock.find_by_email.return_value = account
@@ -47,7 +49,9 @@ class TestSignInAccountUseCase:
             email='user@example.com', password='plain-password'
         )
 
-        self.repository_mock.find_by_email.assert_called_once_with('user@example.com')
+        self.repository_mock.find_by_email.assert_called_once_with(
+            Email.create('user@example.com')
+        )
         self.hash_provider_mock.verify.assert_called_once_with(
             'plain-password', 'hashed-password'
         )
@@ -65,7 +69,9 @@ class TestSignInAccountUseCase:
         with pytest.raises(InvalidCredentialsError):
             self.use_case.execute(email='user@example.com', password='wrong-password')
 
-        self.repository_mock.find_by_email.assert_called_once_with('user@example.com')
+        self.repository_mock.find_by_email.assert_called_once_with(
+            Email.create('user@example.com')
+        )
         self.hash_provider_mock.verify.assert_called_once()
         self.jwt_provider_mock.encode.assert_not_called()
 
@@ -80,7 +86,7 @@ class TestSignInAccountUseCase:
             )
 
         self.repository_mock.find_by_email.assert_called_once_with(
-            'unknown@example.com'
+            Email.create('unknown@example.com')
         )
         self.hash_provider_mock.verify.assert_not_called()
         self.jwt_provider_mock.encode.assert_not_called()

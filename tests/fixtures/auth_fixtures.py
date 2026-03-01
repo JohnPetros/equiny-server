@@ -5,5 +5,5 @@ from equiny.providers.jwt import JoseJwtProvider
 
 @pytest.fixture
 def auth_headers() -> dict[str, str]:
-    token = JoseJwtProvider().encode('test-user')
+    token = JoseJwtProvider().encode('test-user').access_token
     return {'Authorization': f'Bearer {token}'}

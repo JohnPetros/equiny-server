@@ -6,16 +6,20 @@ from equiny.core.auth.domain.errors.email_already_in_use_error import (
     EmailAlreadyInUseError,
 )
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
-from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
+from equiny.core.auth.interfaces.providers.email_verification_provider import (
+    EmailVerificationProvider,
+)
 from equiny.core.auth.interfaces.repositories import AccountsRepository
 from equiny.core.auth.use_cases.sign_up_account_use_case import SignUpAccountUseCase
 from equiny.core.shared.domain.errors import ValidationError
+from equiny.core.shared.domain.structures.email import Email
+from equiny.core.shared.domain.structures.text import Text
 from equiny.core.shared.interfaces import Broker
 
 
 class TestSignUpAccountUseCase:
     hash_provider_mock: Mock
-    jwt_provider_mock: Mock
+    email_verification_provider_mock: Mock
     repository_mock: Mock
     broker_mock: Mock
     use_case: SignUpAccountUseCase
@@ -23,16 +27,22 @@ class TestSignUpAccountUseCase:
     @pytest.fixture(autouse=True)
     def setup(self) -> None:
         self.hash_provider_mock = create_autospec(HashProvider, instance=True)
-        self.jwt_provider_mock = create_autospec(JwtProvider, instance=True)
+        self.email_verification_provider_mock = create_autospec(
+            EmailVerificationProvider, instance=True
+        )
         self.repository_mock = create_autospec(AccountsRepository, instance=True)
         self.broker_mock = create_autospec(Broker, instance=True)
 
         self.hash_provider_mock.generate.return_value = 'hashed-password'
         self.repository_mock.find_by_email.return_value = None
+        self.email_verification_provider_mock.generate_verification_token.return_value = Text.create(
+            'verification-token'
+        )
 
         self.use_case = SignUpAccountUseCase(
             hash_provider=self.hash_provider_mock,
             repository=self.repository_mock,
+            email_verification_provider=self.email_verification_provider_mock,
             broker=self.broker_mock,
         )
 
@@ -44,8 +54,13 @@ class TestSignUpAccountUseCase:
         )
 
         self.hash_provider_mock.generate.assert_called_once_with('plain-password')
-        self.repository_mock.find_by_email.assert_called_once_with('owner@example.com')
+        self.repository_mock.find_by_email.assert_called_once_with(
+            Email.create('owner@example.com')
+        )
         self.repository_mock.add.assert_called_once()
+        self.email_verification_provider_mock.generate_verification_token.assert_called_once_with(
+            Email.create('owner@example.com')
+        )
         self.broker_mock.publish.assert_called_once()
 
         captured_account = self.repository_mock.add.call_args[0][0]
@@ -54,13 +69,14 @@ class TestSignUpAccountUseCase:
         assert result.id == captured_account.id.value
         assert result.email == 'owner@example.com'
         assert not hasattr(result, 'password')
+        assert result.is_verified is False
         assert published_event.name == 'auth/account.created'
         assert published_event.payload.account_id == result.id
         assert published_event.payload.owner_name == 'John Owner'
 
         self.repository_mock.assert_has_calls(
             [
-                call.find_by_email('owner@example.com'),
+                call.find_by_email(Email.create('owner@example.com')),
                 call.add(captured_account),
             ]
         )
@@ -73,9 +89,10 @@ class TestSignUpAccountUseCase:
                 owner_name='John Owner',
             )
 
-        self.hash_provider_mock.generate.assert_called_once_with('plain-password')
-        self.repository_mock.find_by_email.assert_called_once_with('invalid-email')
+        self.hash_provider_mock.generate.assert_not_called()
+        self.repository_mock.find_by_email.assert_not_called()
         self.repository_mock.add.assert_not_called()
+        self.email_verification_provider_mock.generate_verification_token.assert_not_called()
         self.broker_mock.publish.assert_not_called()
 
     def test_should_raise_email_already_in_use_error_when_email_exists(self) -> None:
@@ -90,7 +107,8 @@ class TestSignUpAccountUseCase:
 
         assert exc_info.value.message == 'Email existing@example.com já está em uso'
         self.repository_mock.find_by_email.assert_called_once_with(
-            'existing@example.com'
+            Email.create('existing@example.com')
         )
         self.repository_mock.add.assert_not_called()
+        self.email_verification_provider_mock.generate_verification_token.assert_not_called()
         self.broker_mock.publish.assert_not_called()

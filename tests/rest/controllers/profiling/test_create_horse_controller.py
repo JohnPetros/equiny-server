@@ -27,9 +27,7 @@ class TestCreateHorseController:
 
         accounts_repo = SqlalchemyAccountsRepository(sqlalchemy_session)
         account = Account.create(
-            AccountDto(
-                email=account_email, password=password_hash
-            )
+            AccountDto(email=account_email, password=password_hash)
         )
         accounts_repo.add(account)
         sqlalchemy_session.flush()
@@ -46,7 +44,7 @@ class TestCreateHorseController:
         owners_repo.add(owner)
         sqlalchemy_session.commit()
 
-        access_token = JoseJwtProvider().encode(account.id.value)
+        access_token = JoseJwtProvider().encode(account.id.value).access_token
 
         return {'Authorization': f'Bearer {access_token}'}
 
