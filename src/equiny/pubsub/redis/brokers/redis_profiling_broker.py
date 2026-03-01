@@ -24,11 +24,12 @@ class RedisProfilingBroker(RedisBroker):
     ) -> None:
         create_task(
             self.pubsub.publish_for_socket(
-                socket_key=event.payload.horse_match.owner_id,
+                socket_key=event.payload.owner_id,
                 action='emit',
                 event=event,
             )
         )
+        create_task(self.pubsub.publish_for_job(event))
 
     def _publish_owner_presence_registered_event(
         self, event: OwnerPresenceRegisteredEvent
