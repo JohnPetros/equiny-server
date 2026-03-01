@@ -42,6 +42,11 @@ class SupabaseFileStorageProvider(FileStorageProvider):
             upload_urls.append(self.generate_upload_url(file_path=file_path))
         return upload_urls
 
+    def get_file_url(self, file_path: Text) -> Text:
+        return Text.create(
+            self._supabase.storage.from_(self._BUCKET).get_public_url(file_path.value)
+        )
+
     def upload(self, file: File, upload_url: UploadUrl) -> Text:
         path = self._normalize_file_path(upload_url.file_path.value)
 
