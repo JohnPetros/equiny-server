@@ -2,11 +2,13 @@ from equiny.core.auth.domain.entities.account import Account
 from equiny.core.auth.domain.errors.invalid_credentials_error import (
     InvalidCredentialsError,
 )
+from equiny.core.auth.domain.structures.dtos.jwt_dto import JwtDto
 from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
 from equiny.core.auth.interfaces.repositories.accounts_repository import (
     AccountsRepository,
 )
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
+from equiny.core.shared.domain.structures.email import Email
 
 
 class SignInAccountUseCase:
@@ -20,8 +22,8 @@ class SignInAccountUseCase:
         self.hash_provider = hash_provider
         self.jwt_provider = jwt_provider
 
-    def execute(self, email: str, password: str) -> str:
-        account = self.find_account_by_email(email)
+    def execute(self, email: str, password: str) -> JwtDto:
+        account = self.find_account_by_email(Email.create(email))
         is_valid_password = self.hash_provider.verify(password, account.password.value)
 
         if not is_valid_password:
@@ -29,7 +31,7 @@ class SignInAccountUseCase:
 
         return self.jwt_provider.encode(account.id.value)
 
-    def find_account_by_email(self, email: str) -> Account:
+    def find_account_by_email(self, email: Email) -> Account:
         account = self.repository.find_by_email(email)
         if account is None:
             raise InvalidCredentialsError
