@@ -8,7 +8,7 @@ from typing import Any, Literal, cast
 from redis.asyncio import Redis
 from redis.asyncio.client import PubSub
 
-from equiny.core.matching.domain.events.match_created_event import MatchCreatedEvent
+from equiny.core.profiling.domain.events import HorseMatchNotifiedEvent
 from equiny.core.shared.domain.abstracts.event import Event
 from equiny.constants import Env
 from equiny.pubsub.redis.jobs.notification import SendMatchNotificationJob
@@ -93,7 +93,7 @@ class RedisPubSub:
         event_name = event.get('name')
         event_payload = event.get('payload')
 
-        if event_name.startswith('notification'):
+        if event_name == HorseMatchNotifiedEvent.NAME:
             self._handle_notification_jobs(event_name, event_payload)
             return
 
@@ -101,7 +101,7 @@ class RedisPubSub:
         self, event_name: str, event_payload: dict[str, Any]
     ) -> None:
         match event_name:
-            case MatchCreatedEvent.NAME:
+            case HorseMatchNotifiedEvent.NAME:
                 SendMatchNotificationJob.handle(event_payload)
             case _:
                 pass

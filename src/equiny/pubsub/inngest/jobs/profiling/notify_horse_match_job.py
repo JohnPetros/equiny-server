@@ -12,6 +12,7 @@ from equiny.pubsub.redis.brokers.redis_profiling_broker import RedisProfilingBro
 from equiny.validation.shared import IdSchema
 from equiny.database.sqlalchemy.repositories.profiling import (
     SqlalchemyHorsesRepository,
+    SqlalchemyOwnersRepository,
 )
 from equiny.database.sqlalchemy import Sqlalchemy
 
@@ -40,10 +41,13 @@ class NotifyHorseMatchJob:
 
     @staticmethod
     async def notify_horse_match(app: FastAPI, payload: _PayloadSchema) -> None:
-        with Sqlalchemy.session() as sqlalchemy:
-            horses_repository = SqlalchemyHorsesRepository(sqlalchemy)
+        with Sqlalchemy.session() as sqlalchemy_session:
+            horses_repository = SqlalchemyHorsesRepository(sqlalchemy_session)
+            owners_repository = SqlalchemyOwnersRepository(sqlalchemy_session)
             broker = RedisProfilingBroker(app.state.redis_pubsub)
-            use_case = NotifyHorseMatchUseCase(horses_repository, broker)
+            use_case = NotifyHorseMatchUseCase(
+                horses_repository, owners_repository, broker
+            )
             use_case.execute(
                 horse_a_id=payload.horse_a_id,
                 horse_b_id=payload.horse_b_id,
