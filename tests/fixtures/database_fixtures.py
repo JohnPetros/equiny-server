@@ -6,12 +6,6 @@ from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from equiny.database.sqlalchemy.models.model import Model
-from equiny.database.sqlalchemy.models.matching.match_model import MatchModel
-from equiny.database.sqlalchemy.models.matching.swipe_model import SwipeModel
-from equiny.database.sqlalchemy.models.profiling.horse_model import HorseModel
-from equiny.database.sqlalchemy.models.profiling.horse_image_model import HorseImageModel
-from equiny.database.sqlalchemy.models.profiling.owner_model import OwnerModel
-from equiny.database.sqlalchemy.models.auth.account_model import AccountModel
 
 
 @pytest.fixture(scope='session')
