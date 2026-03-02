@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PYTHON_VERSION: "3.13"
+  PYTHON_VERSION: "3.12"
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
   GAR_LOCATION: ${{ secrets.GAR_LOCATION }}
@@ -51,6 +51,15 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --dev --frozen
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Type check
+        run: uv run pyright
+
+      - name: Tests
+        run: uv run pytest
 
   deploy:
     name: Build and deploy to Cloud Run
@@ -101,7 +110,6 @@ jobs:
 
           secrets: |-
             HOST=host:latest
-            PORT=port:latest
             DATABASE_URL=database-url:latest
             REDIS_URL=redis-url:latest
             INNGEST_SIGNING_KEY=inngest-signing-key:latest
