@@ -53,7 +53,7 @@ args = [{ name = "message", positional = true }]
 
 [tool.poe.tasks."db:upgrade"]
 cmd = "alembic upgrade ${target}"
-args = [{ name = "target", positional = true, default = "head" }]
+args = [{ name = "target", positional = true, default = "heads" }]
 
 [tool.poe.tasks."db:downgrade"]
 cmd = "alembic downgrade ${target}"
