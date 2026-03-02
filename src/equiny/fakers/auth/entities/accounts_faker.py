@@ -21,7 +21,7 @@ class AccountsFaker:
         account_id: str | None = None,
         email: str | None = None,
         password: str | None = None,
-        is_verified: bool = False,
+        is_verified: bool = True,
     ) -> AccountDto:
         return AccountDto(
             id=account_id or IdFaker.fake().value,
