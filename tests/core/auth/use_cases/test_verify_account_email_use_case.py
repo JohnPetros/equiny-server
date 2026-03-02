@@ -42,7 +42,7 @@ class TestVerifyAccountEmailUseCase:
             AccountDto(
                 id='01ARZ3NDEKTSV4RRFFQ69G5FAV',
                 email='user@example.com',
-                password='hashed-password',
+                password='hashed-password',  # noqa: S106
                 is_verified=False,
             )
         )
@@ -54,7 +54,7 @@ class TestVerifyAccountEmailUseCase:
         )
         self.repository_mock.find_by_email.return_value = account
 
-        self.use_case.execute(verification_token='valid-token')
+        self.use_case.execute(verification_token='valid-token')  # noqa: S106
 
         self.email_verification_provider_mock.verify_verification_token.assert_called_once_with(
             Text.create('valid-token')
@@ -71,7 +71,7 @@ class TestVerifyAccountEmailUseCase:
             AccountDto(
                 id='01ARZ3NDEKTSV4RRFFQ69G5FAV',
                 email='user@example.com',
-                password='hashed-password',
+                password='hashed-password',  # noqa: S106
                 is_verified=True,
             )
         )
@@ -83,7 +83,7 @@ class TestVerifyAccountEmailUseCase:
         )
         self.repository_mock.find_by_email.return_value = account
 
-        self.use_case.execute(verification_token='valid-token')
+        self.use_case.execute(verification_token='valid-token')  # noqa: S106
 
         self.email_verification_provider_mock.verify_verification_token.assert_called_once()
         self.repository_mock.find_by_email.assert_called_once()
@@ -97,7 +97,7 @@ class TestVerifyAccountEmailUseCase:
         )
 
         with pytest.raises(InvalidEmailVerificationTokenError):
-            self.use_case.execute(verification_token='invalid-token')
+            self.use_case.execute(verification_token='invalid-token')  # noqa: S106
 
         self.email_verification_provider_mock.verify_verification_token.assert_called_once_with(
             Text.create('invalid-token')
@@ -118,7 +118,7 @@ class TestVerifyAccountEmailUseCase:
         self.repository_mock.find_by_email.return_value = None
 
         with pytest.raises(AccountNotFoundError):
-            self.use_case.execute(verification_token='valid-token')
+            self.use_case.execute(verification_token='valid-token')  # noqa: S106
 
         self.email_verification_provider_mock.verify_verification_token.assert_called_once()
         self.email_verification_provider_mock.decode_email_from_token.assert_called_once()

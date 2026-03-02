@@ -41,14 +41,14 @@ class TestGenerateUploadUrlsForAttachmentsUseCase:
             UploadUrl.create(
                 UploadUrlDto(
                     url='https://storage.local/upload-1',
-                    token='token-1',
+                    token='token-1',  # noqa: S106
                     file_path='/conversation/chats/chat-1/messages/message-1/attachments/attachment-1/images/image-1.jpg',
                 )
             ),
             UploadUrl.create(
                 UploadUrlDto(
                     url='https://storage.local/upload-2',
-                    token='token-2',
+                    token='token-2',  # noqa: S106
                     file_path='/conversation/chats/chat-2/messages/message-2/attachments/attachment-2/videos/video-1.mp4',
                 )
             ),

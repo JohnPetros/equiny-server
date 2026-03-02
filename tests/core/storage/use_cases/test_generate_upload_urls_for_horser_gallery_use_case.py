@@ -27,14 +27,14 @@ class TestGenerateUploadUrlsForHorseGalleryUseCase:
             UploadUrl.create(
                 UploadUrlDto(
                     url='https://storage.local/upload-1',
-                    token='token-1',
+                    token='token-1',  # noqa: S106
                     file_path='/profiling/horses/horse-1/gallery/gallery-1.jpg',
                 )
             ),
             UploadUrl.create(
                 UploadUrlDto(
                     url='https://storage.local/upload-2',
-                    token='token-2',
+                    token='token-2',  # noqa: S106
                     file_path='/profiling/horses/horse-1/gallery/gallery-2.png',
                 )
             ),

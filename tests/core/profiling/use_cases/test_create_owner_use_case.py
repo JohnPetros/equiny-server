@@ -29,7 +29,7 @@ class TestCreateOwnerUseCase:
         result = self.use_case.execute(
             owner_name='John Owner',
             owner_email='john.owner@example.com',
-            owner_email_verification_token='verification-token',
+            owner_email_verification_token='verification-token',  # noqa: S106
             account_id=account_id,
         )
 
@@ -51,7 +51,7 @@ class TestCreateOwnerUseCase:
             self.use_case.execute(
                 owner_name='John Owner',
                 owner_email='invalid-email',
-                owner_email_verification_token='verification-token',
+                owner_email_verification_token='verification-token',  # noqa: S106
                 account_id=account_id,
             )
 

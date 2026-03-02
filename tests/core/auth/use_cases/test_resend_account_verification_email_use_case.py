@@ -48,7 +48,7 @@ class TestResendAccountVerificationEmailUseCase:
             AccountDto(
                 id='01ARZ3NDEKTSV4RRFFQ69G5FAV',
                 email='user@example.com',
-                password='hashed-password',
+                password='hashed-password',  # noqa: S106
                 is_verified=False,
             )
         )
@@ -69,7 +69,7 @@ class TestResendAccountVerificationEmailUseCase:
         call_args = self.broker_mock.publish.call_args
         event = call_args[0][0]
         assert event.payload_data['account_email'] == 'user@example.com'
-        assert event.payload_data['email_verification_token'] == 'generated-token'
+        assert event.payload_data['email_verification_token'] == 'generated-token'  # noqa: S105
 
     def test_should_raise_account_not_found_error_when_account_does_not_exist(
         self,
@@ -92,7 +92,7 @@ class TestResendAccountVerificationEmailUseCase:
             AccountDto(
                 id='01ARZ3NDEKTSV4RRFFQ69G5FAV',
                 email='user@example.com',
-                password='hashed-password',
+                password='hashed-password',  # noqa: S106
                 is_verified=True,
             )
         )

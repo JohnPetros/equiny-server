@@ -65,7 +65,7 @@ class TestSwipeHorseUseCase:
             decision=SwipeDecisionValue.LIKE,
         )
 
-        result = self.use_case.execute(dto=swipe_dto)
+        self.use_case.execute(dto=swipe_dto)
 
         self.matches_repository_mock.add.assert_called_once()
         captured_match = self.matches_repository_mock.add.call_args[0][0]
@@ -98,7 +98,7 @@ class TestSwipeHorseUseCase:
             decision=SwipeDecisionValue.LIKE,
         )
 
-        result = self.use_case.execute(dto=swipe_dto)
+        self.use_case.execute(dto=swipe_dto)
 
         self.matches_repository_mock.add.assert_not_called()
         self.swipes_repository_mock.add.assert_called_once()
@@ -122,7 +122,7 @@ class TestSwipeHorseUseCase:
             decision=SwipeDecisionValue.DISLIKE,
         )
 
-        result = self.use_case.execute(dto=swipe_dto)
+        self.use_case.execute(dto=swipe_dto)
 
         self.matches_repository_mock.add.assert_not_called()
         self.swipes_repository_mock.add.assert_called_once()

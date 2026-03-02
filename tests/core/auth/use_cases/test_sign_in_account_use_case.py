@@ -32,7 +32,7 @@ class TestSignInAccountUseCase:
             AccountDto(
                 id='01ARZ3NDEKTSV4RRFFQ69G5FAV',
                 email='user@example.com',
-                password='hashed-password',
+                password='hashed-password',  # noqa: S106
                 is_verified=False,
             )
         )
@@ -46,7 +46,8 @@ class TestSignInAccountUseCase:
 
     def test_should_return_jwt_when_credentials_are_valid(self) -> None:
         result = self.use_case.execute(
-            email='user@example.com', password='plain-password'
+            email='user@example.com',
+            password='plain-password',  # noqa: S106
         )
 
         self.repository_mock.find_by_email.assert_called_once_with(
@@ -67,7 +68,7 @@ class TestSignInAccountUseCase:
         self.hash_provider_mock.verify.return_value = False
 
         with pytest.raises(InvalidCredentialsError):
-            self.use_case.execute(email='user@example.com', password='wrong-password')
+            self.use_case.execute(email='user@example.com', password='wrong-password')  # noqa: S106
 
         self.repository_mock.find_by_email.assert_called_once_with(
             Email.create('user@example.com')
@@ -82,7 +83,8 @@ class TestSignInAccountUseCase:
 
         with pytest.raises(InvalidCredentialsError):
             self.use_case.execute(
-                email='unknown@example.com', password='plain-password'
+                email='unknown@example.com',
+                password='plain-password',  # noqa: S106
             )
 
         self.repository_mock.find_by_email.assert_called_once_with(

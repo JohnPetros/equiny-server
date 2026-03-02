@@ -24,7 +24,7 @@ class TestSendAccountVerificationEmailUseCase:
     def test_should_send_verification_email_when_called(self) -> None:
         self.use_case.execute(
             account_email='user@example.com',
-            email_verification_token='verification-token-123',
+            email_verification_token='verification-token-123',  # noqa: S106
         )
 
         self.email_sender_provider_mock.send_account_verification_email.assert_called_once_with(

@@ -5,7 +5,7 @@ class TestSignInAccountController:
     def test_should_sign_in_and_return_access_token_when_body_is_valid(
         self, client: TestClient
     ) -> None:
-        response1 = client.post(
+        _ = client.post(
             '/auth/sign-up',
             json={
                 'owner_name': 'John Owner',

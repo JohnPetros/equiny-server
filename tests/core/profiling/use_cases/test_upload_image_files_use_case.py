@@ -30,7 +30,7 @@ class TestUploadImageFilesUseCase:
         upload_url = UploadUrl.create(
             UploadUrlDto(
                 url='https://example.com/upload',
-                token='token',
+                token='token',  # noqa: S106
                 file_path='/images/key-1',
             )
         )

@@ -26,7 +26,7 @@ class TestGenerateUploadUrlForOwnerAvatarUseCase:
         upload_url = UploadUrl.create(
             UploadUrlDto(
                 url='https://storage.local/avatar-upload',
-                token='token-1',
+                token='token-1',  # noqa: S106
                 file_path='/profiling/owners/owner-1/avatar/randomized-avatar.jpg',
             )
         )
