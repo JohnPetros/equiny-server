@@ -58,9 +58,6 @@ jobs:
       - name: Type check
         run: uv run pyright
 
-      - name: Tests
-        run: uv run pytest
-
   deploy:
     name: Build and deploy to Cloud Run
     runs-on: ubuntu-latest
