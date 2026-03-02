@@ -2,7 +2,9 @@ from typing import Any
 from pydantic import BaseModel
 
 from equiny.core.notification.use_cases import SendHorseMatchPushNotificationUseCase
-from equiny.providers.notification import OnesignalPushNotificationProvider
+from equiny.providers.push_notification.onesignal import (
+    OnesignalPushNotificationProvider,
+)
 from equiny.providers.storage.supabase.supabase_file_storage_provider import (
     SupabaseFileStorageProvider,
 )

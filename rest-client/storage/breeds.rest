@@ -1,0 +1,6 @@
+@URL = {{BASE_URL}}/profiling/horses/breeds
+
+### Fetch all breeds
+GET {{URL}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}

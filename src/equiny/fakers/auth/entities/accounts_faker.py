@@ -21,11 +21,13 @@ class AccountsFaker:
         account_id: str | None = None,
         email: str | None = None,
         password: str | None = None,
+        is_verified: bool = False,
     ) -> AccountDto:
         return AccountDto(
             id=account_id or IdFaker.fake().value,
             email=email or AccountsFaker._faker.email(),
             password=password or AccountsFaker._faker.password(),
+            is_verified=is_verified,
         )
 
     @staticmethod

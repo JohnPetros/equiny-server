@@ -2,7 +2,10 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends
 
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
-from equiny.core.auth.domain.entities.dtos import SignUpResultDto
+from equiny.core.auth.interfaces.providers.email_verification_provider import (
+    EmailVerificationProvider,
+)
+from equiny.core.auth.domain.entities.dtos.sign_up_result_dto import SignUpResultDto
 from equiny.core.auth.interfaces.repositories.accounts_repository import (
     AccountsRepository,
 )
@@ -30,12 +33,16 @@ class SignUpAccountController:
                 DatabasePipe.get_accounts_repository
             ),
             hash_provider: HashProvider = Depends(ProvidersPipe.get_hash_provider),
+            email_verification_provider: EmailVerificationProvider = Depends(
+                ProvidersPipe.get_email_verification_provider
+            ),
             broker: Broker = Depends(PubSubPipe.get_broker_from_request),
         ) -> SignUpResultDto:
             use_case = SignUpAccountUseCase(
                 repository=repository,
-                hash_provider=hash_provider,
                 broker=broker,
+                hash_provider=hash_provider,
+                email_verification_provider=email_verification_provider,
             )
             return use_case.execute(
                 body.account_email,

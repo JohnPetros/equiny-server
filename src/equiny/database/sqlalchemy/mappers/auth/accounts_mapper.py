@@ -14,6 +14,7 @@ class AccountsMapper:
             id=account_model.id,
             email=account_model.email,
             password=account_model.password,
+            is_verified=account_model.is_verified,
         )
 
     @staticmethod
@@ -22,4 +23,5 @@ class AccountsMapper:
             id=account.id.value,
             email=account.email.value,
             password=account.password.value,
+            is_verified=account.is_verified.value,
         )

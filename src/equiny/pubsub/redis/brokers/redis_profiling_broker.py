@@ -6,18 +6,30 @@ from equiny.core.profiling.domain.events import (
     OwnerPresenceRegisteredEvent,
     OwnerPresenceUnregisteredEvent,
 )
+from equiny.core.profiling.domain.events.owner_created_event import OwnerCreatedEvent
 from equiny.core.shared.domain.abstracts.event import Event
 from equiny.pubsub.redis.brokers.redis_broker import RedisBroker
 
 
 class RedisProfilingBroker(RedisBroker):
     def publish(self, event: Event[Any]) -> None:
+        if isinstance(event, OwnerCreatedEvent):
+            self._publish_owner_created_event(event)
         if isinstance(event, OwnerPresenceRegisteredEvent):
             self._publish_owner_presence_registered_event(event)
         if isinstance(event, OwnerPresenceUnregisteredEvent):
             self._publish_owner_presence_unregistered_event(event)
         if isinstance(event, HorseMatchNotifiedEvent):
             self._publish_horse_match_notified_event(event)
+
+    def _publish_owner_created_event(self, event: OwnerCreatedEvent) -> None:
+        create_task(
+            self.pubsub.publish_for_socket(
+                socket_key=event.payload.owner_id,
+                action='emit',
+                event=event,
+            )
+        )
 
     def _publish_horse_match_notified_event(
         self, event: HorseMatchNotifiedEvent

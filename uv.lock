@@ -410,6 +410,8 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "httpx" },
     { name = "inngest" },
+    { name = "itsdangerous" },
+    { name = "mailtrap" },
     { name = "psycopg", extra = ["binary"] },
     { name = "psycopg2-binary" },
     { name = "pwdlib", extra = ["argon2"] },
@@ -421,6 +423,7 @@ dependencies = [
     { name = "python-jose", extra = ["cryptography"] },
     { name = "python-ulid" },
     { name = "redis" },
+    { name = "resend" },
     { name = "sqlalchemy" },
     { name = "supabase" },
     { name = "testcontainers" },
@@ -442,6 +445,8 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.7" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "inngest", specifier = ">=0.5.15" },
+    { name = "itsdangerous", specifier = ">=2.2.0" },
+    { name = "mailtrap", specifier = ">=2.4.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.11" },
     { name = "pwdlib", extras = ["argon2"], specifier = ">=0.3.0" },
@@ -453,6 +458,7 @@ requires-dist = [
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.5.0" },
     { name = "python-ulid" },
     { name = "redis", specifier = ">=6.4.0" },
+    { name = "resend", specifier = ">=2.23.0" },
     { name = "sqlalchemy", specifier = ">=2.0.46" },
     { name = "supabase", specifier = ">=2.28.0" },
     { name = "testcontainers", specifier = ">=4.14.1" },
@@ -771,6 +777,15 @@ wheels = [
 ]
 
 [[package]]
+name = "itsdangerous"
+version = "2.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9c/cb/8ac0172223afbccb63986cc25049b154ecfb5e85932587206f42317be31d/itsdangerous-2.2.0.tar.gz", hash = "sha256:e0050c0b7da1eea53ffaf149c0cfbb5c6e2e2b69c4bef22c81fa6eb73e5f6173", size = 54410, upload-time = "2024-04-16T21:28:15.614Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/04/96/92447566d16df59b2a776c0fb82dbc4d9e07cd95062562af01e408583fc4/itsdangerous-2.2.0-py3-none-any.whl", hash = "sha256:c6242fc49e35958c8b15141343aa660db5fc54d4f13a1db01a3f5891b98700ef", size = 16234, upload-time = "2024-04-16T21:28:14.499Z" },
+]
+
+[[package]]
 name = "jcs"
 version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -789,6 +804,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.6.tar.gz", hash = "sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d", size = 245115, upload-time = "2025-03-05T20:05:02.478Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl", hash = "sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67", size = 134899, upload-time = "2025-03-05T20:05:00.369Z" },
+]
+
+[[package]]
+name = "mailtrap"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/73/5c/0a67074bc819bfc8887bc165148c94a6c154e0ba536da7b4d2af6e011693/mailtrap-2.4.0.tar.gz", hash = "sha256:74c6a92befc1fea3ef8bcc79911d42e61c14d9b20ef435585c756693ad31808a", size = 24668, upload-time = "2025-12-04T17:06:12.83Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2d/45/d23889372946915be3d48c59fed65b782fc6db3c65807c3c8a9fbc5e8ba1/mailtrap-2.4.0-py3-none-any.whl", hash = "sha256:d4435bccb1225164fd99dd741d05cb1cf86ce518b16c4bd0baa8df79ecea87a3", size = 36034, upload-time = "2025-12-04T17:06:11.864Z" },
 ]
 
 [[package]]
@@ -1643,6 +1671,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c9/74/b3ff8e6c8446842c3f5c837e9c3dfcfe2018ea6ecef224c710c85ef728f4/requests-2.32.5.tar.gz", hash = "sha256:dbba0bac56e100853db0ea71b82b4dfd5fe2bf6d3754a8893c3af500cec7d7cf", size = 134517, upload-time = "2025-08-18T20:46:02.573Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1d235b70dc0b4e6e3/requests-2.32.5-py3-none-any.whl", hash = "sha256:2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6", size = 64738, upload-time = "2025-08-18T20:46:00.542Z" },
+]
+
+[[package]]
+name = "resend"
+version = "2.23.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/96/a3/20003e7d14604fef778bd30c69604df3560a657a95a5c29a9688610759b6/resend-2.23.0.tar.gz", hash = "sha256:df613827dcc40eb1c9de2e5ff600cd4081b89b206537dec8067af1a5016d23c7", size = 31416, upload-time = "2026-02-23T19:01:57.603Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e3/35/64df775b8cd95e89798fd7b1b7fcafa975b6b09f559c10c0650e65b33580/resend-2.23.0-py2.py3-none-any.whl", hash = "sha256:eca6d28a1ffd36c1fc489fa83cb6b511f384792c9f07465f7c92d96c8b4d5636", size = 52599, upload-time = "2026-02-23T19:01:55.962Z" },
 ]
 
 [[package]]

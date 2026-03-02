@@ -6,3 +6,4 @@ class AccountDto:
     id: str | None = None
     email: str
     password: str
+    is_verified: bool = False

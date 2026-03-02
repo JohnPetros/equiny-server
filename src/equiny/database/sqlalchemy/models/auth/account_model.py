@@ -14,6 +14,7 @@ class AccountModel(Model):
     id: Mapped[str] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(unique=True, index=True)
     password: Mapped[str]
+    is_verified: Mapped[bool] = mapped_column(default=False)
 
     owners: Mapped[list['OwnerModel']] = relationship(
         back_populates='account',

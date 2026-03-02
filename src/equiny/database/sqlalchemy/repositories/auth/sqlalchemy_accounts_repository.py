@@ -9,6 +9,8 @@ from equiny.database.sqlalchemy.models.auth.account_model import AccountModel
 from equiny.database.sqlalchemy.repositories.sqlalchemy_repository import (
     SqlalchemyRepository,
 )
+from equiny.core.shared.domain.structures.id import Id
+from equiny.core.shared.domain.structures.email import Email
 
 
 class SqlalchemyAccountsRepository(SqlalchemyRepository, AccountsRepository):
@@ -20,20 +22,32 @@ class SqlalchemyAccountsRepository(SqlalchemyRepository, AccountsRepository):
         account_models = [AccountsMapper.to_model(account) for account in accounts]
         self.sqlalchemy.add_all(account_models)
 
-    def find_by_email(self, email: str) -> Account | None:
+    def find_by_email(self, email: Email) -> Account | None:
         account_model = (
             self.sqlalchemy.query(AccountModel)
-            .filter(AccountModel.email == email)
+            .filter(AccountModel.email == email.value)
             .first()
         )
         if account_model is None:
             return None
         return AccountsMapper.to_entity(account_model)
 
-    def find_by_id(self, id: str) -> Account | None:
+    def find_by_id(self, id: Id) -> Account | None:
         account_model = (
-            self.sqlalchemy.query(AccountModel).filter(AccountModel.id == id).first()
+            self.sqlalchemy.query(AccountModel)
+            .filter(AccountModel.id == id.value)
+            .first()
         )
         if account_model is None:
             return None
         return AccountsMapper.to_entity(account_model)
+
+    def update(self, account: Account) -> None:
+        account_model = (
+            self.sqlalchemy.query(AccountModel)
+            .filter(AccountModel.id == account.id.value)
+            .first()
+        )
+        if account_model is None:
+            return
+        account_model.is_verified = account.is_verified.value

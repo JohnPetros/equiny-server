@@ -13,6 +13,10 @@ class Env(BaseSettings):
     SUPABASE_STORAGE_BUCKET: str
     ONESIGNAL_APP_ID: str
     ONESIGNAL_API_KEY: str
+    EMAIL_VERIFICATION_SECRET: str
+    EQUINY_SERVER_URL: str
+    RESEND_API_KEY: str
+    RESEND_SENDER_EMAIL: str
 
     model_config = SettingsConfigDict(
         env_file='.env',
