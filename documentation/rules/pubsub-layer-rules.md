@@ -85,7 +85,7 @@ from inngest import Inngest, Context, TriggerEvent
 from equiny.core.auth.domain.events import AccountCreatedEvent
 
 
-class PayloadSchema(BaseModel):
+class _PayloadSchema(BaseModel):
     ...
 
 
@@ -97,7 +97,7 @@ class CreateOwnerJob:
             trigger=TriggerEvent(event=AccountCreatedEvent.name),
         )
         async def _(context: Context) -> None:
-            payload = PayloadSchema.model_validate(context.event.data)
+            payload = _PayloadSchema.model_validate(context.event.data)
             await context.step.run('Create owner', lambda: CreateOwnerJob.create_owner(payload))
 
         return _
