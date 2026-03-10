@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock, create_autospec
+from unittest.mock import MagicMock, create_autospec
 
 from equiny.core.conversation.domain.entities.chat import Chat
 from equiny.core.conversation.domain.entities.dtos.chat_dto import ChatDto
@@ -14,7 +14,7 @@ from tests.fakers.shared.structures.id_faker import IdFaker
 
 
 class TestGetChatUseCase:
-    repository_mock: Mock
+    repository_mock: MagicMock
     use_case: GetChatUseCase
 
     @pytest.fixture(autouse=True)
