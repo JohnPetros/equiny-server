@@ -30,7 +30,7 @@ class Sqlalchemy:
 
     @staticmethod
     @contextmanager
-    def session() -> Generator[Session]:
+    def session() -> Generator[Session, None, None]:
         session = Sqlalchemy.get_session()
         try:
             yield session
