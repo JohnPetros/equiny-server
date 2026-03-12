@@ -1,20 +1,21 @@
 @URL = http://localhost:8080/auth
 
+### Sign In
 POST {{URL}}/sign-in
 Content-Type: application/json
 
 {
-  "account_email": "nosoca6230@pazuric.com",
+  "account_email": "mariana.duarte@equiny.dev",
   "account_password": "12345678"
 }
 
-### Sign Up
 
+### Sign Up
 POST {{URL}}/sign-up
 Content-Type: application/json
 
 {
-  "owner_name": "Jonas",
-  "account_email": "nosoca6230@pazuric.com",
+  "owner_name": "Kaio Duarte",
+  "account_email": "kaio.duarte@equiny.dev",
   "account_password": "12345678"
 }

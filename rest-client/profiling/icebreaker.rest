@@ -1,0 +1,11 @@
+@URL = http://localhost:8080/profiling
+
+### Generate Icebreaker
+POST {{URL}}/icebreaker
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "sender_id": "01KJ07XEQSE53E6G2G2Y5WJFYB",
+  "recipient_id": "01KJ08668AER5YJPV71V56BHYH"
+}

@@ -5,9 +5,13 @@ from equiny.core.conversation.use_cases.verify_chat_participant_use_case import 
     VerifyChatParticipantUseCase,
 )
 from equiny.core.conversation.use_cases.send_message_use_case import SendMessageUseCase
+from equiny.core.conversation.use_cases.send_icebreaker_use_case import (
+    SendIcebreakerUseCase,
+)
 
 __all__ = [
     'ListMessagesUseCase',
     'VerifyChatParticipantUseCase',
     'SendMessageUseCase',
+    'SendIcebreakerUseCase',
 ]

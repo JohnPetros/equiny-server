@@ -2,6 +2,7 @@ from fastapi import Request, WebSocket
 
 from equiny.core.shared.interfaces.broker import Broker
 from equiny.pubsub.inngest.inngest_broker import InngestBroker
+from equiny.pubsub.redis import RedisPubSub
 
 
 class PubSubPipe:
@@ -11,5 +12,9 @@ class PubSubPipe:
         return InngestBroker(inngest)
 
     @staticmethod
-    def get_redis_pubsub_from_websocket(websocket: WebSocket) -> Broker:
+    def get_redis_pubsub_from_request(request: Request) -> RedisPubSub:
+        return request.state.redis_pubsub
+
+    @staticmethod
+    def get_redis_pubsub_from_websocket(websocket: WebSocket) -> RedisPubSub:
         return websocket.app.state.redis_pubsub

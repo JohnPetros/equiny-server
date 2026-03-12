@@ -4,6 +4,7 @@ from .fetch_breeds_controller import FetchBreedsController
 from .fetch_horse_controller import FetchHorseController
 from .fetch_horse_feed_controller import FetchHorseFeedController
 from .fetch_horse_gallery_controller import FetchHorseGalleryController
+from .generate_icebreaker_controller import GenerateIcebreakerController
 from .list_horse_matches_controller import ListHorseMatchesController
 from .fetch_owner_horses_controller import FetchOwnerHorsesController
 from .fetch_owner_presence_controller import FetchOwnerPresenceController
@@ -20,6 +21,7 @@ __all__ = [
     'FetchHorseController',
     'FetchHorseFeedController',
     'FetchHorseGalleryController',
+    'GenerateIcebreakerController',
     'ListHorseMatchesController',
     'FetchOwnerHorsesController',
     'FetchOwnerPresenceController',
