@@ -6,6 +6,6 @@ Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
 {
-  "sender_horse_id": "01KHPD158QDMXWTGENWZK5DFYD",
-  "recipient_horse_id": "01KHPDVN4W6Z2Y7X8C3V9B1N0M"
+  "sender_id": "01KJ07XEQSE53E6G2G2Y5WJFYB",
+  "recipient_id": "01KJ08668AER5YJPV71V56BHYH"
 }

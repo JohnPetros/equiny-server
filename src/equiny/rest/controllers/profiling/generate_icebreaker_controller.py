@@ -6,13 +6,16 @@ from pydantic import BaseModel
 from equiny.core.conversation.interfaces import GenerateIcebreakerWorkflow
 from equiny.pipes.ai_pipe import AiPipe
 from equiny.pipes.auth_pipe import AuthPipe
-from equiny.pipes.matching_pipe import MatchingPipe
 from equiny.validation.shared.id_schema import IdSchema
 
 
 class _BodySchema(BaseModel):
-    sender_horse_id: IdSchema
-    recipient_horse_id: IdSchema
+    sender_id: IdSchema
+    recipient_id: IdSchema
+
+
+class _ResponseSchema(BaseModel):
+    content: str
 
 
 class GenerateIcebreakerController:
@@ -20,10 +23,10 @@ class GenerateIcebreakerController:
     def handle(router: APIRouter) -> None:
         @router.post(
             '/icebreaker',
-            status_code=HTTPStatus.ACCEPTED,
+            status_code=HTTPStatus.CREATED,
+            response_model=_ResponseSchema,
             dependencies=[
                 Depends(AuthPipe.verify_jwt),
-                Depends(MatchingPipe.verify_match),
             ],
         )
         def _(
@@ -31,8 +34,9 @@ class GenerateIcebreakerController:
             workflow: GenerateIcebreakerWorkflow = Depends(
                 AiPipe.get_generate_icebreaker_workflow_from_request
             ),
-        ) -> None:
-            workflow.run(
-                sender_horse_id=body.sender_horse_id,
-                recipient_horse_id=body.recipient_horse_id,
+        ) -> _ResponseSchema:
+            icebreaker = workflow.run(
+                sender_id=body.sender_id,
+                recipient_id=body.recipient_id,
             )
+            return _ResponseSchema(content=icebreaker)

@@ -5,12 +5,12 @@ POST {{URL}}/sign-in
 Content-Type: application/json
 
 {
-  "account_email": "nosoca6230@pazuric.com",
+  "account_email": "mariana.duarte@equiny.dev",
   "account_password": "12345678"
 }
 
-### Sign Up
 
+### Sign Up
 POST {{URL}}/sign-up
 Content-Type: application/json
 
