@@ -4,14 +4,14 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from equiny.core.conversation.interfaces import GenerateIcebreakerWorkflow
+from equiny.core.shared.domain.structures.id import Id
 from equiny.pipes.ai_pipe import AiPipe
-from equiny.pipes.auth_pipe import AuthPipe
+from equiny.pipes.profiling_pipe import ProfilingPipe
 from equiny.validation.shared.id_schema import IdSchema
 
 
 class _BodySchema(BaseModel):
-    sender_id: IdSchema
-    recipient_id: IdSchema
+    recipient_owner_id: IdSchema
 
 
 class _ResponseSchema(BaseModel):
@@ -25,18 +25,16 @@ class GenerateIcebreakerController:
             '/icebreaker',
             status_code=HTTPStatus.CREATED,
             response_model=_ResponseSchema,
-            dependencies=[
-                Depends(AuthPipe.verify_jwt),
-            ],
         )
         def _(
             body: _BodySchema,
+            owner_id: Id = Depends(ProfilingPipe.get_owner_id),
             workflow: GenerateIcebreakerWorkflow = Depends(
                 AiPipe.get_generate_icebreaker_workflow_from_request
             ),
         ) -> _ResponseSchema:
             icebreaker = workflow.run(
-                sender_id=body.sender_id,
-                recipient_id=body.recipient_id,
+                sender_id=owner_id.value,
+                recipient_id=body.recipient_owner_id,
             )
             return _ResponseSchema(content=icebreaker)

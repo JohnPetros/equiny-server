@@ -1,8 +1,9 @@
 from fastapi import Depends
-from equiny.core.conversation.interfaces import GenerateIcebreakerWorkflow
-from equiny.ai.agno.workfows.profiling.agno_generate_icebreaker_workflow import (
+
+from equiny.ai.agno.workflows.profiling.agno_generate_icebreaker_workflow import (
     AgnoGenerateIcebreakerWorkflow,
 )
+from equiny.core.conversation.interfaces import GenerateIcebreakerWorkflow
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.pipes.database_pipe import DatabasePipe
 

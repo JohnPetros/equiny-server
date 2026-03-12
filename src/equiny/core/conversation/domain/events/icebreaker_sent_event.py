@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from equiny.core.shared.domain.abstracts import Event
 
 
@@ -9,8 +10,8 @@ class Payload:
     recipient_id: str
 
 
-class IcebreakSentEvent(Event[Payload]):
-    name: str = 'profiling/icebreak.sent'
+class IcebreakerSentEvent(Event[Payload]):
+    name: str = 'conversation/icebreaker.sent'
 
     def __init__(self, icebreaker: str, sender_id: str, recipient_id: str) -> None:
         payload = Payload(
@@ -18,4 +19,4 @@ class IcebreakSentEvent(Event[Payload]):
             sender_id=sender_id,
             recipient_id=recipient_id,
         )
-        super().__init__(IcebreakSentEvent.name, payload)
+        super().__init__(IcebreakerSentEvent.name, payload)
