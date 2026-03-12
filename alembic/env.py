@@ -3,6 +3,7 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from alembic import context
 
@@ -43,7 +44,18 @@ _ = ChatModel
 _ = MessageModel
 _ = AttachmentModel
 
-database_url = os.getenv('DATABASE_URL')
+
+class AlembicEnv(BaseSettings):
+    DATABASE_URL: str | None = None
+
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_file_encoding='utf-8',
+        extra='ignore',
+    )
+
+
+database_url = os.getenv('DATABASE_URL') or AlembicEnv().DATABASE_URL
 
 if database_url and database_url.startswith('postgresql://'):
     database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
