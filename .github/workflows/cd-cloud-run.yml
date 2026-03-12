@@ -109,7 +109,7 @@ jobs:
 
       - name: Run migrations
         run: |
-          DATABASE_URL=$(gcloud secrets versions access latest --secret=database-url-direct --project=${{ env.GCP_PROJECT_ID }})
+          DATABASE_URL=$(gcloud secrets versions access latest --secret=database-url --project=${{ env.GCP_PROJECT_ID }})
           DATABASE_URL="$DATABASE_URL" uv run alembic upgrade head
 
       - id: deploy
