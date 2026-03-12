@@ -1,15 +1,12 @@
 @URL = http://localhost:8080/auth
-@EMAIL = user@example.com
-@PASSWORD = changeme123
-@OWNER_NAME = Owner Example
 
 ### Sign In
 POST {{URL}}/sign-in
 Content-Type: application/json
 
 {
-  "account_email": "{{EMAIL}}",
-  "account_password": "{{PASSWORD}}"
+  "account_email": "mariana.duarte@equiny.dev",
+  "account_password": "12345678"
 }
 
 
@@ -18,7 +15,7 @@ POST {{URL}}/sign-up
 Content-Type: application/json
 
 {
-  "owner_name": "{{OWNER_NAME}}",
-  "account_email": "{{EMAIL}}",
-  "account_password": "{{PASSWORD}}"
+  "owner_name": "Kaio Duarte",
+  "account_email": "kaio.duarte@equiny.dev",
+  "account_password": "12345678"
 }
