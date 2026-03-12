@@ -79,6 +79,17 @@ Eventos assincronos: UseCase publica evento via `Broker` -> PubSub (Inngest/Redi
 | **Dependencias** | uv | Gerenciamento de pacotes |
 | **Infra Local** | Docker Compose | Ambientes locais (db/cache) |
 
+## Infraestrutura de Hospedagem
+
+No ambiente de producao, os servicos principais estao distribuidos da seguinte forma:
+
+| Servico | Plataforma | Observacao |
+|---|---|---|
+| **API FastAPI** | Google Cloud Run | Executa a aplicacao HTTP em container (deploy serverless). |
+| **PostgreSQL** | Supabase | Banco relacional gerenciado para persistencia principal. |
+| **Redis** | Upstash | Cache e pub/sub em servico gerenciado. |
+| **Inngest** | Inngest Cloud | Orquestracao de jobs e eventos assincronos. |
+
 ## Estrutura de Diretorios (essencial)
 
 ```text
