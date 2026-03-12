@@ -2,7 +2,6 @@ name: Continuous Integration
 
 on:
   pull_request:
-  push:
     branches:
       - main
 
@@ -10,7 +9,7 @@ permissions:
   contents: read
 
 env:
-  PYTHON_VERSION: '3.13'
+  PYTHON_VERSION: "3.13"
 
 jobs:
   typecheck:
