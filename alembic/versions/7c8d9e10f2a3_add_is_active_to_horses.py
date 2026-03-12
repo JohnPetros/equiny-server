@@ -20,12 +20,15 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    dialect_name = op.get_bind().dialect.name
+
     op.add_column(
         'horses',
         sa.Column('is_active', sa.Boolean(), nullable=False, server_default='false'),
     )
 
-    op.alter_column('horses', 'is_active', server_default=None)
+    if dialect_name != 'sqlite':
+        op.alter_column('horses', 'is_active', server_default=None)
 
 
 def downgrade() -> None:

@@ -20,6 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    dialect_name = op.get_bind().dialect.name
     sex_enum = sa.Enum('MALE', 'FEMALE', name='sexvalue')
     sex_enum.create(op.get_bind(), checkfirst=True)
 
@@ -36,9 +37,10 @@ def upgrade() -> None:
         sa.Column('location_state', sa.String(), nullable=False, server_default=''),
     )
 
-    op.alter_column('horses', 'sex', server_default=None)
-    op.alter_column('horses', 'location_city', server_default=None)
-    op.alter_column('horses', 'location_state', server_default=None)
+    if dialect_name != 'sqlite':
+        op.alter_column('horses', 'sex', server_default=None)
+        op.alter_column('horses', 'location_city', server_default=None)
+        op.alter_column('horses', 'location_state', server_default=None)
 
 
 def downgrade() -> None:

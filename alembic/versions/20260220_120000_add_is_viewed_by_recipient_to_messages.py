@@ -20,6 +20,8 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
+    dialect_name = op.get_bind().dialect.name
+
     op.add_column(
         'messages',
         sa.Column(
@@ -29,7 +31,9 @@ def upgrade() -> None:
             server_default=sa.false(),
         ),
     )
-    op.alter_column('messages', 'is_viewed_by_recipient', server_default=None)
+
+    if dialect_name != 'sqlite':
+        op.alter_column('messages', 'is_viewed_by_recipient', server_default=None)
 
 
 def downgrade() -> None:
