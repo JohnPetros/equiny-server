@@ -96,6 +96,22 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Run migrations
+        run: |
+          DATABASE_URL=$(gcloud secrets versions access latest --secret=database-url-direct --project=${{ env.GCP_PROJECT_ID }})
+          DATABASE_URL="$DATABASE_URL" uv run alembic upgrade head
+
       - id: deploy
         name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
