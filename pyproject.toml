@@ -31,6 +31,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "basedpyright>=1.38.2",
     "poethepoet>=0.41.0",
     "pyright>=1.1.408",
     "pytest>=9.0.2",
@@ -72,10 +73,10 @@ cmd = "uv run python -c \"from equiny.database.seed import seed; seed()\""
 cmd = "pytest -s -x -vv"
 
 [tool.poe.tasks.typecheck]
-cmd = "pyright src"
+cmd = "basedpyright"
 
 [tool.poe.tasks.codecheck]
-shell = "ruff check --fix src && ruff format --check src"
+shell = "ruff check --fix src tests && ruff format --check src tests"
 
 
 [tool.ruff]
@@ -114,7 +115,6 @@ select = [
     "I",
     "ICN",
     "ISC",
-    "Q",
     "RET",
     "RSE",
     "S",
