@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, NamedTuple, cast
 from agno.run.base import RunContext
 from agno.workflow import Parallel, Step, StepInput, StepOutput, Workflow
 from equiny.ai.agno.teams.profiling_teams import ProfilingTeam
-from equiny.ai.agno.tookits import ProfilingToolkit
+from equiny.ai.agno.toolkits import ProfilingToolkit
 from equiny.core.conversation.interfaces import GenerateIcebreakerWorkflow
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.core.shared.domain.errors.app_error import AppError
@@ -61,14 +61,14 @@ class AgnoGenerateIcebreakerWorkflow(GenerateIcebreakerWorkflow):
                     description='Fetch sender and recipient horses',
                 ),
                 Step(
-                    name='generate-icebreaker',
+                    name=self._step_names.GENERATE_ICEBREAKER,
                     description='Generate an icebreaker for a conversation',
                     agent=self._team.icebreaker_agent,
                 ),
             ],
             session_state={
-                'sender_id': sender_id,
-                'recipient_id': recipient_id,
+                'sender_owner_id': sender_id,
+                'recipient_owner_id': recipient_id,
             },
         )
 
@@ -81,14 +81,11 @@ class AgnoGenerateIcebreakerWorkflow(GenerateIcebreakerWorkflow):
         if run_context.session_state is None:
             raise AppError('Session state is required', 'Session state is required')
 
-        sender_id = str(run_context.session_state.get('sender_id'))
-
-        sender_horses = self._repository.find_many_by_owner(Id.create(sender_id))
-        if not sender_horses:
-            raise AppError('Sender horse not found', 'Sender horse not found')
+        sender_owner_id = str(run_context.session_state.get('sender_owner_id'))
+        sender_horse_id = self._resolve_primary_horse_id(sender_owner_id)
 
         toolkit = ProfilingToolkit(self._repository)
-        result = toolkit.get_horse_tool(sender_horses[0].id.value)
+        result = toolkit.get_horse_tool(sender_horse_id)
 
         return StepOutput(content=result)
 
@@ -98,14 +95,11 @@ class AgnoGenerateIcebreakerWorkflow(GenerateIcebreakerWorkflow):
         if run_context.session_state is None:
             raise AppError('Session state is required', 'Session state is required')
 
-        recipient_id = str(run_context.session_state.get('recipient_id'))
-
-        recipient_horses = self._repository.find_many_by_owner(Id.create(recipient_id))
-        if not recipient_horses:
-            raise AppError('Recipient horse not found', 'Recipient horse not found')
+        recipient_owner_id = str(run_context.session_state.get('recipient_owner_id'))
+        recipient_horse_id = self._resolve_primary_horse_id(recipient_owner_id)
 
         toolkit = ProfilingToolkit(self._repository)
-        result = toolkit.get_horse_tool(recipient_horses[0].id.value)
+        result = toolkit.get_horse_tool(recipient_horse_id)
 
         return StepOutput(content=result)
 
@@ -115,27 +109,34 @@ class AgnoGenerateIcebreakerWorkflow(GenerateIcebreakerWorkflow):
         if run_context.session_state is None:
             raise AppError('Session state is required', 'Session state is required')
 
-        sender_id = str(run_context.session_state.get('sender_id'))
-        recipient_id = str(run_context.session_state.get('recipient_id'))
+        sender_owner_id = str(run_context.session_state.get('sender_owner_id'))
+        recipient_owner_id = str(run_context.session_state.get('recipient_owner_id'))
 
         sender_matches = self._repository.find_horse_matches_by_owner_id(
-            Id.create(sender_id)
+            Id.create(sender_owner_id)
         )
         recipient_matches = self._repository.find_horse_matches_by_owner_id(
-            Id.create(recipient_id)
+            Id.create(recipient_owner_id)
         )
 
         common_context = {
             'sender_to_recipient_matches': [
                 match.dto
                 for match in sender_matches
-                if match.owner_id.value == recipient_id
+                if match.owner_id.value == recipient_owner_id
             ],
             'recipient_to_sender_matches': [
                 match.dto
                 for match in recipient_matches
-                if match.owner_id.value == sender_id
+                if match.owner_id.value == sender_owner_id
             ],
         }
 
         return StepOutput(content=common_context)
+
+    def _resolve_primary_horse_id(self, owner_id: str) -> str:
+        horses = self._repository.find_many_by_owner(Id.create(owner_id))
+        if not horses:
+            raise AppError('Horse not found', 'Horse not found')
+
+        return min(horses, key=lambda horse: horse.id.value).id.value
