@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -19,7 +20,6 @@ from equiny.database.sqlalchemy.models.profiling.horse_image_model import (
     HorseImageModel,
 )
 from equiny.database.sqlalchemy.models.profiling.owner_model import OwnerModel
-from equiny.database.sqlalchemy.sqlalchemy import DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -43,7 +43,13 @@ _ = ChatModel
 _ = MessageModel
 _ = AttachmentModel
 
-config.set_main_option('sqlalchemy.url', DATABASE_URL)
+database_url = os.getenv('DATABASE_URL')
+
+if database_url and database_url.startswith('postgresql://'):
+    database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
+
+if database_url:
+    config.set_main_option('sqlalchemy.url', database_url)
 
 
 def run_migrations_offline() -> None:
