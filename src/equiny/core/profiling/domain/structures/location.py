@@ -8,11 +8,23 @@ from equiny.core.profiling.domain.structures.dtos import LocationDto
 class Location(Structure):
     city: Text
     state: Text
+    latitude: float
+    longitude: float
 
     @classmethod
     def create(cls, dto: LocationDto) -> 'Location':
-        return cls(city=Text.create(dto.city), state=Text.create(dto.state))
+        return cls(
+            city=Text.create(dto.city),
+            state=Text.create(dto.state),
+            latitude=dto.latitude,
+            longitude=dto.longitude,
+        )
 
     @property
     def dto(self) -> LocationDto:
-        return LocationDto(city=self.city.value, state=self.state.value)
+        return LocationDto(
+            city=self.city.value,
+            state=self.state.value,
+            latitude=self.latitude,
+            longitude=self.longitude,
+        )
