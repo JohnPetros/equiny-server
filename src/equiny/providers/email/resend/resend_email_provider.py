@@ -23,7 +23,7 @@ class ResendEmailProvider(EmailProvider):
 
             params: resend.Emails.SendParams = {
                 'from': Env.RESEND_SENDER_EMAIL,
-                'to': ['nosoca6230@pazuric.com'],
+                'to': [account_email.value],
                 'subject': 'Reenvio de confirmacao de email - Equiny',
                 'html': html,
             }
