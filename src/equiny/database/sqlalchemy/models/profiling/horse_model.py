@@ -26,6 +26,8 @@ class HorseModel(Model):
     sex: Mapped[SexValue]
     location_city: Mapped[str]
     location_state: Mapped[str]
+    location_latitude: Mapped[float] = mapped_column(default=0.0)
+    location_longitude: Mapped[float] = mapped_column(default=0.0)
     owner_id: Mapped[str | None] = mapped_column(
         ForeignKey('owners.id'),
         nullable=True,

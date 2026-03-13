@@ -26,6 +26,8 @@ class HorsesMapper:
             location=LocationDto(
                 city=horse_model.location_city,
                 state=horse_model.location_state,
+                latitude=horse_model.location_latitude,
+                longitude=horse_model.location_longitude,
             ),
         )
 
@@ -44,4 +46,6 @@ class HorsesMapper:
             is_active=horse_dto.is_active,
             location_city=horse_dto.location.city,
             location_state=horse_dto.location.state,
+            location_latitude=horse_dto.location.latitude,
+            location_longitude=horse_dto.location.longitude,
         )

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import case
+from sqlalchemy import case, func
 from sqlalchemy.orm import aliased, selectinload
 
 from equiny.core.profiling.domain.entities.horse import Horse
@@ -10,7 +10,6 @@ from equiny.core.profiling.domain.structures.gallery import Gallery
 from equiny.core.profiling.domain.structures.breed import Breed, BreedValue
 from equiny.core.profiling.domain.structures.sex import Sex, SexValue
 from equiny.core.profiling.domain.structures.age_range import AgeRange
-from equiny.core.profiling.domain.structures.location import Location
 from equiny.core.shared.responses.pagination_response import PaginationResponse
 from equiny.database.sqlalchemy.mappers.profiling.horses_mapper import HorsesMapper
 from equiny.database.sqlalchemy.mappers.profiling.horse_matches_mapper import (
@@ -218,6 +217,8 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         horse_model.sex = SexValue(horse_dto.sex)
         horse_model.location_city = horse_dto.location.city
         horse_model.location_state = horse_dto.location.state
+        horse_model.location_latitude = horse_dto.location.latitude
+        horse_model.location_longitude = horse_dto.location.longitude
         horse_model.is_active = horse_dto.is_active
 
     def replace_horse_match(
@@ -251,10 +252,25 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
         sex: Sex,
         age_range: AgeRange,
         breeds: list[Breed],
-        location: Location,
+        max_distance_in_km: int,
         cursor: Id | None = None,
         limit: int = 20,
     ) -> PaginationResponse[FeedHorse]:
+        source_horse = (
+            self.sqlalchemy.query(
+                HorseModel.location_latitude,
+                HorseModel.location_longitude,
+            )
+            .filter(HorseModel.id == horse_id.value)
+            .first()
+        )
+
+        if source_horse is None:
+            return PaginationResponse(items=[], next_cursor=None, has_more=False)
+
+        source_latitude = source_horse.location_latitude
+        source_longitude = source_horse.location_longitude
+
         query = self.sqlalchemy.query(HorseModel).filter(HorseModel.is_active)
 
         query = query.filter(HorseModel.id != horse_id.value)
@@ -265,8 +281,19 @@ class SqlalchemyHorsesRepository(SqlalchemyRepository, HorsesRepository):
             breed_values = [BreedValue(breed.dto) for breed in breeds]
             query = query.filter(HorseModel.breed.in_(breed_values))
 
-        query = query.filter(HorseModel.location_city == location.city.value)
-        query = query.filter(HorseModel.location_state == location.state.value)
+        distance_cosine = func.cos(func.radians(source_latitude)) * func.cos(
+            func.radians(HorseModel.location_latitude)
+        ) * func.cos(
+            func.radians(HorseModel.location_longitude) - func.radians(source_longitude)
+        ) + func.sin(func.radians(source_latitude)) * func.sin(
+            func.radians(HorseModel.location_latitude)
+        )
+        safe_distance_cosine = func.least(
+            1.0,
+            func.greatest(-1.0, distance_cosine),
+        )
+        distance_in_km = 6371.0 * func.acos(safe_distance_cosine)
+        query = query.filter(distance_in_km <= max_distance_in_km)
 
         current_year = datetime.now().year
         min_birth_year = current_year - age_range.max_age.value

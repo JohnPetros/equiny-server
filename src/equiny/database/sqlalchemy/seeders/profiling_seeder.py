@@ -34,7 +34,12 @@ class ProfilingSeeder:
                 height=1.90,
                 breed='criolo',
                 sex='male',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='São Paulo',
+                    latitude=-23.550520,
+                    longitude=-46.633308,
+                ),
             ),
             'images': [
                 ImageFaker.fake(
@@ -60,7 +65,12 @@ class ProfilingSeeder:
                 height=1.55,
                 breed='mangalarga marchador',
                 sex='female',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='Campinas',
+                    latitude=-22.905539,
+                    longitude=-47.060627,
+                ),
             ),
             'images': [
                 ImageFaker.fake(
@@ -83,7 +93,12 @@ class ProfilingSeeder:
                 height=1.50,
                 breed='quarto de milha',
                 sex='male',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='Ribeirão Preto',
+                    latitude=-21.177851,
+                    longitude=-47.810095,
+                ),
             ),
             'images': [
                 ImageFaker.fake(
@@ -109,7 +124,12 @@ class ProfilingSeeder:
                 height=1.62,
                 breed='campolina',
                 sex='female',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='Santos',
+                    latitude=-23.960833,
+                    longitude=-46.333889,
+                ),
             ),
             'images': [
                 ImageFaker.fake(name='sereia-201b4f9e-2612-4efd-bac2-dee8ebde4bfb.png'),
@@ -126,7 +146,12 @@ class ProfilingSeeder:
                 height=1.70,
                 breed='puro sangue inglês',
                 sex='male',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='São José do Rio Preto',
+                    latitude=-20.819719,
+                    longitude=-49.379646,
+                ),
             ),
             'images': [
                 ImageFaker.fake(
@@ -152,7 +177,12 @@ class ProfilingSeeder:
                 height=1.58,
                 breed='mangalarga marchador',
                 sex='male',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='Sorocaba',
+                    latitude=-23.501530,
+                    longitude=-47.458080,
+                ),
             ),
             'images': [
                 ImageFaker.fake(
@@ -178,7 +208,12 @@ class ProfilingSeeder:
                 height=1.60,
                 breed='campolina',
                 sex='female',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='São José dos Campos',
+                    latitude=-23.179482,
+                    longitude=-45.886970,
+                ),
             ),
             'images': [
                 ImageFaker.fake(
@@ -204,7 +239,12 @@ class ProfilingSeeder:
                 height=1.52,
                 breed='quarto de milha',
                 sex='male',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='Bauru',
+                    latitude=-22.314760,
+                    longitude=-49.060860,
+                ),
             ),
             'images': [
                 ImageFaker.fake(name='sereia-201b4f9e-2612-4efd-bac2-dee8ebde4bfb.png'),
@@ -221,7 +261,12 @@ class ProfilingSeeder:
                 height=1.47,
                 breed='criolo',
                 sex='female',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='Presidente Prudente',
+                    latitude=-22.120790,
+                    longitude=-51.388550,
+                ),
             ),
             'images': [
                 ImageFaker.fake(
@@ -247,7 +292,12 @@ class ProfilingSeeder:
                 height=1.72,
                 breed='puro sangue inglês',
                 sex='male',
-                location=LocationDto(state='RS', city='Bagé'),
+                location=LocationDto(
+                    state='São Paulo',
+                    city='Araçatuba',
+                    latitude=-21.209000,
+                    longitude=-50.433060,
+                ),
             ),
             'images': [
                 ImageFaker.fake(

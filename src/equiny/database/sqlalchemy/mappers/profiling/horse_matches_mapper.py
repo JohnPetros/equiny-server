@@ -27,6 +27,8 @@ class HorseMatchesMapper:
         owner_location = LocationDto(
             city=horse_model.location_city,
             state=horse_model.location_state,
+            latitude=horse_model.location_latitude,
+            longitude=horse_model.location_longitude,
         )
 
         owner_horse_image = ImageDto(
