@@ -12,6 +12,7 @@ class UpdateHorseUseCase:
     def execute(self, horse_id: str, owner_id: str, horse_dto: HorseDto) -> HorseDto:
         self._find_horse(Id.create(horse_id), Id.create(owner_id))
         horse_dto.id = horse_id
+        print(horse_dto)
         horse = Horse.create(horse_dto)
         self.repository.replace(horse)
         return horse.dto

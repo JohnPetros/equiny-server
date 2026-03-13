@@ -3,7 +3,6 @@ from equiny.core.profiling.domain.entities.horse import Horse
 from equiny.core.profiling.domain.structures.gallery import Gallery
 from equiny.core.shared.domain.structures.image import Image
 from equiny.core.shared.domain.structures.id import Id
-from equiny.core.profiling.domain.structures.location import Location
 from equiny.core.profiling.domain.structures.breed import Breed
 from equiny.core.profiling.domain.structures.sex import Sex
 from equiny.core.profiling.domain.structures.age_range import AgeRange
@@ -21,7 +20,7 @@ class HorsesRepository(Protocol):
         sex: Sex,
         age_range: AgeRange,
         breeds: list[Breed],
-        location: Location,
+        max_distance_in_km: int,
         cursor: Id | None = None,
         limit: int = 20,
     ) -> PaginationResponse[FeedHorse]: ...

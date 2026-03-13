@@ -1,11 +1,9 @@
 from equiny.core.profiling.domain.structures.breed import Breed
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.core.profiling.domain.structures.dtos.age_range_dto import AgeRangeDto
-from equiny.core.profiling.domain.structures.dtos.location_dto import LocationDto
 from equiny.core.profiling.domain.structures.dtos.feed_horse_dto import FeedHorseDto
 from equiny.core.profiling.domain.structures.sex import Sex
 from equiny.core.profiling.domain.structures.age_range import AgeRange
-from equiny.core.profiling.domain.structures.location import Location
 from equiny.core.shared.domain.structures.id import Id
 from equiny.core.shared.responses.pagination_response import PaginationResponse
 
@@ -20,7 +18,7 @@ class GetHorseFeedUseCase:
         sex: str,
         breeds: list[str],
         age_range_dto: AgeRangeDto,
-        location_dto: LocationDto,
+        max_distance_in_km: int,
         cursor: str | None = None,
         limit: int = 20,
     ) -> PaginationResponse[FeedHorseDto]:
@@ -31,7 +29,7 @@ class GetHorseFeedUseCase:
             sex=Sex.create(sex),
             age_range=AgeRange.create(age_range_dto),
             breeds=[Breed.create(breed) for breed in breeds],
-            location=Location.create(location_dto),
+            max_distance_in_km=max_distance_in_km,
             cursor=cursor_id,
             limit=limit,
         )
