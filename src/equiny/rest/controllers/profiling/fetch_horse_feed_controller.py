@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, Query
 
 from equiny.core.profiling.domain.structures.dtos.feed_horse_dto import FeedHorseDto
 from equiny.core.profiling.domain.structures.dtos.age_range_dto import AgeRangeDto
-from equiny.core.profiling.domain.structures.dtos.location_dto import LocationDto
 from equiny.core.profiling.interfaces.repositories.horsers_repository import (
     HorsesRepository,
 )
@@ -36,8 +35,7 @@ class FetchHorseFeedController:
             horse_id: IdSchema,
             repository: repository,
             sex: SexValue,
-            city: str,
-            state: str,
+            max_distance_in_km: int = Query(default=50, gt=0),
             breeds: list[BreedValue] = Query(default=[]),
             min_age: int = Query(default=0, ge=0, le=30),
             max_age: int = Query(default=30, ge=0, le=30),
@@ -45,14 +43,13 @@ class FetchHorseFeedController:
             limit: int = Query(default=20, ge=1, le=100),
         ) -> PaginationResponse[FeedHorseDto]:
             use_case = GetHorseFeedUseCase(repository)
-            location_dto = LocationDto(city=city, state=state)
             age_range_dto = AgeRangeDto(min_age=min_age, max_age=max_age)
             return use_case.execute(
                 horse_id=horse_id,
                 sex=sex.value,
                 breeds=[breed.value for breed in breeds],
                 age_range_dto=age_range_dto,
-                location_dto=location_dto,
+                max_distance_in_km=max_distance_in_km,
                 cursor=cursor,
                 limit=limit,
             )
