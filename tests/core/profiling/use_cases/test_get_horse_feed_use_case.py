@@ -2,7 +2,6 @@ import pytest
 from unittest.mock import Mock, create_autospec
 
 from equiny.core.profiling.domain.structures.dtos.age_range_dto import AgeRangeDto
-from equiny.core.profiling.domain.structures.dtos.location_dto import LocationDto
 from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from equiny.core.profiling.use_cases.get_horse_feed_use_case import GetHorseFeedUseCase
 from equiny.core.shared.responses.pagination_response import PaginationResponse
@@ -24,7 +23,7 @@ class TestGetHorseFeedUseCase:
         sex = 'female'
         breeds = ['quarto de milha', 'mangalarga marchador']
         age_range_dto = AgeRangeDto(min_age=3, max_age=10)
-        location_dto = LocationDto(city='São Paulo', state='SP')
+        max_distance_in_km = 120
         cursor = None
         limit = 20
 
@@ -41,7 +40,7 @@ class TestGetHorseFeedUseCase:
             sex=sex,
             breeds=breeds,
             age_range_dto=age_range_dto,
-            location_dto=location_dto,
+            max_distance_in_km=max_distance_in_km,
             cursor=cursor,
             limit=limit,
         )
@@ -55,7 +54,7 @@ class TestGetHorseFeedUseCase:
         sex = 'female'
         breeds: list[str] = []
         age_range_dto = AgeRangeDto(min_age=0, max_age=30)
-        location_dto = LocationDto(city='Rio de Janeiro', state='RJ')
+        max_distance_in_km = 75
         cursor = None
         limit = 10
 
@@ -72,7 +71,7 @@ class TestGetHorseFeedUseCase:
             sex=sex,
             breeds=breeds,
             age_range_dto=age_range_dto,
-            location_dto=location_dto,
+            max_distance_in_km=max_distance_in_km,
             cursor=cursor,
             limit=limit,
         )
@@ -85,7 +84,7 @@ class TestGetHorseFeedUseCase:
         sex = 'male'
         breeds: list[str] = []
         age_range_dto = AgeRangeDto(min_age=0, max_age=30)
-        location_dto = LocationDto(city='Belo Horizonte', state='MG')
+        max_distance_in_km = 40
         cursor = IdFaker.fake().value
         limit = 5
 
@@ -102,7 +101,7 @@ class TestGetHorseFeedUseCase:
             sex=sex,
             breeds=breeds,
             age_range_dto=age_range_dto,
-            location_dto=location_dto,
+            max_distance_in_km=max_distance_in_km,
             cursor=cursor,
             limit=limit,
         )

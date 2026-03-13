@@ -60,7 +60,12 @@ class TestCreateHorseController:
                 'height': 1.62,
                 'breed': 'arabe',
                 'sex': 'male',
-                'location': {'city': 'Sao Paulo', 'state': 'SP'},
+                'location': {
+                    'city': 'Sao Paulo',
+                    'state': 'SP',
+                    'latitude': -23.55052,
+                    'longitude': -46.633308,
+                },
             },
             headers=self._auth_headers(sqlalchemy_session),
         )
@@ -75,7 +80,12 @@ class TestCreateHorseController:
         assert data['height'] == 1.62
         assert data['breed'] == 'arabe'
         assert data['sex'] == 'male'
-        assert data['location'] == {'city': 'Sao Paulo', 'state': 'SP'}
+        assert data['location'] == {
+            'city': 'Sao Paulo',
+            'state': 'SP',
+            'latitude': -23.55052,
+            'longitude': -46.633308,
+        }
 
     @pytest.mark.parametrize('birth_month', [0, 13])
     def test_should_return_422_when_birth_month_is_invalid(
@@ -93,7 +103,12 @@ class TestCreateHorseController:
                 'height': 1.62,
                 'breed': 'arabe',
                 'sex': 'male',
-                'location': {'city': 'Sao Paulo', 'state': 'SP'},
+                'location': {
+                    'city': 'Sao Paulo',
+                    'state': 'SP',
+                    'latitude': -23.55052,
+                    'longitude': -46.633308,
+                },
             },
             headers=self._auth_headers(sqlalchemy_session),
         )
@@ -112,7 +127,12 @@ class TestCreateHorseController:
                 'height': 1.62,
                 'breed': 'arabe',
                 'sex': 'male',
-                'location': {'city': 'Sao Paulo', 'state': 'SP'},
+                'location': {
+                    'city': 'Sao Paulo',
+                    'state': 'SP',
+                    'latitude': -23.55052,
+                    'longitude': -46.633308,
+                },
             },
             headers=self._auth_headers(sqlalchemy_session),
         )
@@ -131,7 +151,12 @@ class TestCreateHorseController:
                 'height': 1.62,
                 'breed': 'invalid breed',
                 'sex': 'male',
-                'location': {'city': 'Sao Paulo', 'state': 'SP'},
+                'location': {
+                    'city': 'Sao Paulo',
+                    'state': 'SP',
+                    'latitude': -23.55052,
+                    'longitude': -46.633308,
+                },
             },
             headers=self._auth_headers(sqlalchemy_session),
         )
@@ -150,7 +175,12 @@ class TestCreateHorseController:
                 'height': 1.62,
                 'breed': 'arabe',
                 'sex': 'male',
-                'location': {'city': 'Sao Paulo', 'state': 'SP'},
+                'location': {
+                    'city': 'Sao Paulo',
+                    'state': 'SP',
+                    'latitude': -23.55052,
+                    'longitude': -46.633308,
+                },
             },
             headers=self._auth_headers(sqlalchemy_session),
         )
