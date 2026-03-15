@@ -1,102 +1,119 @@
-# Regras da camada Routers
+# Regras da Camada Routers
 
-## Visao geral
+> 💡 Use este documento ao criar ou revisar composicao de rotas HTTP em `src/equiny/routers/`.
 
-A camada `src/equiny/routers/` e responsavel por compor a API HTTP no nivel de modulos.
+## Visao Geral
 
-Em outras palavras: **Router = composicao**, **Controller = endpoint**.
+### Resumo da camada
 
-## Estrutura atual
+| Aspecto | Diretriz |
+|---|---|
+| **Objetivo** | Compor a superficie de entrada HTTP da aplicacao. |
+| **Papel arquitetural** | Organizar modulos, `prefix`, `tags` e hierarquia de rotas. |
+| **Entrada principal** | `Controllers` vindos de `rest`. |
+| **Saida principal** | Instancias de `APIRouter` prontas para o `app`. |
 
-```text
-src/equiny/routers/
-  auth/
-    auth_router.py
-  docs/
-    docs_router.py
-  profiling/
-    profiling_router.py
-    horses_router.py
-```
+### Responsabilidades principais
 
-## Padrao de implementacao
+- Agrupar endpoints por modulo e contexto funcional.
+- Definir `prefix`, `tags` e inclusao de sub-routers.
+- Registrar `controllers` da camada `rest` e entregar routers prontos para o `composition root`.
 
-### Router Class Pattern
+### Limites da camada
 
-Routers sao definidos como classes com um metodo estatico `register() -> APIRouter`.
-Exemplo (padrao usado no projeto):
+- `routers` deve priorizar composicao e organizacao, nao implementacao de regra de negocio.
+- Routers HTTP nao devem conhecer `ORM`, `session`, providers ou detalhes de persistencia.
+- O fluxo de `WebSocket` fica fisicamente em `src/equiny/routers/`, mas segue regras adicionais de `documentation/rules/websocket-layer-rules.md`.
 
-```python
-from fastapi import APIRouter
-from equiny.rest.controllers.profiling import CreateHorseController
+> 💡 Regra pratica: **`Router = composicao`** e **`Controller = endpoint`**.
 
+## Estrutura de Diretorios Globais
 
-class HorsesRouter:
-    @staticmethod
-    def register() -> APIRouter:
-        router = APIRouter(prefix='/horses')
+### Mapa de pastas relevantes
 
-        CreateHorseController.handle(router)
+| Caminho | Responsabilidade |
+|---|---|
+| `src/equiny/routers/` | Ponto de composicao dos routers publicos da aplicacao. |
+| `src/equiny/routers/<context>/` | Routers HTTP agrupados por contexto, como `auth`, `profiling`, `conversation`, `matching`, `storage` e `docs`. |
 
-        return router
-```
+### Regras de organizacao e nomeacao
 
-### Inclusao de sub-routers
+- Cada contexto deve ter um router agregador e, quando fizer sentido, sub-routers por recurso.
+- Routers devem seguir convencao `*Router` com metodo estatico `register() -> APIRouter`.
+- Sub-routers devem existir para modularizar recursos, nao para repetir logica de endpoint.
+- Nao especificar arquivos especificos, pois isso muda constantemente.
 
-Um router de modulo pode incluir routers internos via `router.include_router(...)`.
-No projeto, `ProfilingRouter` inclui `HorsesRouter`.
+## Glossario arquitetural da camada
 
-Regra pratica:
+| Termo | Definicao |
+|---|---|
+| `Router` | Unidade de composicao que monta um conjunto de rotas e devolve `APIRouter`. |
+| `Module Router` | Router principal de um contexto, responsavel por `prefix`, `tags` e sub-routers. |
+| `Sub-router` | Router subordinado usado para separar recursos internos do mesmo modulo. |
+| `register()` | Metodo padrao que cria o router, registra `controllers` e devolve a instancia final. |
+| `include_router(...)` | Mecanismo de composicao do `FastAPI` para montar hierarquia de rotas. |
 
-- **Router de modulo**: define `prefix` e `tags`.
-- **Sub-router**: define apenas `prefix` (tags geralmente herdadas do modulo).
+## Padroes de Projeto
 
-### Exportacao via `__init__.py`
+### Padroes arquiteturais aceitos
 
-Cada pacote expõe seus routers via `__init__.py` (com `__all__`) para permitir imports estaveis:
+- **`Router as Composition Unit`** para separar organizacao de modulo da implementacao de endpoint.
+- **`Hierarchical Routing`** para decompor recursos por contexto e subcontexto.
+- **`Explicit Registration`** para concentrar a montagem final no `composition root`.
 
-- `from equiny.routers.auth import AuthRouter`
-- `from equiny.routers.profiling import ProfilingRouter`
+### Como aplicar os padroes
 
-## Integracao com a aplicacao
+- Um router de contexto deve criar `APIRouter`, definir `prefix` e `tags`, registrar `controllers` e incluir sub-routers quando necessario.
+- Routers devem importar `controllers` da camada `rest` e registrar endpoints via `Controller.handle(router)`.
+- O `app` deve incluir apenas routers prontos, mantendo a montagem global clara em um unico lugar.
 
-O registro global acontece no composition root do FastAPI:
+### Quando evitar
 
-- `src/equiny/app.py`: `FastAPIApp.register()` cria a app, registra middlewares e faz `app.include_router(<Router>.register())`.
+- Nao criar sub-router quando isso apenas adiciona profundidade artificial.
+- Nao transformar router em endpoint; se existir logica de transporte ou de negocio, ela pertence a `rest`.
+- Nao espalhar inclusao global de routers em varios arquivos quando o `composition root` ja resolve o acoplamento.
 
-Observacao importante (estado atual do projeto):
+## Regras de Integracao com Outras Camadas
 
-- A aplicacao desabilita `docs_url` e `redoc_url` no FastAPI.
-- O router `DocsRouter` usa `include_in_schema=False` (a pagina existe, mas nao aparece no OpenAPI).
+### Mapa de integracao
 
-## Principios fundamentais
+| Camada | Como integra com `routers` | Regra |
+|---|---|---|
+| `rest` | Fornece `controllers` registrados via `handle(router)` | Router apenas compoe. |
+| `app` | Inclui routers retornados por `register()` | O `app` e o `composition root` final. |
+| `core` | Nao deve integrar diretamente | Regra de negocio nao entra em router HTTP. |
 
-### ✅ O que DEVE conter
+### Dependencias permitidas e proibidas
 
-- **Agrupamento por contexto**: um router por modulo (ex: `AuthRouter`, `ProfilingRouter`).
-- **Prefixos e tags**: definicao consistente de `prefix='/<modulo>'` e `tags=['<Nome> module']` quando aplicavel.
-- **Composicao**: chamada de `Controller.handle(router)` para registrar endpoints.
-- **Hierarquia**: uso de `include_router` para modularizar sub-recursos (`/profiling` -> `/horses`).
+- Routers HTTP podem depender de `rest/controllers` e do `FastAPI` para composicao.
+- Routers HTTP nao devem depender de `database`, `providers`, `pipes` de dados, `ORM` ou `UseCase` diretamente.
 
-### ❌ O que NUNCA deve conter
+### Contratos de comunicacao
 
-- **Logica de endpoint**: nao declarar funcoes `@router.get/post/...` diretamente no router.
-- **Regras de negocio**: nada de Core/UseCases/DTOs aqui.
-- **Dependencias de request**: nao injetar repositorios/sessoes/usuario no router; isso e responsabilidade do controller (e seus Pipes/Depends).
-- **Acesso a banco/ORM**: router nao conversa com SQLAlchemy.
+- O contrato entre `routers` e `rest` e o metodo de registro do `controller`, normalmente `handle(router)`.
+- O contrato entre `routers` e `app` e o retorno de `register() -> APIRouter`.
+- Fluxos especiais, como `WebSocket`, devem seguir o contrato proprio documentado na regra especifica da camada correspondente.
 
-## Convencoes de nomenclatura
+## Checklist Rapido para Novas Features na Camada
 
-- Diretorio por contexto: `routers/<context>/`.
-- Arquivo: `<context>_router.py` ou `<resource>_router.py` (ex: `profiling_router.py`, `horses_router.py`).
-- Classe: `PascalCase` + sufixo `Router` (ex: `ProfilingRouter`).
-- Metodo: `register()` retorna `APIRouter`.
+- [ ] O endpoint foi anexado ao router do contexto correto.
+- [ ] `Prefix` e `tags` permanecem consistentes com o modulo.
+- [ ] `Controllers` foram registrados sem mover logica de endpoint para o router.
+- [ ] Sub-routers so foram introduzidos quando melhoram a composicao.
+- [ ] O `app` inclui o router correto no `composition root`.
+- [ ] Nenhum router HTTP conhece `session`, `repository` concreto ou provider externo.
 
-## Checklist rapido para adicionar um novo router
+## ✅ O que DEVE conter
 
-1. Criar pasta `src/equiny/routers/<context>/` com `__init__.py` exportando o router.
-2. Criar `<context>_router.py` com `class <Context>Router` e `register() -> APIRouter`.
-3. Definir `prefix` e (quando for modulo) `tags`.
-4. Registrar controllers via `Controller.handle(router)`.
-5. Se houver sub-recursos, criar sub-router e incluir via `router.include_router(SubRouter.register())`.
-6. Registrar no app em `src/equiny/app.py` com `app.include_router(<Context>Router.register())`.
+- Routers por contexto com `register() -> APIRouter`.
+- Composicao clara de `controllers` e sub-routers.
+- `Prefix` e `tags` coerentes com o modulo.
+- Exports publicos em `__init__.py` para estabilizar imports.
+- Montagem global centralizada no `composition root`.
+
+## ❌ O que NUNCA deve conter
+
+- Regra de negocio, acesso a banco, `session handling` ou validacao de dominio em routers HTTP.
+- `Controllers` inteiros embutidos no router por conveniencia.
+- Dependencia direta de `UseCase`, `ORM` ou SDK externo em routers de modulo HTTP.
+- Hierarquia de rota artificial sem ganho real de organizacao.

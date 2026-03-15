@@ -7,27 +7,14 @@ description: Criar um prompt genérico para gerar documento de regras de uma cam
 **Objetivo:** Criar um meta-prompt reutilizavel para gerar um documento de regras arquiteturais de uma camada especifica da aplicacao. O resultado deve padronizar como a camada e descrita, quais limites ela possui, como integra com outras camadas e como validar novas features rapidamente. O prompt deve ser orientado a consistencia, clareza e aplicabilidade no dia a dia do time.
 
 **Entrada:**
-
-- **Obrigatorias:**
-  - Nome da camada `{CAMADA}` (ex: UI, REST, RPC, Queue, Core, Database).
-  - Objetivo da camada `{OBJETIVO_CAMADA}`.
-  - Fontes disponiveis `{FONTES}` (arquivos, links, docs internas).
-- **Opcionais:**
-  - Stack e frameworks relacionados `{STACK}`.
-  - Restricoes do documento `{RESTRICOES}`.
-  - Convencoes ja existentes `{CONVENCOES_EXISTENTES}`.
-  - Formato de saida esperado `{FORMATO_SAIDA}` (default: Markdown).
-  - Nivel de detalhe `{NIVEL_DETALHE}` (resumido, medio, completo).
-- **Formato esperado da entrada:**
   - Preferencialmente em bullets.
-  - Caminhos de arquivo como `documentation/...`.
+  - Caminhos de diretorios como `rest/...`.
   - Trechos de regras e exemplos reais quando existirem.
 
 **Diretrizes de Execucao:**
 
 1. **Entendimento e validacao de contexto**
    - Confirmar objetivo do documento de regras para a camada `{CAMADA}`.
-   - Extrair e listar placeholders que serao usados na geracao: `{CAMADA}`, `{OBJETIVO_CAMADA}`, `{DIRETORIOS_GLOBAIS}`, `{PRINCIPIOS}`, `{PADROES_PROJETO}`, `{PADROES_USO}`, `{INTEGRACOES}`, `{CHECKLIST}`, `{REGRAS_FIXAS}`.
    - Validar se as fontes fornecidas sao suficientes para cobrir arquitetura, convencoes e limites da camada.
    - Quando houver lacunas, assumir padroes conservadores e registrar pendencias explicitamente na secao de observacoes.
 
@@ -65,25 +52,16 @@ description: Criar um prompt genérico para gerar documento de regras de uma cam
 - Mapa de pastas relevantes
 - Responsabilidade de cada diretorio
 - Regras de organizacao e nomeacao
+- Não especificar arquivos específicos, pois isso muda constantemente.
 
-# Principios Fundamentais
-## Deve conter
-- Elementos obrigatorios da camada
-- Praticas recomendadas
-
-## Nao deve conter
-- Antipadroes e acoplamentos proibidos
-- Responsabilidades que pertencem a outras camadas
+# Glossario arquitetural da camada
+- Nomenclatura de classes, metodos, etc.
+- Nomenclatura de arquivos, diretorios, etc.
 
 # Padroes de Projeto
 - Padroes arquiteturais aceitos
 - Como aplicar cada padrao na camada
 - Quando evitar cada padrao
-
-# Padroes de Uso Aplicados
-- Fluxos comuns da camada
-- Exemplos de uso correto
-- Erros comuns e como evitar
 
 # Regras de Integracao com Outras Camadas
 - Dependencias permitidas e proibidas
@@ -95,10 +73,13 @@ description: Criar um prompt genérico para gerar documento de regras de uma cam
 - Criterios minimos de conformidade arquitetural
 - Sinais de alerta para revisao tecnica
 
-# Observacoes e Pendencias
-- Premissas adotadas
-- Informacoes ausentes
-- Proximos passos para refinamento
+## ✅ O que DEVE conter
+- Elementos obrigatorios da camada
+- Praticas recomendadas
+
+## ❌ O que NUNCA deve conter
+- Antipadroes e acoplamentos proibidos
+- Responsabilidades que pertencem a outras camadas
 ```
 
 4. **Regras:**

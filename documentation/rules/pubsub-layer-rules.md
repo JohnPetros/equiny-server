@@ -1,173 +1,125 @@
 # Regras da Camada PubSub
 
-# Visao Geral
-- Objetivo da camada
-  - Executar processamento assincrono orientado a **eventos de dominio**, usando `Inngest` como broker e runtime de jobs.
-  - Expor funcoes/jobs do `Inngest` via `FastAPI` (adapter de entrada) e publicar eventos do dominio via `Broker` (porta do `core`).
-- Responsabilidades principais
-  - Registrar e servir funcoes do `Inngest` no app: `src/equiny/pubsub/inngest/inngest_pubsub.py`.
-  - Publicar eventos do dominio (adapter do `Broker`): `src/equiny/pubsub/inngest/inngest_broker.py`.
-  - Implementar jobs assincronos que consomem eventos e orquestram `UseCase` do `core`: `src/equiny/pubsub/inngest/jobs/`.
-  - Gerenciar ciclo de vida de `Session` SQLAlchemy em jobs (`commit`/`rollback`/`close`): `src/equiny/pubsub/inngest/jobs/job.py`.
-- Limites da camada
-  - A camada `pubsub` deve ser **orquestracao**: validar payload, abrir recursos (sessao), instanciar repositorio/use case e executar.
-  - A camada `pubsub` nao deve conter **regra de negocio**; regra de negocio pertence ao `core`.
-  - A camada `pubsub` nao deve expor o SDK do `Inngest` para o `core` (o `core` fala via `Broker`).
+> 💡 Use este documento ao criar ou revisar publicacao de eventos, `jobs`, `brokers` e fluxos assincronos em `src/equiny/pubsub/`.
 
-# Estrutura de Diretorios Globais
-- Mapa de pastas relevantes
-  - `src/equiny/pubsub/`
-  - `src/equiny/pubsub/inngest/`
-  - `src/equiny/pubsub/inngest/jobs/`
-  - `src/equiny/pubsub/inngest/jobs/profiling/`
-- Responsabilidade de cada diretorio
-  - `src/equiny/pubsub/`: pacote da camada; exporta `InngestPubSub` via `__all__`.
-  - `src/equiny/pubsub/inngest/`: integracao com `Inngest` (registro/serve e broker).
-  - `src/equiny/pubsub/inngest/jobs/`: base de job e jobs por contexto.
-  - `src/equiny/pubsub/inngest/jobs/<contexto>/`: jobs agrupados por **bounded context** (ex: `profiling`).
-- Regras de organizacao e nomeacao
-  - Jobs devem viver em `src/equiny/pubsub/inngest/jobs/<contexto>/`.
-  - Um job deve ser uma classe `*Job` com metodos `@staticmethod`, seguindo o padrao usado em `src/equiny/pubsub/inngest/jobs/profiling/create_owner_job.py`.
-  - A exportacao do pacote deve ser explicita via `__init__.py` + `__all__` (ex: `src/equiny/pubsub/inngest/jobs/profiling/__init__.py`).
+## Visao Geral
 
-> 💡 Regra pratica: se voce criou um job novo e ele nao esta registrado em `src/equiny/pubsub/inngest/inngest_pubsub.py`, ele nao sera executado.
+### Resumo da camada
 
-# Principios Fundamentais
-## Deve conter
-- Elementos obrigatorios da camada
-  - **Jobs magros**: receber evento -> validar payload -> executar 1 acao principal (orquestracao) -> delegar regra de negocio para `UseCase`.
-  - **Validacao de payload** via Pydantic (`BaseModel.model_validate(...)`) dentro do job.
-  - **Gestao de sessao** SQLAlchemy em jobs via `Job.sqlalchemy_session()`: `src/equiny/pubsub/inngest/jobs/job.py`.
-  - **Publicacao de eventos** via porta `Broker`: `src/equiny/core/shared/interfaces/broker.py` + adapter `src/equiny/pubsub/inngest/inngest_broker.py`.
-  - **Uso de step** do `Inngest` para a acao principal, seguindo o padrao atual em `src/equiny/pubsub/inngest/jobs/profiling/create_owner_job.py` (`context.step.run(...)`).
-- Praticas recomendadas
-  - Jobs devem ser **idempotentes** (a mesma execucao pode acontecer mais de uma vez sem corromper estado).
-  - Jobs devem manter o numero de efeitos colaterais no minimo e centralizar a mudanca de estado no `UseCase`.
-  - Jobs devem tipar o payload com schemas reutilizados quando existirem (ex: `equiny.validation.shared`).
+| Aspecto | Diretriz |
+|---|---|
+| **Objetivo** | Orquestrar processamento assincrono e entrega orientada a eventos. |
+| **Papel arquitetural** | Ser a borda de eventos do sistema, integrando `core`, `Inngest`, `Redis` e runtime realtime. |
+| **Entrada principal** | `Events` do dominio publicados por contratos como `Broker`. |
+| **Saida principal** | `Jobs`, relays e publicacoes para `Inngest`, `Redis` e fluxos de notificacao/realtime. |
 
-## Nao deve conter
-- Antipadroes e acoplamentos proibidos
-  - Job nao deve implementar validacoes e regras de negocio (isso e do `core`).
-  - Job nao deve manipular **Models ORM** diretamente nem escrever queries: use repositorios SQLAlchemy existentes.
-  - Job nao deve fazer `commit()`/`rollback()` manual fora do context manager; o ciclo transacional e do `Job.sqlalchemy_session()`.
-  - Job nao deve depender de `controllers`/`routers`/`pipes`; `pubsub` e uma borda propria.
-- Responsabilidades que pertencem a outras camadas
-  - Contratos HTTP e status codes pertencem a `rest`/`routers`.
-  - Definicao de eventos de dominio pertence a `core/*/domain/events/`.
-  - Persistencia (models/mappers/repos) pertence a `src/equiny/database/sqlalchemy/`.
+### Responsabilidades principais
 
-> ⚠️ Se voce esta prestes a "resolver" um problema de dominio dentro do job, isso e sinal de que a regra deveria estar em um `UseCase` no `core`.
+- Registrar funcoes do `Inngest` para jobs de `background` e integracoes assincronas.
+- Implementar `brokers` concretos para publicar `events` do dominio em `Inngest` ou `Redis`.
+- Executar `jobs`, relays e handlers que consomem eventos e delegam o trabalho real ao `core` ou ao runtime de socket.
 
-# Padroes de Projeto
-- Padroes arquiteturais aceitos
-  - Ports and Adapters: `core` define a porta `Broker` (`src/equiny/core/shared/interfaces/broker.py`) e `pubsub` implementa o adaptador concreto (`src/equiny/pubsub/inngest/inngest_broker.py`).
-  - Orquestracao por UseCase: job instancia repositorio + `UseCase` e chama `execute(...)`.
-- Como aplicar cada padrao na camada
-  - Registro do Inngest no app deve acontecer via `InngestPubSub.register(app)`: `src/equiny/pubsub/inngest/inngest_pubsub.py`.
-  - Publicacao de evento deve receber um `Event` do dominio e enviar para o Inngest com `name` e `payload`: `src/equiny/pubsub/inngest/inngest_broker.py`.
-  - Job deve:
-    - Definir `PayloadSchema(BaseModel)`.
-    - Criar handler via `@inngest.create_function(...)`.
-    - Validar `context.event.data` com `PayloadSchema.model_validate(...)`.
-    - Executar a acao principal via `context.step.run(...)`.
-    - Abrir sessao DB com `Job.sqlalchemy_session()` e instanciar repositorio + use case.
-- Quando evitar cada padrao
-  - Nao criar job para logica que precisa ser sincrona/transactional com a request HTTP; isso pertence ao fluxo REST.
-  - Nao publicar eventos diretamente do `database` ou do `core` com SDK do Inngest; sempre via `Broker` (porta) no `core`.
+### Limites da camada
 
-```python
-# Exemplo real do projeto (estrutura do job):
-# `src/equiny/pubsub/inngest/jobs/profiling/create_owner_job.py`
+- `pubsub` e uma camada de orquestracao e transporte de eventos, nao de regra de negocio.
+- Pode abrir `session`, montar adaptadores concretos e acionar `UseCase`, mas nao deve concentrar decisao funcional.
+- O `core` deve falar com esta camada apenas por `interfaces`, como `Broker`, e por `events` de dominio.
 
-from pydantic import BaseModel
-from inngest import Inngest, Context, TriggerEvent
+> ⚠️ Se um `job` esta resolvendo regra de negocio de ponta a ponta, a fronteira entre `pubsub` e `core` foi quebrada.
 
-from equiny.core.auth.domain.events import AccountCreatedEvent
+## Estrutura de Diretorios Globais
 
+### Mapa de pastas relevantes
 
-class _PayloadSchema(BaseModel):
-    ...
+| Caminho | Responsabilidade |
+|---|---|
+| `src/equiny/pubsub/inngest/` | Integracao com runtime do `Inngest` e `broker` usado para eventos assincronos. |
+| `src/equiny/pubsub/inngest/jobs/` | `Jobs` de `background` organizados por contexto. |
+| `src/equiny/pubsub/redis/` | Runtime de `pub/sub` para entrega realtime e disparo de jobs leves. |
+| `src/equiny/pubsub/redis/brokers/` | `Brokers` especializados por contexto para fan-out via `Redis`. |
+| `src/equiny/pubsub/redis/jobs/` | `Jobs` acionados a partir de mensagens consumidas do `Redis`. |
 
+### Regras de organizacao e nomeacao
 
-class CreateOwnerJob:
-    @staticmethod
-    def handle(inngest: Inngest):
-        @inngest.create_function(
-            fn_id='profiling/create.owner.job',
-            trigger=TriggerEvent(event=AccountCreatedEvent.name),
-        )
-        async def _(context: Context) -> None:
-            payload = _PayloadSchema.model_validate(context.event.data)
-            await context.step.run('Create owner', lambda: CreateOwnerJob.create_owner(payload))
+- `Jobs` devem ser agrupados por contexto e seguir convencao `*Job`.
+- `Brokers` concretos devem explicitar a tecnologia ou o contexto quando isso reduzir ambiguidade.
+- A camada deve separar claramente runtime de transporte de `jobs` e `brokers`.
+- Nao especificar arquivos especificos, pois isso muda constantemente.
 
-        return _
-```
+## Glossario arquitetural da camada
 
-# Padroes de Uso Aplicados
-- Fluxos comuns da camada
-  - Publicacao: `core` cria `Event` -> borda (ex: REST) recebe `Broker` via `Depends` -> `InngestBroker.publish(event)`.
-  - Consumo: Inngest dispara job -> job valida payload -> job abre sessao -> job executa `UseCase`.
-- Exemplos de uso correto
-  - Job de exemplo: `src/equiny/pubsub/inngest/jobs/profiling/create_owner_job.py`.
-    - Evento: `AccountCreatedEvent` (importado do `core`).
-    - Payload tipado e validado com `PayloadSchema`.
-    - Execucao de `CreateOwnerUseCase` usando `SqlalchemyOwnersRepository` dentro de `Job.sqlalchemy_session()`.
-- Erros comuns e como evitar
-  - Mismatch de payload entre `Event.payload` e `PayloadSchema`: o job deve refletir exatamente o payload publicado.
-  - Misturar borda HTTP com job: job nao deve depender de semantica HTTP (status code/response); ele deve apenas executar a orquestracao do processamento assincrono.
-  - Acessar `request.state` no job: job nao deve depender de request; job roda fora do ciclo HTTP.
+| Termo | Definicao |
+|---|---|
+| `Broker` | Adaptador concreto que traduz um `event` do dominio para o mecanismo de publicacao adequado. |
+| `Job` | Unidade assincrona que consome um `event`, valida `payload` e delega para `UseCase` ou runtime especializado. |
+| `Inngest Function` | Handler registrado no `Inngest` para fluxos de `background`. |
+| `Redis PubSub` | Runtime de distribuicao de mensagens para sockets e jobs leves. |
+| `Event Relay` | Fluxo que recebe um `event` e o encaminha para notificacao, socket ou processamento posterior. |
 
-# Regras de Integracao com Outras Camadas
-- Dependencias permitidas e proibidas
-  - `pubsub` pode depender de:
-    - `core` (eventos e use cases).
-    - `database` (repositorios SQLAlchemy concretos usados nos jobs).
-    - `validation` (schemas Pydantic reutilizados para validar payload de evento).
-    - SDK do Inngest (`inngest`).
-  - `pubsub` nao deve depender de:
-    - `routers` e `rest/controllers`.
-    - Pipes (ex: `src/equiny/pipes/`) como dependencia interna de job.
-- Contratos/interface de comunicacao
-  - Publicacao de eventos deve acontecer via `Broker` (`src/equiny/core/shared/interfaces/broker.py`).
-  - O adaptador `InngestBroker` deve traduzir `Event` (dominio) -> `inngest.Event` e enviar com `send_sync(...)`: `src/equiny/pubsub/inngest/inngest_broker.py`.
-- Direcao de dependencia e limites de acoplamento
-  - O `core` nao deve importar nada de `pubsub`.
-  - O `rest` pode receber `Broker` via `Depends(PubSubPipe.get_broker)` e publicar eventos sem conhecer o SDK.
-    - Pipe: `src/equiny/pipes/pubsub_pipe.py`.
-    - Middleware que injeta client na request: `src/equiny/rest/middlewares/handle_inngest_client_middleware.py`.
-    - Registro do Inngest e middlewares: `src/equiny/app.py`.
+## Padroes de Projeto
 
-| De | Para | Tipo | Contrato | Arquivo real |
-|---|---|---|---|---|
-| `rest` | `pubsub` | `Depends` | `Broker` | `src/equiny/pipes/pubsub_pipe.py` |
-| `rest` | `pubsub` | `middleware` | `request.state.inngest_client` | `src/equiny/rest/middlewares/handle_inngest_client_middleware.py` |
-| `pubsub` | `core` | import | `Event`, `UseCase` | `src/equiny/pubsub/inngest/jobs/profiling/create_owner_job.py` |
-| `pubsub` | `database` | import | `Sqlalchemy*Repository` | `src/equiny/pubsub/inngest/jobs/profiling/create_owner_job.py` |
+### Padroes arquiteturais aceitos
 
-# Checklist Rapido para Novas Features na Camada
-- Itens objetivos de validacao antes de abrir PR
-  - Job novo esta em `src/equiny/pubsub/inngest/jobs/<contexto>/` e exportado em `__init__.py`.
-  - Job valida payload com `PayloadSchema.model_validate(context.event.data)`.
-  - Job usa `context.step.run(...)` para a acao principal.
-  - Job usa `Job.sqlalchemy_session()` e nao faz commit/rollback manual.
-  - Job chama `UseCase.execute(...)` e nao contem regra de negocio.
-- Criterios minimos de conformidade arquitetural
-  - Eventos consumidos/publicados sao do `core` (classe de evento, `name`, `payload`).
-  - Publicacao de evento na borda usa `Broker` (porta), nao SDK do Inngest.
-  - Nenhum import do `core` aponta para `pubsub`.
-- Sinais de alerta para revisao tecnica
-  - Job acessa Models ORM diretamente ou escreve SQL.
-  - Job implementa validacao de dominio ou branching de negocio.
-  - PayloadSchema nao bate com o evento publicado (campos ausentes/nomes divergentes).
-  - Job depende de request/middleware/pipes (acoplamento indevido ao HTTP).
+- **`Event-Driven Architecture`** para processamento desacoplado de efeitos colaterais.
+- **`Ports and Adapters`** para publicar `events` sem vazar detalhes de `Inngest` ou `Redis` para o `core`.
+- **`Job as Orchestrator`** para validar `payload`, abrir recursos e chamar `UseCase`.
+- **`Broker` especializado por contexto** quando o fan-out depende do tipo de `event`.
 
-# Observacoes e Pendencias
-- Premissas adotadas
-  - A camada PubSub do projeto esta implementada via `Inngest` e registrada no `FastAPI` por `InngestPubSub.register(app)`.
-  - A gestao transacional em jobs segue `Job.sqlalchemy_session()`.
-- Informacoes ausentes
-  - Padrao unificado de convencao para `fn_id` de jobs alem do exemplo atual (`profiling/create.owner.job`) nao esta documentado em regras; use o padrao ja existente para manter consistencia.
-  - Nao ha (neste repositorio) um documento dedicado de retry/backoff/idempotencia por tipo de job; se isso virar recorrente, documentar um padrao explicito.
-- Proximos passos para refinamento
-  - Adicionar mais exemplos reais quando novos jobs forem criados (ex: outros contextos alem de `profiling`).
-  - Se houver necessidade de padronizar `fn_id` e naming, criar convencao formal e aplicar de forma incremental.
+### Como aplicar os padroes
+
+- `Events` publicados pelo dominio devem chegar ao `pubsub` como classes do `core`, nao como dicionarios anonimos.
+- Cada `job` deve validar `payload`, montar `repositories/providers` necessarios e chamar um fluxo do `core` ou runtime especializado.
+- `Redis` deve ser usado para entrega realtime e disparo de jobs leves; `Inngest` deve ser usado para `background` e integracoes assincronas estruturadas.
+- Efeitos colaterais devem ser centralizados no handler correto, mantendo responsabilidade unica por unidade.
+
+### Quando evitar
+
+- Nao criar `job` para trabalho que precisa ser sincrono com a `request` ou com a transacao corrente.
+- Nao usar `broker` como atalho para esconder regra de negocio que deveria estar em `UseCase`.
+- Nao publicar direto no SDK dentro de `core`, `database` ou `rest` quando existe `interface` de `Broker` adequada.
+
+## Regras de Integracao com Outras Camadas
+
+### Mapa de integracao
+
+| Camada | Como integra com `pubsub` | Regra |
+|---|---|---|
+| `core` | Publica `events` e `interfaces` | Nao conhece SDK nem runtime de transporte. |
+| `rest` | Pode obter `brokers` via `pipes` | Publica evento sem conhecer a implementacao concreta. |
+| `websocket` | Pode publicar ou consumir efeitos via `Redis` | Deve manter o `core` isolado do transporte realtime. |
+| `database` | Pode ser usado por `jobs` que montam o proprio escopo transacional | Nao deve receber regra de negocio deslocada. |
+
+### Dependencias permitidas e proibidas
+
+- `pubsub` pode depender de `core`, `database`, `providers`, runtime de `websocket` e SDKs de `Inngest`/`Redis`.
+- `pubsub` nao deve depender de `rest/controllers` ou de composicao de routers para executar seus `jobs`.
+
+### Contratos de comunicacao
+
+- A publicacao de eventos deve acontecer por `interfaces` do `core`, principalmente `Broker`.
+- `Payloads` consumidos por `jobs` devem refletir fielmente o contrato do `event` publicado.
+- `Jobs` e `brokers` devem devolver controle para a borda sem impor detalhes de transporte ao `core`.
+
+## Checklist Rapido para Novas Features na Camada
+
+- [ ] O `event` novo ja existe ou foi definido no `core` antes da implementacao do `job` ou `broker`.
+- [ ] O `job` esta no contexto correto e valida `payload` de forma explicita.
+- [ ] O handler monta apenas as dependencias minimas necessarias.
+- [ ] O fluxo escolheu corretamente entre `Inngest` e `Redis` conforme a natureza do processamento.
+- [ ] O comportamento e seguro para reexecucao ou tolerante a reentrega.
+- [ ] Nenhum `job` concentra regra de negocio principal.
+
+## ✅ O que DEVE conter
+
+- `Brokers` concretos para publicacao de `events`.
+- `Jobs` e handlers organizados por contexto e por runtime.
+- Validacao explicita de `payload` e montagem objetiva de dependencias.
+- Escolha intencional entre `Inngest` e `Redis`.
+- Unidades assincronas pequenas, previsiveis e focadas em uma responsabilidade.
+
+## ❌ O que NUNCA deve conter
+
+- Regra de negocio central implementada dentro de `jobs` ou `brokers`.
+- Publicacao direta com SDK a partir de `core` ou `controllers` quando existe `Broker`.
+- Dependencia de `request`, `request.state` ou `response object` dentro de `jobs`.
+- Divergencia entre `payload` publicado e `payload` esperado pelo consumidor.

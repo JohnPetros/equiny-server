@@ -1,143 +1,123 @@
-# Regras da camada REST
+# Regras da Camada REST
 
-## Visao geral e modulos da 
+> 💡 Use este documento ao criar ou revisar `controllers`, `middlewares`, contratos HTTP e integracoes da API em `src/equiny/rest/`.
 
-A camada `src/equiny/rest/` atua como o adaptador de entrada (Driver Adapter) da aplicacao.
-Ela e responsavel por expor a interface HTTP, receber requisicoes, validar entradas,
-converter dados e delegar a execucao para os Casos de Uso (Core).
+## Visao Geral
 
-Modulos atuais:
+### Resumo da camada
 
-- `controllers`: Agrupamento de controladores por contexto (`auth`, `profiling`, etc.).
-- `docs`: Controladores para documentacao ou paginas estaticas.
-- `middlewares`: Logica transversal (cross-cutting concerns) como gestao de sessao de banco e integracao com clientes externos (Inngest).
+| Aspecto | Diretriz |
+|---|---|
+| **Objetivo** | Expor a API HTTP e adaptar `request` para fluxos do `core`. |
+| **Papel arquitetural** | Ser a borda de entrada HTTP da aplicacao. |
+| **Entrada principal** | `request`, `query params`, `path params`, `body`, `headers` e `dependencies`. |
+| **Saida principal** | Respostas HTTP baseadas em `DTOs`, `responses` e `schemas` estaveis. |
 
-Responsabilidade de alto nivel:
+### Responsabilidades principais
 
-- Definir contratos de entrada (Schemas) e saida (Response Models).
-- Gerenciar codigos de status HTTP (`201`, `400`, `404`, etc.).
-- Orquestrar a obtencao de dependencias (via Pipes) e injecao em casos de uso.
-- Traduzir excecoes de dominio para respostas HTTP adequadas.
+- Implementar `controllers` por contexto, com endpoints finos e focados em transporte.
+- Declarar `middlewares` de `request` para `session`, clientes externos e concerns transversais.
+- Traduzir validacoes, erros de dominio e dependencias injetadas em uma experiencia HTTP previsivel.
 
-## Estrutura de diretorios explicada
+### Limites da camada
 
-```text
-src/equiny/rest/
-  controllers/
-    auth/
-      sign_in_account_controller.py
-      ...
-    profiling/
-      create_horse_controller.py
-      ...
-    docs/
-      render_docs_page_controller.py
-  middlewares/
-    handle_sqlalchemy_session_middleware.py
-    ...
-```
+- Pode depender de `FastAPI`, `pipes`, `validation`, `core` e contratos de resposta da aplicacao.
+- Nao deve conter regra de negocio, `query SQL`, modelagem ORM ou acoplamento forte a implementacoes concretas de infraestrutura.
+- Deve agir como borda de entrada: validar, adaptar, delegar e responder.
 
-Leitura por responsabilidade:
+> ⚠️ Se um `controller` esta decidindo regra de negocio, a borda ficou gorda demais.
 
-- `controllers/<context>/<action>_controller.py`: Implementacao de um endpoint especifico.
-- `middlewares/handle_<responsibility>_middleware.py`: Implementacao de middlewares do FastAPI.
+## Estrutura de Diretorios Globais
 
-## Principios Fundamentais
+### Mapa de pastas relevantes
 
-### ✅ O que DEVE conter
+| Caminho | Responsabilidade |
+|---|---|
+| `src/equiny/rest/controllers/` | Agrupamento de `controllers` por contexto funcional. |
+| `src/equiny/rest/controllers/<context>/` | Endpoints HTTP do contexto, como `auth`, `profiling`, `matching`, `conversation`, `storage` e `docs`. |
+| `src/equiny/rest/middlewares/` | `Middlewares` por `request` para sessao e clientes anexados ao estado da aplicacao. |
 
-- **Controllers "Magros"**: Apenas logica de adaptador (HTTP -> Dominio -> HTTP).
-- **Validacao de Entrada**: Uso de Pydantic Schemas (`src/equiny/validation`) ou `Body` models locais.
-- **Injecao de Dependencia**: Uso de `Depends` do FastAPI juntamente com classes `Pipe` (ex: `DatabasePipe`, `AuthPipe`) para obter repositorios e servicos.
-- **Delegacao**: Instanciar Casos de Uso com as dependencias injetadas.
-- **Retorno Tipado**: Uso explicito de `response_model` com DTOs do Core.
-- **Status Codes**: Uso de `http.HTTPStatus` para clareza (ex: `HTTPStatus.CREATED`).
+### Regras de organizacao e nomeacao
 
-### ❌ O que NUNCA deve conter
+- Cada endpoint deve viver em um `controller` dedicado e no contexto correto.
+- `Controllers` devem seguir convencao `*Controller` e expor registro por `handle(router)`.
+- `Middlewares` devem encapsular infraestrutura transversal, nao regra de negocio.
+- Nao especificar arquivos especificos, pois isso muda constantemente.
 
-- **Regras de Negocio**: Condicionais de logica de dominio, validacoes de negocio complexas.
-- **Acesso Direto ao ORM**: Queries SQL ou manipulacao de modelos do SQLAlchemy diretamente no controller.
-- **Instanciacao Manual de Repositorios**: Evite `Repo(session)`. Use `Depends(DatabasePipe.get_repo)` para manter o acoplamento baixo e facilitar testes.
-- **Gestao de Transacao**: Commit/Rollback explicito (deixe para o Middleware `HandleSqlalchemySessionMiddleware`).
-- **Retorno de Models ORM**: Nunca retornar um objeto `Model` do SQLAlchemy diretamente no `response_model`.
+## Glossario arquitetural da camada
 
-## Padroes de projeto e Padroes de uso aplicados
+| Termo | Definicao |
+|---|---|
+| `Controller` | Adaptador HTTP que recebe `request`, resolve dependencias e delega ao `UseCase`. |
+| `Middleware` | Componente transversal executado por `request` para abrir ou anexar recursos. |
+| `Depends` | Mecanismo de injecao do `FastAPI` para montar `repositories`, providers, `guards` e dependencias reutilizaveis. |
+| `response_model` | Contrato de saida do endpoint; deve refletir `DTOs`, `responses` ou `schemas`, nunca `ORM`. |
+| `Schema` | Estrutura de validacao e serializacao usada na borda HTTP. |
 
-### Controller Class Pattern
+## Padroes de Projeto
 
-Os controllers sao definidos como classes com um metodo estatico `handle`:
+### Padroes arquiteturais aceitos
 
-```python
-class CreateHorseController:
-    @staticmethod
-    def handle(router: APIRouter) -> None:
-        @router.post(...)
-        def _(
-            body: Schema,
-            repository: InterfaceRepository = Depends(DatabasePipe.get_repository)
-        ):
-            ...
-```
+- **`Thin Controller`** para separar transporte de regra de negocio.
+- **Fluxo `Schema -> DTO -> UseCase -> DTO/Response`** como caminho padrao.
+- **`Dependency Injection`** via `Depends(...)` e `pipes`.
+- **`Middleware per Request`** para recursos compartilhados durante o ciclo HTTP.
 
-Isso permite agrupar dependencias e manter o escopo limpo. O metodo interno (geralmente `_`) e a funcao de rota real.
+### Como aplicar os padroes
 
-### Dependency Injection (Pipes)
+- Todo `controller` deve registrar rota, declarar `status_code` e `response_model`, resolver dependencias e chamar `UseCase.execute(...)`.
+- Conversoes de entrada devem acontecer na borda, preferencialmente via `schema` ou dependencia tipada.
+- `Repositories`, `brokers` e providers devem entrar por `pipes`, evitando instanciacao manual repetida.
+- `Errors` de dominio devem subir para os `handlers` globais da aplicacao e ser traduzidos fora do `core`.
 
-A camada REST utiliza "Pipes" (`src/equiny/pipes/`) como provedores de dependencias para o FastAPI:
+### Quando evitar
 
-1.  **DatabasePipe**: Fornece repositorios concretos (`Sqlalchemy*Repository`) ja inicializados com a sessao da requisicao.
-2.  **AuthPipe**: Fornece validacao de token e usuario autenticado.
+- Nao criar `controller` generico demais que misture multiplas responsabilidades.
+- Nao usar `middleware` para regra de negocio; ele existe para infraestrutura e concerns transversais.
+- Nao transformar o endpoint em `composition root` pesado quando um `pipe` resolve a dependencia de forma mais limpa.
 
-O fluxo tipico em um controller e:
+## Regras de Integracao com Outras Camadas
 
-1.  Declarar dependencia do repositorio via `Depends(DatabasePipe.get_*)`.
-2.  Instanciar o Caso de Uso passando o repositorio injetado.
-3.  Executar `use_case.execute(dto)`.
+### Mapa de integracao
 
-### Input/Output Conversion
+| Camada | Como integra com `rest` | Regra |
+|---|---|---|
+| `core` | `controllers` importam `UseCase`, `DTO`, `Response` e `Error` | Deve receber apenas dados adaptados da borda. |
+| `validation` | Fornece `schemas` e conversao de entrada | Deve validar transporte antes do `UseCase`. |
+| `pipes` | Entrega `repositories`, providers, `guards` e `brokers` | Deve simplificar o wiring do endpoint. |
+| `routers` | Registra `controllers` por contexto | Nao deve absorver logica de endpoint. |
 
-- **Input**: `Schema` (Validation) -> `to_dto()` -> `DTO` (Core).
-- **Output**: `DTO` (Core) -> `Response Model` (FastAPI serializa automaticamente).
+### Dependencias permitidas e proibidas
 
-## Convencoes de nomenclatura
+- `rest` pode depender de `core`, `validation`, `pipes` e mecanismos do `FastAPI`.
+- `rest` nao deve depender diretamente de `models` ORM, `query SQL` ou SDKs que deveriam entrar por `pipes`.
 
-- Arquivos em `snake_case` refletindo a acao: `create_horse_controller.py`.
-- Classes em `PascalCase` com sufixo `Controller`: `CreateHorseController`.
-- Metodo de entrada padrao: `handle(router: APIRouter)`.
-- Funcao de rota interna: `def _(...)`.
+### Contratos de comunicacao
 
-## Regras de integracao com outras camadas da aplicacao
+- Entrada HTTP deve ser validada por `schemas`, parametros tipados ou `dependencies` equivalentes.
+- Saida HTTP deve usar `DTOs`, `responses` ou `schemas` de saida.
+- `Repositories`, providers e `brokers` devem chegar ao `controller` por interfaces ou dependencias encapsuladas em `pipes`.
 
-### Integracao com Core (`src/equiny/core/`)
+## Checklist Rapido para Novas Features na Camada
 
-- Controllers importam `UseCases`, `DTOs` e `Interfaces` de repositorios.
-- Controllers nao implementam regras, apenas chamam `execute()`.
+- [ ] O endpoint novo vive no contexto correto em `controllers/<context>/`.
+- [ ] A rota declara `status_code`, contrato de entrada e `response_model` quando aplicavel.
+- [ ] As dependencias entram por `Depends(...)` e `pipes`.
+- [ ] O `controller` converte dados para `DTO` ou tipo esperado antes de chamar o `UseCase`.
+- [ ] O fluxo de erro esta coberto por `handlers` globais ou excecoes coerentes com a borda.
+- [ ] Nenhum endpoint manipula `Session`, `commit`, `rollback` ou `SQL` diretamente.
 
-### Integracao com Database (`src/equiny/database/`)
+## ✅ O que DEVE conter
 
-- **Indireta via Pipes**: Controllers NAO devem importar `Sqlalchemy` ou classes concretas de repositorios diretamente.
-- O `DatabasePipe` encapsula a criacao dos repositorios concretos.
+- `Controllers` finos, rotas explicitas e contratos HTTP claros.
+- Injecao de dependencias por `Depends(...)` e `pipes`.
+- `Middlewares` para recursos por `request` e adaptacao transversal.
+- Conversao de entrada antes do `core`.
+- `Handlers` globais como ponto de traducao de erro para HTTP.
 
-### Integracao com Validation (`src/equiny/validation/`)
+## ❌ O que NUNCA deve conter
 
-- Schemas sao usados como type hints nos argumentos da funcao de rota.
-- O metodo `to_dto()` do schema deve ser usado para converter para o tipo esperado pelo Use Case.
-
-### Integracao com Routers (`src/equiny/routers/`)
-
-- Os arquivos de rotas (`src/equiny/routers/*.py`) definem classes com metodos estaticos `register() -> APIRouter`.
-- O metodo `register` configura prefixos e tags.
-- Controllers sao registrados chamando `Controller.handle(router)`.
-- Routers podem incluir sub-routers via `router.include_router(...)`.
-- O controller nao define o prefixo do modulo (ex: `/horses`), apenas o caminho relativo da acao (ex: `/` ou `/{id}`).
-
-## Checklist rapido para novas features na camada `rest`
-
-1.  Definir/Reutilizar Schema em `validation` (ou local se for muito simples).
-2.  Criar arquivo do controller em `rest/controllers/<context>/`.
-3.  Implementar classe `*Controller` e metodo `handle`.
-4.  Definir rota, status code e `response_model` (DTO).
-5.  Injetar dependencias (Repositorios/Servicos) via `Depends(DatabasePipe.*)`.
-6.  Instanciar Use Case com as dependencias.
-7.  Chamar `execute` e retornar resultado.
-8.  Registrar controller no arquivo de rotas correspondente em `routers/`.
+- Regra de negocio, `query SQL`, acesso direto a `ORM` ou controle manual de transacao dentro do endpoint.
+- Contrato de resposta baseado em `Model` ORM.
+- Instanciacao espalhada de adaptadores concretos que poderiam ser reutilizados via `pipes`.
+- `Middleware` carregando fluxo de feature em vez de concern transversal.

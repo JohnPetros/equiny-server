@@ -1,127 +1,124 @@
 # Regras da Camada WebSocket
 
-# Visao Geral
-- Objetivo da camada
-  - Expor um endpoint WebSocket para o cliente enviar eventos (nome + payload) e disparar orquestracao de casos de uso do `core`.
-  - Integrar comunicacao em tempo real via `RedisPubSub` + `ws.emit(...)` para entrega de eventos para sockets conectados.
-- Responsabilidades principais
-  - Aceitar conexoes e manter registro de sockets por `owner_id`: `src/equiny/websocket/ws.py`.
-  - Definir o contrato de mensagem recebida (nome + payload) e rotear para o channel correto: `src/equiny/routers/websocket_router.py`.
-  - Implementar handlers (channels) por contexto de dominio, validando payload e chamando `UseCase.execute(...)`: `src/equiny/websocket/channels/`.
-- Limites da camada
-  - A camada `websocket` deve ser **borda/orquestracao**: validar entrada e delegar regra de negocio para `core`.
-  - A camada `websocket` nao deve conter regra de negocio, nem modelar entidades de dominio; isso pertence ao `core`.
-  - O gerenciamento de sockets deve permanecer encapsulado em `Ws` e nao deve vazar `WebSocket` (FastAPI/Starlette) para o `core`.
+> 💡 Use este documento ao criar ou revisar fluxo realtime, `channels`, emissao de eventos e integracao de socket com `Redis`.
 
-# Estrutura de Diretorios Globais
-- Mapa de pastas relevantes
-  - `src/equiny/websocket/`
-  - `src/equiny/websocket/channels/`
-  - `src/equiny/routers/websocket_router.py`
-  - `src/equiny/pubsub/redis/redis_pubsub.py`
-- Responsabilidade de cada diretorio
-  - `src/equiny/websocket/`: runtime de conexao/emissao (`ws = Ws()`) e export publico via `__all__`.
-  - `src/equiny/websocket/channels/`: handlers por contexto (ex: `ProfilingChannel`, `ConversationChannel`).
-  - `src/equiny/routers/websocket_router.py`: endpoint WebSocket, parse de JSON recebido e roteamento para channels.
-  - `src/equiny/pubsub/redis/redis_pubsub.py`: adaptador pubsub que consome mensagens Redis e chama `ws.emit(...)`.
-- Regras de organizacao e nomeacao
-  - Um handler de websocket deve viver em `src/equiny/websocket/channels/` e seguir o padrao `*Channel`.
-  - Eventos recebidos do cliente devem ser name-spaced por contexto (padrao atual): `profiling/...` e `conversation/...`: `src/equiny/routers/websocket_router.py`.
-  - Exports do pacote devem ser explicitos via `__init__.py` + `__all__`: `src/equiny/websocket/channels/__init__.py`, `src/equiny/websocket/__init__.py`.
+## Visao Geral
 
-# Principios Fundamentais
-## Deve conter
-- Elementos obrigatorios da camada
-  - **Contrato de mensagem**: sempre receber `{ "name": str, "payload": Any }` e validar via schema: `JsonSchema` em `src/equiny/routers/websocket_router.py`.
-  - **Validacao de payload** por evento no channel usando `Schema.model_validate(...)` e schemas locais (por handler): `src/equiny/websocket/channels/profiling_channel.py`, `src/equiny/websocket/channels/conversation_channel.py`.
-  - **Orquestracao por UseCase**: channel instancia o caso de uso e chama `execute(...)` (sem regra de negocio dentro do handler): `RegisterOwnerPresenceUseCase`, `UnregisterOwnerPresenceUseCase`, `SendMessageUseCase`.
-  - **Dependencias por contexto**: repositories e providers sao injetados no constructor do channel (nao buscar globalmente): `src/equiny/websocket/channels/*.py`.
-- Praticas recomendadas
-  - Manter `handle(...)` com roteamento simples (match/case) e isolar validacao e execucao em metodos privados (padrao atual): `src/equiny/websocket/channels/*_channel.py`.
-  - Manter payload schemas pequenos e tipados (ex: `IdSchema`, `Field(default_factory=list)`), para falhar cedo em input invalido.
+### Resumo da camada
 
-## Nao deve conter
-- Antipadroes e acoplamentos proibidos
-  - Channel nao deve conter branching de negocio; qualquer decisao de dominio deve ir para o `core`.
-  - Router WebSocket nao deve conter regra de negocio (apenas parse, roteamento, abertura de recursos e delegacao).
-  - Nao deve expor SDKs de transporte (FastAPI WebSocket, Redis client) para o `core`.
-- Responsabilidades que pertencem a outras camadas
-  - Persistencia (models/mappers/queries) pertence a `src/equiny/database/sqlalchemy/`.
-  - Contratos HTTP e status codes pertencem a `rest`/`routers` HTTP; WebSocket trata eventos e payload.
+| Aspecto | Diretriz |
+|---|---|
+| **Objetivo** | Sustentar comunicacao realtime com clientes conectados. |
+| **Papel arquitetural** | Ser a borda de entrada e saida de eventos por `WebSocket`. |
+| **Entrada principal** | Envelope `{name, payload}` enviado pelo cliente. |
+| **Saida principal** | Execucao de `UseCase` e emissao de eventos para sockets ativos. |
 
-# Padroes de Projeto
-- Padroes arquiteturais aceitos
-  - Clean/Hexagonal: `websocket` como borda; `core` como regra; `database` como adaptador de persistencia; dependencias sempre apontam para dentro (conforme `documentation/architecture.md`).
-  - Handler por contexto (channel): o router decide o channel por prefixo do evento e o channel decide a acao por `event_name`.
-- Como aplicar cada padrao na camada
-  - Router deve:
-    - autenticar (padrao atual: `AuthPipe.verify_jwt_from_query`),
-    - aceitar socket e registrar em `ws.connect(owner_id, websocket)`,
-    - ler JSON e validar com `JsonSchema.model_validate(...)`,
-    - criar broker e repositorios, instanciar channel e chamar `channel.handle(name, payload)`: `src/equiny/routers/websocket_router.py`.
-  - Channel deve:
-    - validar o payload com schema Pydantic (`Schema.model_validate(...)`),
-    - instanciar `UseCase` e executar `execute(...)`,
-    - publicar efeitos via `Broker` quando aplicavel (dependencia ja injetada).
-- Quando evitar cada padrao
-  - Nao criar evento novo sem um prefixo de contexto consistente (`profiling/` ou `conversation/`) enquanto o roteamento for baseado em prefixo.
-  - Nao mover logica de parse/roteamento para dentro de `core`; transporte e detalhe de borda.
+### Responsabilidades principais
 
-# Padroes de Uso Aplicados
-- Fluxos comuns da camada
-  - Cliente conecta em `WS /websocket/{owner_id}?token=<jwt>` e envia eventos `{name, payload}`; o server roteia para o channel e executa use case: `src/equiny/routers/websocket_router.py`.
-  - Server emite eventos para um socket via `RedisPubSub.reader()` consumindo Redis e chamando `ws.emit(socket_key, event)`: `src/equiny/pubsub/redis/redis_pubsub.py`.
-- Exemplos de uso correto
-  - Profiling presence:
-    - Evento `OwnerEnteredEvent.NAME` com payload `{ owner_id }` chama `RegisterOwnerPresenceUseCase.execute(owner_id)`: `src/equiny/websocket/channels/profiling_channel.py`.
-    - Evento `OwnerExitedEvent.NAME` com payload `{ owner_id }` chama `UnregisterOwnerPresenceUseCase.execute(owner_id)`: `src/equiny/websocket/channels/profiling_channel.py`.
-  - Conversation send message:
-    - Evento `MessageSentEvent.name` com payload `{ message_content, chat_id, sender_id, attachments[] }` chama `SendMessageUseCase.execute(MessageDto(...), chat_id)`: `src/equiny/websocket/channels/conversation_channel.py`.
-- Erros comuns e como evitar
-  - Enviar `name` sem prefixo conhecido: cai em erro `Event not supported` no router; defina `profiling/...` ou `conversation/...`: `src/equiny/routers/websocket_router.py`.
-  - Payload divergente do schema do handler: `Schema.model_validate(...)` falha; mantenha o payload alinhado ao schema do channel.
-  - Misturar concerns de DB/transacao no channel: o padrao atual abre sessao no router e passa repositorios para o channel; preserve esse limite.
+- Manter o runtime de conexao e emissao em `src/equiny/websocket/`.
+- Implementar `channels` por contexto para validar `payload` e delegar execucao ao `core`.
+- Integrar o fluxo realtime com o router `WebSocket`, `brokers` `Redis`, cache e `repositories` necessarios ao processamento.
 
-# Regras de Integracao com Outras Camadas
-- Dependencias permitidas e proibidas
-  - `websocket` pode depender de:
-    - `core` (events, use cases, interfaces, erros de dominio): `src/equiny/websocket/channels/*.py`.
-    - `validation` (schemas Pydantic compartilhados): `equiny.validation.shared`.
-    - `database` (repositorios concretos SQLAlchemy, instanciados no router): `src/equiny/routers/websocket_router.py`.
-    - `pipes` (Depends para auth, providers, database, pubsub): `src/equiny/routers/websocket_router.py`.
-  - `websocket` nao deve depender de:
-    - detalhes internos de `database` (models/mappers) dentro de channels.
-    - `rest/controllers` HTTP para executar logica.
-- Contratos/interface de comunicacao
-  - Contrato de entrada do cliente: `JsonSchema` com `name` e `payload`: `src/equiny/routers/websocket_router.py`.
-  - Contrato de emissao para o socket: `ws.emit(socket_key, event)` com payload JSON-serializavel (via `jsonable_encoder`): `src/equiny/websocket/ws.py`.
-  - Integracao com pubsub: `RedisPubSub.publish(socket_key, action, event)` publica no Redis; `reader()` consome e executa `ws.emit(...)`: `src/equiny/pubsub/redis/redis_pubsub.py`.
-- Direcao de dependencia e limites de acoplamento
-  - `core` nao deve importar `websocket`.
-  - `routers/websocket_router.py` pode conhecer implementacoes concretas (repositorios SQLAlchemy, brokers Redis) como composition root do fluxo WebSocket.
+### Limites da camada
 
-| De | Para | Tipo | Contrato | Arquivo real |
-|---|---|---|---|---|
-| cliente | `WebSocketRouter` | WebSocket | `{name, payload}` | `src/equiny/routers/websocket_router.py` |
-| `WebSocketRouter` | `ConversationChannel` | call | `handle(name, payload)` | `src/equiny/websocket/channels/conversation_channel.py` |
-| `WebSocketRouter` | `ProfilingChannel` | call | `handle(name, payload)` | `src/equiny/websocket/channels/profiling_channel.py` |
-| `RedisPubSub.reader` | `ws` | call | `emit(socket_key, event)` | `src/equiny/pubsub/redis/redis_pubsub.py` |
+- `websocket` e borda de transporte e orquestracao, nao lugar de regra de negocio.
+- Pode validar envelope de mensagem, montar `channels` e publicar efeitos realtime, mas nao deve modelar dominio fora do `core`.
+- Detalhes de `WebSocket`, sockets conectados e `Redis` nao devem vazar para o `core`.
 
-# Checklist Rapido para Novas Features na Camada
-- Itens objetivos de validacao antes de abrir PR
-  - Evento novo possui prefixo de contexto suportado pelo router (padrao atual: `profiling/` ou `conversation/`).
-  - Channel novo segue `*Channel`, vive em `src/equiny/websocket/channels/` e esta exportado em `src/equiny/websocket/channels/__init__.py`.
-  - Handler valida payload com `Schema.model_validate(...)` antes de executar `UseCase`.
-  - Channel chama `UseCase.execute(...)` e nao contem regra de negocio.
-  - Router abre recursos (sessao SQLAlchemy) e injeta repositorios no channel, sem espalhar transacao para o core.
-- Criterios minimos de conformidade arquitetural
-  - Nenhum import do `core` aponta para `websocket`.
-  - WebSocketRouter permanece como composition root do fluxo (instanciacao de repositorios concretos e brokers).
-  - Mensagens emitidas sao JSON-serializaveis (passam por `jsonable_encoder` em `Ws.emit`).
-- Sinais de alerta para revisao tecnica
-  - Channel com branching de negocio, validacoes de dominio ou regras complexas.
-  - Channel acessando ORM models/SQL diretamente.
-  - Evento definido sem schema/validacao de payload.
-  - Router crescendo com logica que deveria estar no `core` (use case).
+> ⚠️ Se um `channel` esta decidindo regra de negocio complexa, ele deixou de ser uma borda realtime.
 
+## Estrutura de Diretorios Globais
 
+### Mapa de pastas relevantes
+
+| Caminho | Responsabilidade |
+|---|---|
+| `src/equiny/websocket/` | Runtime de conexao, desconexao e emissao para sockets ativos. |
+| `src/equiny/websocket/channels/` | `Handlers` por contexto que validam `payload` e executam fluxos do dominio. |
+| `src/equiny/routers/` | Ponto de entrada do endpoint `WebSocket` e `composition root` do fluxo realtime. |
+| `src/equiny/pubsub/redis/` | Distribuicao de eventos para sockets e jobs conectados ao runtime realtime. |
+
+### Regras de organizacao e nomeacao
+
+- `Channels` devem ser agrupados por contexto e seguir convencao `*Channel`.
+- Eventos recebidos do cliente devem ser `namespaced` por contexto para permitir roteamento previsivel.
+- O runtime de socket deve permanecer centralizado, evitando logica de conexao espalhada pelos `channels`.
+- Nao especificar arquivos especificos, pois isso muda constantemente.
+
+## Glossario arquitetural da camada
+
+| Termo | Definicao |
+|---|---|
+| `Ws Runtime` | Componente que registra sockets conectados, gerencia conexao e emite eventos. |
+| `Channel` | Handler por contexto que recebe `name` e `payload`, valida entrada e delega ao dominio. |
+| `Event Envelope` | Contrato de entrada enviado pelo cliente: `{name, payload}`. |
+| `Socket Key` | Identificador usado para enderecar um socket ou grupo logico de conexoes. |
+| `Realtime Broker` | Adaptador que publica eventos para `Redis PubSub` e alimenta a emissao do runtime. |
+
+## Padroes de Projeto
+
+### Padroes arquiteturais aceitos
+
+- **`Channel per Context`** para separar o tratamento realtime por dominio.
+- **`Event Envelope`** para padronizar o contrato de entrada do cliente.
+- **`Composition Root` no router `WebSocket`** para montar `repositories`, cache e `brokers` por mensagem.
+- **Fan-out com `Redis`** para distribuir eventos a sockets conectados sem acoplar o `core` ao transporte.
+
+### Como aplicar os padroes
+
+- O router `WebSocket` deve autenticar, aceitar conexao, validar o envelope recebido e encaminhar o evento para o `channel` correto.
+- Cada `channel` deve validar o `payload` com `schema` apropriado, montar o `DTO` necessario e chamar `UseCase.execute(...)`.
+- Eventos de saida devem ser publicados por `brokers` apropriados para que o runtime de socket faca a emissao ao cliente.
+- O runtime deve ser a unica fonte de verdade sobre sockets ativos e emissao de mensagens.
+
+### Quando evitar
+
+- Nao criar `channel` novo quando o evento ainda pertence ao mesmo contexto e pode ficar coeso no handler existente.
+- Nao colocar parse de transporte ou gestao de conexao dentro do `core`.
+- Nao pular validacao do envelope ou do `payload` so porque o cliente ja conhece o contrato.
+
+## Regras de Integracao com Outras Camadas
+
+### Mapa de integracao
+
+| Camada | Como integra com `websocket` | Regra |
+|---|---|---|
+| `core` | Recebe chamadas de `UseCase`, `DTOs`, `errors` e `events` | Nao conhece `WebSocket` nem `Redis`. |
+| `database` | Fornece `repositories` concretos montados no `router` | Nao deve vazar `ORM` para `channels`. |
+| `pipes` | Pode fornecer auth e acesso a runtime compartilhado | Deve simplificar wiring do fluxo realtime. |
+| `pubsub/redis` | Distribui eventos para sockets ativos | Deve manter a entrega desacoplada do dominio. |
+
+### Dependencias permitidas e proibidas
+
+- `websocket` pode depender de `core`, `database`, `providers`, `pipes`, `pubsub/redis` e `FastAPI WebSocket`.
+- `websocket` nao deve depender de `controllers` HTTP nem expor classes de transporte ao dominio.
+
+### Contratos de comunicacao
+
+- O cliente deve enviar mensagens no envelope padrao `{name, payload}`.
+- `Channels` devem falar com o `core` por `UseCase`, `DTOs`, `interfaces` e `errors` de dominio.
+- A emissao realtime deve acontecer por runtime ou `broker` apropriado, nao por acesso direto do `core` ao socket.
+
+## Checklist Rapido para Novas Features na Camada
+
+- [ ] O evento novo possui `namespace` de contexto consistente.
+- [ ] O `channel` novo ou alterado valida o `payload` antes de chamar o `UseCase`.
+- [ ] O fluxo realtime usa `broker/runtime` para emissao, sem acesso direto do dominio ao socket.
+- [ ] O router continua como `composition root` e nao absorveu regra de negocio.
+- [ ] O evento emitido para o cliente e serializavel e previsivel.
+- [ ] A gestao de sockets continua centralizada em um unico runtime.
+
+## ✅ O que DEVE conter
+
+- Runtime centralizado de conexao e emissao.
+- `Channels` por contexto com validacao de `payload`.
+- Integracao explicita com `brokers` realtime para fan-out de eventos.
+- Envelope de mensagem padronizado.
+- Uso do `router WebSocket` como `composition root` do fluxo realtime.
+
+## ❌ O que NUNCA deve conter
+
+- Regra de negocio principal ou acesso direto a `ORM` dentro dos `channels`.
+- Emissao de mensagens direto do `core` para o socket sem passar por `broker/runtime`.
+- Envelope de mensagem ad hoc sem `namespace` e sem validacao.
+- Transporte vazando para o dominio por meio de tipos de `WebSocket` ou `Redis`.
