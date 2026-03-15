@@ -57,7 +57,25 @@ class SqlalchemyAccountsRepository(SqlalchemyRepository, AccountsRepository):
             account.password.value if account.password is not None else None
         )
         account_model.is_verified = account.is_verified.value
-        account_model.social_accounts = [
-            SocialAccountsMapper.to_model(social_account, account.id.value)
+
+        social_accounts_by_provider = {
+            social_account.provider.dto: social_account
             for social_account in account.social_accounts
-        ]
+        }
+
+        for social_account_model in account_model.social_accounts[:]:
+            social_account = social_accounts_by_provider.pop(
+                social_account_model.provider,
+                None,
+            )
+
+            if social_account is None:
+                account_model.social_accounts.remove(social_account_model)
+                continue
+
+            social_account_model.email = social_account.email.value
+
+        for social_account in social_accounts_by_provider.values():
+            account_model.social_accounts.append(
+                SocialAccountsMapper.to_model(social_account, account.id.value)
+            )
