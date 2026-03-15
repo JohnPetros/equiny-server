@@ -1,9 +1,11 @@
+from secrets import token_urlsafe
 from unittest.mock import Mock, create_autospec
 
 import pytest
 
 from equiny.core.auth.domain.entities.account import Account
 from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from equiny.core.auth.domain.structures.dtos.jwt_dto import JwtDto
 from equiny.core.auth.domain.structures.dtos.social_account_dto import SocialAccountDto
 from equiny.core.auth.interfaces.providers import GoogleAuthProvider, JwtProvider
 from equiny.core.auth.interfaces.repositories import AccountsRepository
@@ -18,6 +20,7 @@ class TestSignUpWithGoogleUseCase:
     jwt_provider_mock: Mock
     broker_mock: Mock
     use_case: SignUpWithGoogleUseCase
+    jwt_dto: JwtDto
 
     @pytest.fixture(autouse=True)
     def setup(self) -> None:
@@ -32,7 +35,11 @@ class TestSignUpWithGoogleUseCase:
             'owner@example.com',
             'John Owner',
         )
-        self.jwt_provider_mock.encode.return_value = 'jwt-token'
+        self.jwt_dto = JwtDto(
+            access_token=token_urlsafe(32),
+            refresh_token=token_urlsafe(32),
+        )
+        self.jwt_provider_mock.encode.return_value = self.jwt_dto
         self.repository_mock.find_by_email.return_value = None
 
         self.use_case = SignUpWithGoogleUseCase(
@@ -63,7 +70,8 @@ class TestSignUpWithGoogleUseCase:
         assert len(created_account.social_accounts) == 1
         assert created_account.social_accounts[0].provider.dto == 'google'
         assert published_event.payload.account_email_verification_token is None
-        assert result == 'jwt-token'
+        assert result.access_token == self.jwt_dto.access_token
+        assert result.refresh_token == self.jwt_dto.refresh_token
 
     def test_should_link_google_and_return_jwt_when_account_already_exists(
         self,
@@ -90,7 +98,8 @@ class TestSignUpWithGoogleUseCase:
         assert len(existing_account.social_accounts) == 1
         assert existing_account.social_accounts[0].provider.dto == 'google'
         assert existing_account.is_verified.value is True
-        assert result == 'jwt-token'
+        assert result.access_token == self.jwt_dto.access_token
+        assert result.refresh_token == self.jwt_dto.refresh_token
 
     def test_should_not_duplicate_google_link_when_account_already_has_provider(
         self,
@@ -117,4 +126,5 @@ class TestSignUpWithGoogleUseCase:
         self.repository_mock.update.assert_called_once_with(existing_account)
         self.broker_mock.publish.assert_not_called()
         assert len(existing_account.social_accounts) == 1
-        assert result == 'jwt-token'
+        assert result.access_token == self.jwt_dto.access_token
+        assert result.refresh_token == self.jwt_dto.refresh_token

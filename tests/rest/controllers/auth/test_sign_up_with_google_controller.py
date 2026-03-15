@@ -55,7 +55,7 @@ class TestSignUpWithGoogleController:
         fastapi_app = cast('FastAPI', client.app)
         google_auth_provider = create_autospec(GoogleAuthProvider, instance=True)
         google_auth_provider.authenticate.side_effect = AuthError(
-            'Token Google invalido'
+            'Token Google inválido'
         )
         fastapi_app.dependency_overrides[ProvidersPipe.get_google_auth_provider] = (
             lambda: google_auth_provider
@@ -73,7 +73,49 @@ class TestSignUpWithGoogleController:
             )
 
         assert response.status_code == 401
-        assert response.json()['message'] == 'Token Google invalido'
+        assert response.json()['message'] == 'Token Google inválido'
+
+    def test_should_sign_up_twice_with_google_without_duplicating_social_account(
+        self,
+        client: TestClient,
+        sqlalchemy_session: Session,
+    ) -> None:
+        fastapi_app = cast('FastAPI', client.app)
+        google_auth_provider = create_autospec(GoogleAuthProvider, instance=True)
+        google_auth_provider.authenticate.return_value = (
+            'double-sign-up@example.com',
+            'Double Sign Up',
+        )
+        fastapi_app.dependency_overrides[ProvidersPipe.get_google_auth_provider] = (
+            lambda: google_auth_provider
+        )
+
+        try:
+            first_response = client.post(
+                '/auth/sign-up/google',
+                json={'id_token': 'google-id-token'},
+            )
+            second_response = client.post(
+                '/auth/sign-up/google',
+                json={'id_token': 'google-id-token'},
+            )
+        finally:
+            fastapi_app.dependency_overrides.pop(
+                ProvidersPipe.get_google_auth_provider,
+                None,
+            )
+
+        sqlalchemy_session.expire_all()
+        persisted_account = (
+            sqlalchemy_session.query(AccountModel)
+            .filter(AccountModel.email == 'double-sign-up@example.com')
+            .one()
+        )
+
+        assert first_response.status_code == 201
+        assert second_response.status_code == 201
+        assert len(persisted_account.social_accounts) == 1
+        assert persisted_account.social_accounts[0].provider == 'google'
 
     def test_should_return_422_when_id_token_is_missing(
         self, client: TestClient
