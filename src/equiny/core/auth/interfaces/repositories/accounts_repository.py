@@ -13,4 +13,5 @@ class AccountsRepository(Protocol):
 
     def find_by_id(self, id: Id) -> Account | None: ...
 
-    def update(self, account: Account) -> None: ...
+    def update(self, account: Account) -> None:
+        """Sync password, verification state and social accounts."""
