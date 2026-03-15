@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
-from src.equiny.core.storage.structures.dtos.upload_url_dto import UploadUrlDto
-from src.equiny.core.storage.structures.upload_url import UploadUrl
-from src.equiny.core.storage.use_cases.generate_upload_urls_for_horser_gallery_use_case import (
+from equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
+from equiny.core.storage.structures.dtos.upload_url_dto import UploadUrlDto
+from equiny.core.storage.structures.upload_url import UploadUrl
+from equiny.core.storage.use_cases.generate_upload_urls_for_horser_gallery_use_case import (
     GenerateUploadUrlsForHorseGalleryUseCase,
 )
 

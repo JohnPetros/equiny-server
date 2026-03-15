@@ -1,12 +1,12 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.core.notification.interfaces.email_sender_provider import EmailProvider
-from src.equiny.core.notification.use_cases.send_account_verification_email_use_case import (
+from equiny.core.notification.interfaces.email_sender_provider import EmailProvider
+from equiny.core.notification.use_cases.send_account_verification_email_use_case import (
     SendAccountVerificationEmailUseCase,
 )
-from src.equiny.core.shared.domain.structures.email import Email
-from src.equiny.core.shared.domain.structures.text import Text
+from equiny.core.shared.domain.structures.email import Email
+from equiny.core.shared.domain.structures.text import Text
 
 
 class TestSendAccountVerificationEmailUseCase:

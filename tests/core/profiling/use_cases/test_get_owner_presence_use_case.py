@@ -1,16 +1,16 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.constants import CACHE_KEYS
-from src.equiny.core.profiling.domain.errors.owner_not_found_error import OwnerNotFoundError
-from src.equiny.core.profiling.domain.structures.dtos.owner_presence_dto import (
+from equiny.constants import CACHE_KEYS
+from equiny.core.profiling.domain.errors.owner_not_found_error import OwnerNotFoundError
+from equiny.core.profiling.domain.structures.dtos.owner_presence_dto import (
     OwnerPresenceDto,
 )
-from src.equiny.core.profiling.interfaces.repositories import OwnersRepository
-from src.equiny.core.profiling.use_cases.get_owner_presence_use_case import (
+from equiny.core.profiling.interfaces.repositories import OwnersRepository
+from equiny.core.profiling.use_cases.get_owner_presence_use_case import (
     GetOwnerPresenceUseCase,
 )
-from src.equiny.core.shared.interfaces.cache_provider import CacheProvider
+from equiny.core.shared.interfaces.cache_provider import CacheProvider
 from tests.fakers.profiling.entities.owners_faker import OwnersFaker
 from tests.fakers.shared.structures.id_faker import IdFaker
 

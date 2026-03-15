@@ -2,9 +2,9 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.equiny.core.shared.domain.errors import AuthError
-from src.equiny.core.shared.domain.structures.text import Text
-from src.equiny.providers.auth.google.google_auth_provider import GoogleOauthProvider
+from equiny.core.shared.domain.errors import AuthError
+from equiny.core.shared.domain.structures.text import Text
+from equiny.providers.auth.google.google_auth_provider import GoogleOauthProvider
 
 
 class TestGoogleOauthProvider:

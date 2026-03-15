@@ -1,23 +1,23 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.core.conversation.domain.entities.chat import Chat
-from src.equiny.core.conversation.domain.entities.dtos.chat_dto import ChatDto
-from src.equiny.core.conversation.domain.entities.dtos.chat_message_dto import (
+from equiny.core.conversation.domain.entities.chat import Chat
+from equiny.core.conversation.domain.entities.dtos.chat_dto import ChatDto
+from equiny.core.conversation.domain.entities.dtos.chat_message_dto import (
     MessageDto,
 )
-from src.equiny.core.conversation.domain.entities.dtos.recipient_dto import RecipientDto
-from src.equiny.core.conversation.domain.errors.chat_not_found_error import (
+from equiny.core.conversation.domain.entities.dtos.recipient_dto import RecipientDto
+from equiny.core.conversation.domain.errors.chat_not_found_error import (
     ChatNotFoundError,
 )
-from src.equiny.core.conversation.interfaces.chats_repository import ChatsRepository
-from src.equiny.core.conversation.interfaces.messages_repository import (
+from equiny.core.conversation.interfaces.chats_repository import ChatsRepository
+from equiny.core.conversation.interfaces.messages_repository import (
     MessagesRepository,
 )
-from src.equiny.core.conversation.use_cases.send_message_use_case import (
+from equiny.core.conversation.use_cases.send_message_use_case import (
     SendMessageUseCase,
 )
-from src.equiny.core.shared.domain.structures.id import Id
+from equiny.core.shared.domain.structures.id import Id
 from tests.fakers.shared.structures.id_faker import IdFaker
 
 

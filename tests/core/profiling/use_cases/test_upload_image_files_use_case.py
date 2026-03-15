@@ -1,14 +1,14 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.core.profiling.use_cases.upload_image_files_use_case import (
+from equiny.core.profiling.use_cases.upload_image_files_use_case import (
     UploadImageFilesUseCase,
 )
-from src.equiny.core.shared.domain.errors import ValidationError
-from src.equiny.core.shared.domain.structures.text import Text
-from src.equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
-from src.equiny.core.storage.structures import UploadUrl
-from src.equiny.core.storage.structures.dtos import UploadUrlDto
+from equiny.core.shared.domain.errors import ValidationError
+from equiny.core.shared.domain.structures.text import Text
+from equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
+from equiny.core.storage.structures import UploadUrl
+from equiny.core.storage.structures.dtos import UploadUrlDto
 from tests.fakers.storage.structures.file_faker import FileFaker
 
 

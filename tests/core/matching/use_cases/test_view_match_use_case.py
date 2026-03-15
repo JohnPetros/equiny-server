@@ -1,14 +1,14 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.core.matching.use_cases.view_match_use_case import ViewHorseMatchUseCase
-from src.equiny.core.profiling.domain.errors.horse_not_found_error import (
+from equiny.core.matching.use_cases.view_match_use_case import ViewHorseMatchUseCase
+from equiny.core.profiling.domain.errors.horse_not_found_error import (
     HorseNotFoundError,
 )
-from src.equiny.core.profiling.domain.errors.horse_match_not_found_error import (
+from equiny.core.profiling.domain.errors.horse_match_not_found_error import (
     HorseMatchNotFoundError,
 )
-from src.equiny.core.profiling.interfaces.repositories import HorsesRepository
+from equiny.core.profiling.interfaces.repositories import HorsesRepository
 from tests.fakers.profiling.entities.horses_faker import HorsesFaker
 from tests.fakers.profiling.structures.horse_match_faker import HorseMatchFaker
 from tests.fakers.shared.structures.id_faker import IdFaker

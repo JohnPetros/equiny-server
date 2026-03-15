@@ -6,17 +6,17 @@ from fastapi.testclient import TestClient
 from pwdlib import PasswordHash
 from sqlalchemy.orm import Session
 
-from src.equiny.core.auth.domain.entities.account import Account
-from src.equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
-from src.equiny.core.profiling.domain.entities.owner import Owner
-from src.equiny.core.profiling.domain.entities.dtos.owner_dto import OwnerDto
-from src.equiny.database.sqlalchemy.repositories.profiling.sqlalchemy_owners_repository import (
+from equiny.core.auth.domain.entities.account import Account
+from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from equiny.core.profiling.domain.entities.owner import Owner
+from equiny.core.profiling.domain.entities.dtos.owner_dto import OwnerDto
+from equiny.database.sqlalchemy.repositories.profiling.sqlalchemy_owners_repository import (
     SqlalchemyOwnersRepository,
 )
-from src.equiny.database.sqlalchemy.repositories.auth.sqlalchemy_accounts_repository import (
+from equiny.database.sqlalchemy.repositories.auth.sqlalchemy_accounts_repository import (
     SqlalchemyAccountsRepository,
 )
-from src.equiny.providers.jwt import JoseJwtProvider
+from equiny.providers.jwt import JoseJwtProvider
 
 
 class TestCreateHorseController:

@@ -4,16 +4,16 @@ from unittest.mock import create_autospec
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from src.equiny.core.auth.domain.entities.account import Account
-from src.equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
-from src.equiny.core.auth.interfaces.providers import GoogleAuthProvider
-from src.equiny.core.shared.domain.errors import AuthError
-from src.equiny.database.sqlalchemy.models.auth.account_model import AccountModel
-from src.equiny.database.sqlalchemy.repositories.auth.sqlalchemy_accounts_repository import (
+from equiny.core.auth.domain.entities.account import Account
+from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from equiny.core.auth.interfaces.providers import GoogleAuthProvider
+from equiny.core.shared.domain.errors import AuthError
+from equiny.database.sqlalchemy.models.auth.account_model import AccountModel
+from equiny.database.sqlalchemy.repositories.auth.sqlalchemy_accounts_repository import (
     SqlalchemyAccountsRepository,
 )
-from src.equiny.providers.hash import PwdlibHashProvider
-from src.equiny.pipes import ProvidersPipe
+from equiny.providers.hash import PwdlibHashProvider
+from equiny.pipes import ProvidersPipe
 
 if TYPE_CHECKING:
     from fastapi import FastAPI

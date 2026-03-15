@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.core.profiling.interfaces.repositories import HorsesRepository
-from src.equiny.core.profiling.use_cases.list_horse_matches_use_case import (
+from equiny.core.profiling.interfaces.repositories import HorsesRepository
+from equiny.core.profiling.use_cases.list_horse_matches_use_case import (
     ListHorseMatchesUseCase,
 )
 from tests.fakers.profiling.structures.horse_match_faker import HorseMatchFaker

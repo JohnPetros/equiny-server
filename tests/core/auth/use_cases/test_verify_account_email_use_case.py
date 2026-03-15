@@ -1,25 +1,25 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.core.auth.domain.entities.account import Account
-from src.equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
-from src.equiny.core.auth.domain.errors.invalid_email_verification_token_error import (
+from equiny.core.auth.domain.entities.account import Account
+from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from equiny.core.auth.domain.errors.invalid_email_verification_token_error import (
     InvalidEmailVerificationTokenError,
 )
-from src.equiny.core.auth.domain.errors.account_not_found_error import (
+from equiny.core.auth.domain.errors.account_not_found_error import (
     AccountNotFoundError,
 )
-from src.equiny.core.auth.interfaces.providers.email_verification_provider import (
+from equiny.core.auth.interfaces.providers.email_verification_provider import (
     EmailVerificationProvider,
 )
-from src.equiny.core.auth.interfaces.repositories.accounts_repository import (
+from equiny.core.auth.interfaces.repositories.accounts_repository import (
     AccountsRepository,
 )
-from src.equiny.core.auth.use_cases.verify_account_email_use_case import (
+from equiny.core.auth.use_cases.verify_account_email_use_case import (
     VerifyAccountEmailUseCase,
 )
-from src.equiny.core.shared.domain.structures.logical import Logical
-from src.equiny.core.shared.domain.structures.text import Text
+from equiny.core.shared.domain.structures.logical import Logical
+from equiny.core.shared.domain.structures.text import Text
 
 
 class TestVerifyAccountEmailUseCase:

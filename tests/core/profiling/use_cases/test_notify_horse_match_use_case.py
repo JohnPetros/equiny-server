@@ -1,18 +1,18 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.core.profiling.domain.errors import (
+from equiny.core.profiling.domain.errors import (
     HorseMatchNotFoundError,
     OwnerNotFoundError,
 )
-from src.equiny.core.profiling.interfaces.repositories import (
+from equiny.core.profiling.interfaces.repositories import (
     HorsesRepository,
     OwnersRepository,
 )
-from src.equiny.core.profiling.use_cases.notify_horse_match_use_case import (
+from equiny.core.profiling.use_cases.notify_horse_match_use_case import (
     NotifyHorseMatchUseCase,
 )
-from src.equiny.core.shared.interfaces import Broker
+from equiny.core.shared.interfaces import Broker
 from tests.fakers.profiling.entities.owners_faker import OwnersFaker
 from tests.fakers.profiling.structures.horse_match_faker import HorseMatchFaker
 from tests.fakers.shared.structures.id_faker import IdFaker

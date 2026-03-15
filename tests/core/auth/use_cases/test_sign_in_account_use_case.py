@@ -1,16 +1,16 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from src.equiny.core.auth.domain.entities.account import Account
-from src.equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
-from src.equiny.core.auth.domain.errors.invalid_credentials_error import (
+from equiny.core.auth.domain.entities.account import Account
+from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from equiny.core.auth.domain.errors.invalid_credentials_error import (
     InvalidCredentialsError,
 )
-from src.equiny.core.auth.interfaces.providers.hash_provider import HashProvider
-from src.equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
-from src.equiny.core.auth.interfaces.repositories import AccountsRepository
-from src.equiny.core.auth.use_cases.sign_in_account_use_case import SignInAccountUseCase
-from src.equiny.core.shared.domain.structures.email import Email
+from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
+from equiny.core.auth.interfaces.providers.jwt_provider import JwtProvider
+from equiny.core.auth.interfaces.repositories import AccountsRepository
+from equiny.core.auth.use_cases.sign_in_account_use_case import SignInAccountUseCase
+from equiny.core.shared.domain.structures.email import Email
 
 
 class TestSignInAccountUseCase:

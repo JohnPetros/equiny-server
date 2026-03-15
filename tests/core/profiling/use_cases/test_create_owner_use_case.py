@@ -2,10 +2,10 @@ from unittest.mock import Mock, create_autospec
 
 import pytest
 
-from src.equiny.core.profiling.interfaces.repositories import OwnersRepository
-from src.equiny.core.profiling.use_cases.create_owner_use_case import CreateOwnerUseCase
-from src.equiny.core.shared.domain.errors import ValidationError
-from src.equiny.core.shared.interfaces import Broker
+from equiny.core.profiling.interfaces.repositories import OwnersRepository
+from equiny.core.profiling.use_cases.create_owner_use_case import CreateOwnerUseCase
+from equiny.core.shared.domain.errors import ValidationError
+from equiny.core.shared.interfaces import Broker
 from tests.fakers.shared.structures.id_faker import IdFaker
 
 

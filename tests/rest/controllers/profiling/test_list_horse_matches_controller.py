@@ -5,16 +5,16 @@ from fastapi.testclient import TestClient
 from pwdlib import PasswordHash
 from sqlalchemy.orm import Session
 
-from src.equiny.core.auth.domain.entities.account import Account
-from src.equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
-from src.equiny.core.profiling.domain.structures.breed import BreedValue
-from src.equiny.core.profiling.domain.structures.sex import SexValue
-from src.equiny.database.sqlalchemy.repositories.auth.sqlalchemy_accounts_repository import (
+from equiny.core.auth.domain.entities.account import Account
+from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from equiny.core.profiling.domain.structures.breed import BreedValue
+from equiny.core.profiling.domain.structures.sex import SexValue
+from equiny.database.sqlalchemy.repositories.auth.sqlalchemy_accounts_repository import (
     SqlalchemyAccountsRepository,
 )
-from src.equiny.database.sqlalchemy.mappers.profiling.horses_mapper import HorsesMapper
-from src.equiny.database.sqlalchemy.models.matching.match_model import MatchModel
-from src.equiny.providers.jwt import JoseJwtProvider
+from equiny.database.sqlalchemy.mappers.profiling.horses_mapper import HorsesMapper
+from equiny.database.sqlalchemy.models.matching.match_model import MatchModel
+from equiny.providers.jwt import JoseJwtProvider
 from tests.fakers.profiling.entities.horses_faker import HorsesFaker
 from tests.fakers.shared.structures.id_faker import IdFaker
 

@@ -2,19 +2,19 @@ from unittest.mock import Mock, call, create_autospec
 
 import pytest
 
-from src.equiny.core.auth.domain.errors.email_already_in_use_error import (
+from equiny.core.auth.domain.errors.email_already_in_use_error import (
     EmailAlreadyInUseError,
 )
-from src.equiny.core.auth.interfaces.providers.hash_provider import HashProvider
-from src.equiny.core.auth.interfaces.providers.email_verification_provider import (
+from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
+from equiny.core.auth.interfaces.providers.email_verification_provider import (
     EmailVerificationProvider,
 )
-from src.equiny.core.auth.interfaces.repositories import AccountsRepository
-from src.equiny.core.auth.use_cases.sign_up_account_use_case import SignUpAccountUseCase
-from src.equiny.core.shared.domain.errors import ValidationError
-from src.equiny.core.shared.domain.structures.email import Email
-from src.equiny.core.shared.domain.structures.text import Text
-from src.equiny.core.shared.interfaces import Broker
+from equiny.core.auth.interfaces.repositories import AccountsRepository
+from equiny.core.auth.use_cases.sign_up_account_use_case import SignUpAccountUseCase
+from equiny.core.shared.domain.errors import ValidationError
+from equiny.core.shared.domain.structures.email import Email
+from equiny.core.shared.domain.structures.text import Text
+from equiny.core.shared.interfaces import Broker
 
 
 class TestSignUpAccountUseCase:
