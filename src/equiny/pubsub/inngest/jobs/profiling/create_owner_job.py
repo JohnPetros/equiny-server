@@ -1,4 +1,3 @@
-import asyncio
 from pydantic import BaseModel
 from inngest import Inngest, Context, TriggerEvent
 
@@ -15,7 +14,7 @@ class PayloadSchema(BaseModel):
     owner_name: NameSchema
     account_email: EmailSchema
     account_id: IdSchema
-    account_email_verification_token: str
+    account_email_verification_token: str | None = None
 
 
 class CreateOwnerJob:
@@ -40,7 +39,6 @@ class CreateOwnerJob:
             repository = SqlalchemyOwnersRepository(sqlalchemy_session)
             broker = InngestBroker(inngest)
             use_case = CreateOwnerUseCase(repository, broker)
-            await asyncio.sleep(3)
             use_case.execute(
                 owner_name=payload.owner_name,
                 owner_email=payload.account_email,

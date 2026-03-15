@@ -14,7 +14,7 @@ class CreateOwnerUseCase:
         self,
         owner_name: str,
         owner_email: str,
-        owner_email_verification_token: str,
+        owner_email_verification_token: str | None,
         account_id: str,
     ) -> OwnerDto:
         owner = Owner.create(
@@ -28,11 +28,12 @@ class CreateOwnerUseCase:
             )
         )
         self._repository.add(owner)
-        self._broker.publish(
-            OwnerCreatedEvent(
-                owner_id=owner.id.value,
-                owner_email=owner.email.value,
-                owner_email_verification_token=owner_email_verification_token,
+        if owner_email_verification_token is not None:
+            self._broker.publish(
+                OwnerCreatedEvent(
+                    owner_id=owner.id.value,
+                    owner_email=owner.email.value,
+                    owner_email_verification_token=owner_email_verification_token,
+                )
             )
-        )
         return owner.dto
