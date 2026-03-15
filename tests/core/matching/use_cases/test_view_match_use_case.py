@@ -2,7 +2,9 @@ import pytest
 from unittest.mock import Mock, create_autospec
 
 from equiny.core.matching.use_cases.view_match_use_case import ViewHorseMatchUseCase
-from equiny.core.profiling.domain.errors.horse_not_found_error import HorseNotFoundError
+from equiny.core.profiling.domain.errors.horse_not_found_error import (
+    HorseNotFoundError,
+)
 from equiny.core.profiling.domain.errors.horse_match_not_found_error import (
     HorseMatchNotFoundError,
 )

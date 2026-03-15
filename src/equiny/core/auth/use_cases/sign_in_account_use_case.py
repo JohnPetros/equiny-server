@@ -24,6 +24,8 @@ class SignInAccountUseCase:
 
     def execute(self, email: str, password: str) -> JwtDto:
         account = self.find_account_by_email(Email.create(email))
+        if account.password is None:
+            raise InvalidCredentialsError('Esta conta usa Google. Entre com o Google.')
         is_valid_password = self.hash_provider.verify(password, account.password.value)
 
         if not is_valid_password:

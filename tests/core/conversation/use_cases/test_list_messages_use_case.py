@@ -3,14 +3,18 @@ from unittest.mock import Mock, create_autospec
 
 from equiny.core.conversation.domain.entities.chat import Chat
 from equiny.core.conversation.domain.entities.dtos.chat_dto import ChatDto
-from equiny.core.conversation.domain.entities.dtos.chat_message_dto import MessageDto
+from equiny.core.conversation.domain.entities.dtos.chat_message_dto import (
+    MessageDto,
+)
 from equiny.core.conversation.domain.entities.dtos.recipient_dto import RecipientDto
 from equiny.core.conversation.domain.entities.message import Message
 from equiny.core.conversation.domain.errors.chat_not_found_error import (
     ChatNotFoundError,
 )
 from equiny.core.conversation.interfaces.chats_repository import ChatsRepository
-from equiny.core.conversation.interfaces.messages_repository import MessagesRepository
+from equiny.core.conversation.interfaces.messages_repository import (
+    MessagesRepository,
+)
 from equiny.core.conversation.use_cases.list_messages_use_case import (
     ListMessagesUseCase,
 )

@@ -57,3 +57,17 @@ class TestCreateOwnerUseCase:
 
         self.repository_mock.add.assert_not_called()
         self.broker_mock.publish.assert_not_called()
+
+    def test_should_not_publish_event_when_verification_token_is_missing(self) -> None:
+        account_id = IdFaker.fake().value
+
+        result = self.use_case.execute(
+            owner_name='John Owner',
+            owner_email='john.owner@example.com',
+            owner_email_verification_token=None,
+            account_id=account_id,
+        )
+
+        self.repository_mock.add.assert_called_once()
+        self.broker_mock.publish.assert_not_called()
+        assert result.account_id == account_id

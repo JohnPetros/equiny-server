@@ -36,7 +36,12 @@ class SignUpAccountUseCase:
         self.find_account_by_email(account_email)
         hashed_password = self._hash_provider.generate(account_password)
         account = Account.create(
-            AccountDto(email=account_email, password=hashed_password, is_verified=False)
+            AccountDto(
+                email=account_email,
+                password=hashed_password,
+                is_verified=False,
+                social_accounts=[],
+            )
         )
         self._repository.add(account)
         email_verification_token = (

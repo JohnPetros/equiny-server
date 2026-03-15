@@ -17,6 +17,7 @@ class Env(BaseSettings):
     EQUINY_SERVER_URL: str
     RESEND_API_KEY: str
     RESEND_SENDER_EMAIL: str
+    GOOGLE_OAUTH_CLIENT_ID: str
 
     model_config = SettingsConfigDict(
         env_file='.env',

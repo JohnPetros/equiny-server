@@ -1,206 +1,130 @@
-# Regras da camada Core
+# Regras da Camada Core
 
-## Visao geral e modulos da camada
+> 💡 Use este documento ao criar ou revisar regras de negocio, `entities`, `structures`, `DTOs`, `events`, `interfaces` e `use_cases` em `src/equiny/core/`.
 
-A camada `src/equiny/core/` representa o nucleo de negocio da aplicacao.
-Ela concentra regras de dominio, contratos e orquestracao de casos de uso,
-sem acoplamento com HTTP, ORM ou banco de dados.
+## Visao Geral
 
-Modulos atuais:
+### Resumo da camada
 
-- `shared`: shared kernel com abstracoes, estruturas base, erros e decorators.
-- `auth`: contexto de autenticacao (entidade `Account`, DTO, evento e use case).
-- `profiling`: contexto de perfil de cavalo (entidade `Horse`, estruturas,
-  erros, interface de repositorio e use cases).
+| Aspecto | Diretriz |
+|---|---|
+| **Objetivo** | Concentrar a regra de negocio pura da aplicacao em `src/equiny/core/`. |
+| **Papel arquitetural** | Ser o centro da arquitetura, sem depender de transporte, persistencia ou SDKs externos. |
+| **Entrada principal** | `use_cases` e tipos de dominio consumidos por camadas externas. |
+| **Saida principal** | `DTOs`, `responses`, `events`, `errors` e `interfaces` estaveis para o restante do sistema. |
 
-Responsabilidade de alto nivel:
+### Responsabilidades principais
 
-- modelar o negocio com tipos ricos e invariantes;
-- definir contratos estaveis para integracao com outras camadas;
-- oferecer casos de uso como ponto de entrada para operacoes de dominio.
+- Modelar `entities`, `structures`, `DTOs`, `events`, `errors` e `responses` compartilhadas.
+- Definir contratos de integracao por meio de `interfaces` de repositorio, provider, `broker` e `workflow`.
+- Orquestrar fluxos de negocio em `use_cases`, mantendo a decisao funcional dentro do dominio.
 
-## Estrutura de diretorios explicada
+### Limites da camada
 
-```text
-src/equiny/core/
-  auth/
-    domain/
-      entities/
-        dtos/
-      events/
-    use_cases/
-  profiling/
-    domain/
-      entities/
-        dtos/
-      structures/
-      errors/
-    interfaces/
-      repositories/
-    use_cases/
-  shared/
-    domain/
-      abstracts/
-      decorators/
-      errors/
-      structures/
-```
+- Pode depender apenas de tipos do proprio `core` e de bibliotecas genericas de modelagem e validacao.
+- Nao deve depender de `FastAPI`, `SQLAlchemy`, `Redis`, `Inngest`, `request`, `response`, `Env` ou detalhes de sessao/transacao.
+- Deve expor contratos claros para `rest`, `routers`, `pipes`, `database`, `providers`, `pubsub` e `websocket`.
 
-Leitura por responsabilidade:
+> ⚠️ Se um arquivo do `core` conhece detalhes de HTTP, banco ou fila, a direcao de dependencia foi quebrada.
 
-- `domain/entities`: entidades com identidade e comportamento de negocio.
-- `domain/entities/dtos`: contratos de entrada/saida entre casos de uso e bordas.
-- `domain/structures`: value objects e enums com regras de validacao.
-- `domain/errors`: erros especificos do contexto, estendendo erros base.
-- `domain/events`: eventos de dominio.
-- `interfaces/repositories`: portas de saida (contratos para persistencia).
-- `use_cases`: orquestracao de fluxo de negocio, sem dependencia de infraestrutura.
-- `shared/domain/*`: tipos e regras comuns reutilizadas pelos contextos.
+## Estrutura de Diretorios Globais
 
-## Principios Fundamentais
+### Mapa de pastas relevantes
 
-### ✅ O que DEVE conter
+| Caminho | Responsabilidade |
+|---|---|
+| `src/equiny/core/shared/` | Tipos, abstractions, decorators, `interfaces`, `errors` e `responses` reutilizaveis. |
+| `src/equiny/core/auth/` | Dominio e fluxos de autenticacao e conta. |
+| `src/equiny/core/profiling/` | Dominio e fluxos de perfil, cavalos e presenca. |
+| `src/equiny/core/matching/` | Dominio e fluxos de `swipe`, `match` e verificacoes relacionadas. |
+| `src/equiny/core/conversation/` | Dominio e fluxos de conversa, `chat`, mensagem e `icebreaker`. |
+| `src/equiny/core/storage/` | Tipos e `use_cases` ligados a arquivos, anexos e `upload URL`. |
+| `src/equiny/core/notification/` | Contratos e fluxos de notificacao por email e `push`. |
 
-- Regras de negocio puras e invariantes de dominio.
-- Entidades, estruturas e DTOs claros, com tipagem explicita.
-- Casos de uso orientados a intencao (`execute(...)`) e focados em fluxo.
-- Interfaces de repositorio abstratas (ports), nunca implementacoes concretas.
-- Erros de dominio (`AppError` e derivados) para sinalizar violacoes de regra.
-- Fabrica de objetos via metodos `create(...)` para centralizar validacao.
+### Regras de organizacao e nomeacao
 
-### ❌ O que NUNCA deve conter
+- A organizacao principal deve seguir `bounded contexts`, e nao uma divisao global por tipo tecnico.
+- Cada contexto deve preservar a estrutura `domain/`, `interfaces/` e `use_cases/`.
+- `__init__.py` deve expor apenas contratos publicos e imports estaveis.
+- Nao especificar arquivos especificos, pois isso muda constantemente.
 
-- Imports de FastAPI, SQLAlchemy, ORM, HTTP client, filas, cache ou broker.
-- Regras de serializacao HTTP (status code, request/response, Depends).
-- Acesso direto a env vars, sessao de banco ou detalhes de transacao.
-- Dependencia em repositorio concreto de infraestrutura.
-- Logica de mapeamento para modelo de banco dentro de entidade/use case.
+## Glossario arquitetural da camada
 
-## Glossario arquitetural
+| Termo | Definicao |
+|---|---|
+| `Entity` | Objeto de dominio com identidade estavel e comportamento proprio. |
+| `Structure` | Objeto orientado a valor, sem identidade propria, usado para conceitos pequenos e reutilizaveis. |
+| `Dto` | Contrato de dados para cruzar fronteiras entre camadas e `use_cases`. |
+| `UseCase` | Porta de entrada da aplicacao para um fluxo de negocio com `execute(...)`. |
+| `Interface` | Contrato abstrato implementado fora do `core`. |
+| `Event` | Fato de dominio usado para acionar efeitos assincronos ou realtime. |
+| `Response` | Estrutura reutilizavel de saida, como lista e paginacao. |
 
-### Entidades
+## Padroes de Projeto
 
-Objeto de dominio com identidade estavel (`id`) e igualdade por identidade.
-No projeto, `Entity` define `__eq__` baseado em `id` e o decorator `@entity`
-padroniza entidades como dataclasses mutaveis (`kw_only=True`, `eq=False`).
+### Padroes arquiteturais aceitos
 
-Exemplos: `Account`, `Horse`.
+- **`Clean Architecture` + `Hexagonal Architecture`** para manter dependencias apontando para dentro.
+- **`Use Case`** como orquestrador de fluxo.
+- **`Ports and Adapters`** para repositorios, cache, autenticacao, `storage`, notificacao e `broker`.
+- **Modelagem tatica de dominio** com `Entity`, `Structure`, `Dto`, `Event` e `Domain Error`.
 
-### DTOs
+### Como aplicar os padroes
 
-Objetos de transferencia de dados para cruzar fronteiras entre camadas.
-No projeto, DTOs usam `@dto` e carregam dados de entrada/saida de use cases.
-Nao devem conter regra de negocio complexa.
+- Todo fluxo novo deve nascer em um `UseCase` que recebe dependencias por contrato e retorna tipos claros.
+- Regras de consistencia devem viver em `entities`, `structures` e `errors`, nao em controllers, jobs ou repositories.
+- `Events` devem representar fatos reais do dominio, nao atalhos tecnicos para integrar camadas.
+- Itens compartilhados devem entrar em `shared/` apenas quando houver reuso real entre contextos.
 
-Exemplos: `AccountDto`, `HorseDto`.
+### Quando evitar
 
-### Interfaces
+- Nao criar `UseCase` apenas para repassar dados sem decisao ou orquestracao relevante.
+- Nao mover validacao de transporte ou serializacao para tipos de dominio.
+- Nao transformar `shared/` em deposito de utilitarios genericos sem fronteira clara.
 
-Contratos abstratos que descrevem dependencias externas da regra de negocio.
-No projeto, `HorsesRepository` e a porta usada por use cases para persistir
-e buscar `Horse`, sem conhecer SQLAlchemy.
+## Regras de Integracao com Outras Camadas
 
-### Use Cases
+### Mapa de integracao
 
-Aplicacao de regras em fluxos especificos da aplicacao.
-Recebem dependencias por construtor (injeccao por interface), coordenam
-entidades/estruturas e retornam DTOs.
+| Camada externa | Como integra com o `core` | Regra |
+|---|---|---|
+| `rest` | Importa `UseCase`, `Dto`, `Response` e `Error` | Deve apenas adaptar HTTP e delegar. |
+| `websocket` | Importa `UseCase`, `Event`, `Dto` e `Error` | Deve tratar transporte realtime e delegar regra. |
+| `pubsub` | Importa `UseCase`, `Event` e `interfaces` | Deve orquestrar eventos sem mover regra de negocio. |
+| `database` | Implementa `interfaces` e mapeia tipos do dominio | Nunca deve ser importado pelo `core`. |
+| `providers` | Implementa `interfaces` do `core` | Deve ficar totalmente fora do dominio. |
 
-Exemplos: `CreateHorseUseCase`, `GetHorseUseCase`, `SignInAccountUseCase`.
+### Dependencias permitidas e proibidas
 
-### Decorators
+- `core` pode depender de `core/shared` e, com criterio, de contratos de outros contextos internos.
+- `core` nao deve depender de `rest`, `routers`, `pipes`, `database`, `providers`, `pubsub`, `websocket` ou SDKs externos.
 
-Decorators de modelagem (`@entity`, `@structure`, `@dto`) encapsulam padrao de
-declaracao com `pydantic.dataclasses` e reduzem boilerplate.
+### Contratos de comunicacao
 
-- `@entity`: mutavel, keyword-only, igualdade custom por identidade.
-- `@structure`: imutavel, comparacao por valor.
-- `@dto`: contrato leve para transporte de dados.
+- A comunicacao com camadas externas deve acontecer por `DTOs`, `responses`, `events`, `errors` e `interfaces` do proprio `core`.
+- Implementacoes concretas devem respeitar exatamente a assinatura e a semantica publicadas pelo dominio.
+- O `core` nao define `status code`, formato HTTP de erro ou envelope de transporte.
 
-## Padroes de projeto e Padroes de uso aplicados
+## Checklist Rapido para Novas Features na Camada
 
-Padroes arquiteturais observados:
+- [ ] O contexto respeita a divisao `domain/`, `interfaces/` e `use_cases/`.
+- [ ] O fluxo principal esta em um `UseCase` com `execute(...)`.
+- [ ] Dependencias externas entram por `interfaces`, nunca por classes concretas.
+- [ ] `Entities` e `structures` concentram invariantes relevantes.
+- [ ] `DTOs` e `events` foram criados porque existe uma fronteira real para cruzar.
+- [ ] Nenhum import do `core` aponta para framework, ORM, fila, cache ou variavel de ambiente.
 
-- Clean/Hexagonal style: `core` define regras e portas; adaptadores vivem fora.
-- DDD tatico: Entities, Value Objects (Structures), Domain Errors e Events.
-- Repository pattern: use case depende de interface (`HorsesRepository`).
-- Data Mapper: camada `database/sqlalchemy/mappers` converte entidade <-> modelo.
-- Factory Method: criacao via `create(...)` em entidades e estruturas.
-- Error Hierarchy: especializacao de erro por contexto (`HorseNotFoundError`).
+## ✅ O que DEVE conter
 
-Padroes de uso no fluxo atual:
+- Tipos de dominio claros, com responsabilidade bem definida.
+- `UseCase` como ponto de entrada para fluxos de negocio.
+- `Interfaces` estaveis para repositorios, providers, `brokers` e `workflows`.
+- `Events`, `responses` e `errors` alinhados ao comportamento real do dominio.
+- Nomes consistentes como `*UseCase`, `*Dto`, `*Error`, `*Repository`, `*Provider` e `*Event`.
 
-1. Entrada chega por schema na borda REST.
-2. Schema converte para DTO (`to_dto()`).
-3. Use case cria/consulta entidade via interface de repositorio.
-4. Entidade retorna DTO por propriedade `dto`.
-5. Camadas externas serializam resposta.
+## ❌ O que NUNCA deve conter
 
-Observacao de estado atual (importante para evolucao):
-
-- `Horse.create(...)` define `Breed` como arabe fixo, ignorando `dto.breed`.
-- `Name.create(...)` levanta `pydantic.ValidationError`, enquanto o restante da
-  camada usa `core.shared.domain.errors.ValidationError`.
-- `SignInAccountUseCase` retorna `AccountDto` diretamente sem persistencia/autenticacao.
-
-## Convencoes de nomenclatura
-
-Convencoes observadas e recomendadas:
-
-- Diretorios e arquivos em `snake_case`.
-- Classes em `PascalCase`.
-- Sufixos explicitos por papel:
-  - `*UseCase`
-  - `*Repository`
-  - `*Dto`
-  - `*Error`
-  - `*Event`
-- Metodos de fabrica estaticos chamados `create(...)`.
-- Metodo principal de caso de uso chamado `execute(...)`.
-- Propriedade de serializacao de entidade chamada `dto`.
-- Enums com nomes em `UPPER_SNAKE_CASE` (ex.: `BreedValue`).
-- Exposicao publica de modulo via `__init__.py` + `__all__`.
-
-## Regras de integracao com outras camadas da aplicacao
-
-Direcao de dependencias obrigatoria:
-
-- `rest/controllers` -> `core/use_cases`
-- `core/use_cases` -> `core/interfaces` e `core/domain`
-- `database/repositories` -> implementa `core/interfaces`
-- `database/mappers` -> traduz tipos de persistencia para tipos de dominio
-
-Regras de integracao por camada:
-
-### Integracao com REST (`src/equiny/rest/`)
-
-- Controller recebe request e delega para use case.
-- Controller instancia adaptador concreto (ex.: repositorio SQLAlchemy) e injeta
-  no use case por interface.
-- `response_model` deve usar DTO do `core`, nunca entidade/modelo ORM.
-- Erros de dominio devem ser traduzidos para HTTP na borda (handler/exception map).
-
-### Integracao com Validation (`src/equiny/validation/`)
-
-- Schemas validam formato e limites de entrada.
-- Conversao para DTO e feita antes de chamar use case.
-- Regras de negocio continuam no `core`, mesmo quando schema ja valida campos.
-
-### Integracao com Database (`src/equiny/database/`)
-
-- Implementacoes de repositorio devem aderir exatamente ao contrato da interface.
-- Mapper e responsavel por conversoes entidade <-> modelo de banco.
-- Sessao/transacao fica fora do `core` (middleware e infra).
-
-### Integracao com Routers/Middlewares (`src/equiny/routers/`, `src/equiny/middlewares/`)
-
-- Composicao de rotas, prefixos e DI de sessao acontecem fora do `core`.
-- `core` nao conhece request lifecycle nem commits/rollback.
-
-Checklist rapido para novas features no `core`:
-
-1. Criar tipos de dominio (`entities`, `structures`, `errors`, `events`) no contexto.
-2. Definir portas em `interfaces` para dependencias externas.
-3. Implementar `use_cases` com retorno em DTO.
-4. Expor contratos em `__init__.py`.
-5. Integrar na borda (REST/DB) sem inverter dependencias.
+- Framework web, ORM, cliente HTTP, SDK de fila, cache, `push` ou `storage` dentro do dominio.
+- `SQL`, `commit`, `rollback`, leitura de `request.state` ou acesso direto a `Env`.
+- Serializacao HTTP, controle de `status code` ou detalhes de transporte.
+- `DTO` com comportamento de dominio complexo ou `entity` atuando como `schema` de borda.

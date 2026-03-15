@@ -3,7 +3,9 @@ from unittest.mock import Mock, create_autospec
 
 from equiny.core.auth.domain.entities.account import Account
 from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
-from equiny.core.auth.domain.errors.account_not_found_error import AccountNotFoundError
+from equiny.core.auth.domain.errors.account_not_found_error import (
+    AccountNotFoundError,
+)
 from equiny.core.auth.domain.errors.account_already_verified_error import (
     AccountAlreadyVerifiedError,
 )

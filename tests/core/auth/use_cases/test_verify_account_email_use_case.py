@@ -6,7 +6,9 @@ from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
 from equiny.core.auth.domain.errors.invalid_email_verification_token_error import (
     InvalidEmailVerificationTokenError,
 )
-from equiny.core.auth.domain.errors.account_not_found_error import AccountNotFoundError
+from equiny.core.auth.domain.errors.account_not_found_error import (
+    AccountNotFoundError,
+)
 from equiny.core.auth.interfaces.providers.email_verification_provider import (
     EmailVerificationProvider,
 )

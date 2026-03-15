@@ -92,3 +92,23 @@ class TestSignInAccountUseCase:
         )
         self.hash_provider_mock.verify.assert_not_called()
         self.jwt_provider_mock.encode.assert_not_called()
+
+    def test_should_raise_informative_error_when_account_has_no_password(self) -> None:
+        account = Account.create(
+            AccountDto(
+                id='01ARZ3NDEKTSV4RRFFQ69G5FAV',
+                email='google-user@example.com',
+                password=None,
+                is_verified=True,
+            )
+        )
+        self.repository_mock.find_by_email.return_value = account
+
+        with pytest.raises(InvalidCredentialsError) as exc_info:
+            self.use_case.execute(
+                email='google-user@example.com',
+                password='plain-password',  # noqa: S106
+            )
+
+        assert exc_info.value.message == 'Esta conta usa Google. Entre com o Google.'
+        self.hash_provider_mock.verify.assert_not_called()

@@ -15,14 +15,7 @@ rascunho estruturado para o Pull Request.
 
 - **Spec Técnica:** O documento que guiou a implementação
   (`documentation/features/<modulo>/specs/<nome>-spec.md`), injetado
-  integralmente no contexto.
-- **Diff do Código:** As alterações realizadas nas camadas `core`, `database`,
-  `rest`, `validation`, `providers` e demais módulos impactados, injetadas como
-  contexto para permitir verificação real dos requisitos.
-
-> ⚠️ Ambas as entradas devem estar presentes no contexto antes da execução.
-> Não simule a verificação caso alguma delas esteja ausente — interrompa e
-> sinalize o que está faltando.
+  como caminho para o arquivo no contexto.
 
 ---
 

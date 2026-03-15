@@ -1,162 +1,121 @@
-# Regras da camada Pipes
+# Regras da Camada Pipes
 
-## Visao geral
+> 💡 Use este documento ao criar ou revisar `dependency providers`, `guards` e montagem de dependencias reutilizaveis em `src/equiny/pipes/`.
 
-A camada `src/equiny/pipes/` concentra provedores de dependencias para o FastAPI.
-Ela padroniza a injecao via `fastapi.Depends`, mantem controllers magros, e centraliza
-a criacao de adapters concretos (repositorios, providers, broker).
+## Visao Geral
 
-Pipes neste projeto nao sao "pipeline" de processamento. Sao dependency providers.
+### Resumo da camada
 
-## Estrutura atual
+| Aspecto | Diretriz |
+|---|---|
+| **Objetivo** | Centralizar a injecao de dependencias do `FastAPI`. |
+| **Papel arquitetural** | Montar adaptadores concretos e checks reutilizaveis para `controllers` e fluxos realtime. |
+| **Entrada principal** | `Request`, `WebSocket`, `Depends(...)` e recursos anexados ao estado da aplicacao. |
+| **Saida principal** | `Repositories`, providers, `brokers`, `guards` e valores derivados prontos para consumo. |
 
-```text
-src/equiny/pipes/
-  auth_pipe.py
-  database_pipe.py
-  providers_pipe.py
-  pubsub_pipe.py
-  storage_pipe.py
-  __init__.py
-```
+### Responsabilidades principais
 
-Responsabilidade por modulo:
+- Instanciar `repositories`, providers, `brokers` e recursos reutilizaveis para uso com `Depends(...)`.
+- Encapsular acesso a `request.state` e `websocket.app.state`.
+- Reaproveitar `guards` e validacoes de precondicao quando elas representam checks tecnicos ou de acesso recorrentes.
 
-- `providers_pipe.py`: instancia providers (hash/jwt) sem depender de request.
-- `database_pipe.py`: entrega repositorios SQLAlchemy usando a sessao da request.
-- `pubsub_pipe.py`: entrega `Broker` usando o client Inngest da request.
-- `auth_pipe.py`: dependencies reutilizaveis de autenticacao (guards).
-- `storage_pipe.py`: valida e transforma arquivos de entrada (`UploadFile`) em DTOs do dominio (`FileDto`).
+### Limites da camada
 
-## Principios fundamentais
+- `pipes` pode depender de `FastAPI`, `core`, `database`, `providers`, `pubsub` e outros adaptadores necessarios para montar dependencias.
+- Nao deve virar o centro da regra de negocio nem substituir `UseCase` como orquestrador principal da feature.
+- Deve continuar pequeno, previsivel e focado em fornecer dependencias, nao em montar respostas.
 
-### ✅ O que DEVE conter
+> ⚠️ Se um `pipe` esta executando a feature inteira, ele deixou de ser um `dependency provider`.
 
-- Funcoes pequenas e deterministicas: cada Pipe faz uma coisa (obter/criar dependencia).
-- Integracao com FastAPI: assinaturas pensadas para uso com `Depends(...)`.
-- Retorno por interface: quando existir interface no Core, retorne a interface (ex: `HorsesRepository`, `Broker`).
-- Criacao de adapters concretos: encapsular `Sqlalchemy*Repository`, `InngestBroker`, etc.
-- Uso de `request.state` para contexto de request: obter recursos criados por middlewares (sessao, clients).
+## Estrutura de Diretorios Globais
 
-### ❌ O que NUNCA deve conter
+### Mapa de pastas relevantes
 
-- Regras de negocio: Pipe nao chama UseCase e nao decide comportamento de dominio.
-- Logica HTTP: nao montar Response, nao definir status code, nao acessar `APIRouter`.
-- Transacoes: nao fazer commit/rollback (isso e do middleware de sessao).
-- Estado global de request: nao guardar session/client em variaveis globais.
-- Dependencias opacas: se algo vem de `request.state`, garanta middleware registrado e documente.
+| Caminho | Responsabilidade |
+|---|---|
+| `src/equiny/pipes/` | Modulo unico com arquivos `*_pipe.py` por assunto, como `auth`, `database`, `providers`, `pubsub`, `profiling`, `matching`, `conversation`, `storage` e `ai`. |
 
-## Padroes aplicados no projeto
+### Regras de organizacao e nomeacao
 
-### ProvidersPipe
+- Cada arquivo deve representar um assunto claro de injecao de dependencia ou precondicao reutilizavel.
+- Classes devem seguir convencao `*Pipe` e expor metodos estaticos pequenos.
+- Dependencias compostas devem reaproveitar outros `pipes` em vez de duplicar wiring.
+- Nao especificar arquivos especificos, pois isso muda constantemente.
 
-`ProvidersPipe` concentra providers sem estado e sem request:
+## Glossario arquitetural da camada
 
-- `ProvidersPipe.get_hash_provider() -> HashProvider`
-- `ProvidersPipe.get_jwt_provider() -> JoseJwtProvider`
-- `ProvidersPipe.get_cache_provider() -> CacheProvider`
+| Termo | Definicao |
+|---|---|
+| `Pipe` | `Dependency provider` usado para construir ou validar recursos antes da execucao principal. |
+| `Guard` | `Pipe` que valida autenticacao, autorizacao ou precondicao de acesso. |
+| `Adapter Factory` | `Pipe` que instancia implementacoes concretas e as devolve tipadas por contrato. |
+| `Request State Accessor` | `Pipe` que recupera recursos anexados a `request.state` ou `app.state`. |
+| `Fail-fast Validation` | Validacao tecnica na borda que interrompe cedo um input invalido. |
 
-Regra: providers simples podem ser instanciados aqui. Prefira tipar o retorno por interface quando possivel.
+## Padroes de Projeto
 
-### DatabasePipe (Session por request)
+### Padroes arquiteturais aceitos
 
-`DatabasePipe` depende da sessao SQLAlchemy salva em `request.state.sqlalchemy_session`.
-Esse valor e definido pelo middleware `HandleSqlalchemySessionMiddleware`.
+- **`Dependency Injection`** via `Depends(...)`.
+- **`Adapter Factory`** para `repositories`, providers, `brokers` e `workflows`.
+- **`Guard Dependencies`** para autenticacao, resolucao de `owner` e checks recorrentes.
+- **`Fail-fast`** para uploads invalidos ou credenciais ausentes.
 
-Padrao atual:
+### Como aplicar os padroes
 
-- `get_sqlalchemy_session(request: Request) -> Session`
-- `DatabasePipe.get_*_repository(sqlalchemy: Annotated[Session, Depends(get_sqlalchemy_session)]) -> <RepoInterface>`
+- Um `pipe` deve devolver a dependencia pronta para consumo, preferencialmente tipada por `interface` do `core`.
+- `Pipes` que dependem de `request` ou `websocket` devem ler recursos do estado da aplicacao sem espalhar esse detalhe para `controllers` e `routers`.
+- `Guards` podem usar `repositories` ou `use_cases` pequenos para validar acesso, desde que isso continue sendo uma precondicao reutilizavel.
+- Validacoes tecnicas de transporte, como upload de arquivo, podem falhar cedo no `pipe` para evitar dado invalido no dominio.
 
-Regra: controllers devem depender do repositorio via `Depends(DatabasePipe.get_*_repository)`
-e nao criar repositorio manualmente.
+### Quando evitar
 
-### PubSubPipe (Client por request)
+- Nao mover para `pipe` uma orquestracao que deveria estar em `UseCase`.
+- Nao criar `pipe` apenas para renomear uma dependencia simples sem ganho de reuso ou isolamento.
+- Nao retornar tipo concreto quando existe `interface` estavel do `core` disponivel.
 
-`PubSubPipe` depende do client Inngest salvo em `request.state.inngest_client`.
-Esse valor e definido pelo middleware `HandleInngestClientMiddleware`.
+## Regras de Integracao com Outras Camadas
 
-Padrao atual:
+### Mapa de integracao
 
-- `get_inngest_client(request: Request)` retorna o client salvo no state
-- `PubSubPipe.get_broker(inngest: Inngest = Depends(get_inngest_client)) -> Broker`
+| Camada | Como integra com `pipes` | Regra |
+|---|---|---|
+| `rest` | Consome `pipes` via `Depends(...)` | Deve simplificar wiring do endpoint. |
+| `routers/websocket` | Consome `pipes` para auth e acesso a runtime compartilhado | Deve evitar acoplamento direto a infraestrutura quando houver provider reutilizavel. |
+| `database` | Entra como implementacao concreta encapsulada | Nao deve vazar mais do que o necessario. |
+| `providers` / `pubsub` | Entram como adaptadores concretos | Devem ser retornados preferencialmente por contrato do `core`. |
 
-Regra: expor para o controller a interface do Core (`Broker`), nao o SDK.
+### Dependencias permitidas e proibidas
 
-### StoragePipe (Validacao de entrada)
+- `pipes` pode depender de `core`, `database`, `providers`, `pubsub` e mecanismos do `FastAPI`.
+- `pipes` nao deve depender de `rest/controllers` para funcionar, nem carregar `APIRouter`, `response body` ou logica de serializacao.
 
-`StoragePipe` centraliza validacao e transformacao de arquivos de upload:
+### Contratos de comunicacao
 
-- `StoragePipe.get_image_files(files: list[UploadFile]) -> list[FileDto]`
+- `Controllers` REST e fluxos `WebSocket` devem consumir `pipes` via `Depends(...)`.
+- Sempre que houver `interface` do `core`, o retorno do `pipe` deve preferi-la ao adaptador concreto.
+- Recursos em `request.state` ou `app.state` devem ter origem clara em `middleware` ou `lifespan`.
 
-Comportamento:
+## Checklist Rapido para Novas Features na Camada
 
-- Valida se todos os arquivos possuem `Content-Type` iniciando com `image/`.
-- Retorna HTTP 415 (UNSUPPORTED_MEDIA_TYPE) imediatamente para arquivos invalidos.
-- Converte `UploadFile` (FastAPI) para `FileDto` (dominio) preservando nome, dados e content-type.
+- [ ] O novo `pipe` resolve uma dependencia reutilizavel real ou uma precondicao recorrente.
+- [ ] O retorno esta tipado por `interface` do `core` sempre que possivel.
+- [ ] O `pipe` e pequeno, deterministico e nao monta resposta HTTP manualmente como responsabilidade principal.
+- [ ] Se usa `request.state` ou `app.state`, o recurso existe e e gerenciado pelo ciclo correto.
+- [ ] Se executa verificacao de acesso, continua sendo um `guard`, nao o fluxo principal da feature.
+- [ ] O `controller` ou `router` ficou mais simples apos a introducao do `pipe`.
 
-Padrao de uso no controller:
+## ✅ O que DEVE conter
 
-```python
-from fastapi import Depends
-from equiny.pipes.storage_pipe import StoragePipe
+- `Dependency providers` claros para `repositories`, providers, `brokers`, `workflows` e `guards`.
+- Encapsulamento de acesso a recursos de `request/app state`.
+- Validacoes de precondicao pequenas e reutilizaveis na borda.
+- Reaproveitamento entre endpoints e fluxos especiais.
+- Retorno por `interface` do `core` sempre que aplicavel.
 
-@router.post('/images/upload')
-def _(
-    files_dto: list[FileDto] = Depends(StoragePipe.get_image_files),
-):
-    ...
-```
+## ❌ O que NUNCA deve conter
 
-Regra: pipes de validacao de entrada devem falhar rapido (fail-fast) na borda REST,
-retornando codigos HTTP apropriados antes de chegar ao controller ou use case.
-
-### AuthPipe (guards)
-
-`AuthPipe` expoe dependencies reutilizaveis para proteger endpoints.
-No estado atual existe:
-
-- `AuthPipe.verify_jwt(request: Request, jwt_provider: JwtProvider = Depends(ProvidersPipe.get_jwt_provider)) -> None`
-
-Comportamento atual:
-
-- Le o header `Authorization`.
-- Se nao existir, levanta `AuthError`.
-- Se existir, delega para `jwt_provider.decode(token)`.
-
-Padrao de uso no controller:
-
-```python
-from fastapi import Depends
-from equiny.pipes.auth_pipe import AuthPipe
-
-@router.post(
-    '/',
-    dependencies=[Depends(AuthPipe.verify_jwt)],
-)
-def _( ... ):
-    ...
-```
-
-Regra: AuthPipe pode validar credenciais e levantar erro de autenticacao, mas nao deve
-acessar repositorios nem carregar conta/usuario (isso vira um Pipe dedicado quando existir).
-
-## Exportacao do pacote
-
-`src/equiny/pipes/__init__.py` exporta `DatabasePipe`, `PubSubPipe`, `ProvidersPipe` e `StoragePipe` via `__all__`.
-`AuthPipe` e importado diretamente do modulo `equiny.pipes.auth_pipe`.
-
-## Integracao com outras camadas
-
-- `src/equiny/rest/controllers/`: consome Pipes via `Depends(...)`.
-- `src/equiny/rest/middlewares/`: popula `request.state` (sessao SQLAlchemy e client Inngest).
-- `src/equiny/app.py`: registra middlewares e compoe routers; isso garante que `request.state` exista para Pipes.
-
-## Checklist rapido para criar um novo Pipe
-
-1. Criar `src/equiny/pipes/<assunto>_pipe.py`.
-2. Definir funcao(s) e/ou `class <Assunto>Pipe` com metodos `@staticmethod`.
-3. Retornar interfaces do Core sempre que possivel.
-4. Se depender de `request.state`, garantir middleware registrado em `src/equiny/app.py`.
-5. Consumir no controller via `Depends(<Pipe>.<metodo>)`.
-6. Exportar no `src/equiny/pipes/__init__.py` se for Pipe de uso amplo.
+- Orquestracao principal da feature, regra de negocio complexa ou `branching` de dominio.
+- Controle manual de transacao, acesso direto a `APIRouter` ou construcao de payload de resposta como responsabilidade principal.
+- Dependencias escondidas sem `middleware`, `lifespan` ou origem explicita.
+- `Pipe` que existe apenas para mover complexidade sem melhorar reuso ou clareza.

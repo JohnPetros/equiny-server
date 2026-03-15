@@ -3,7 +3,9 @@ from unittest.mock import Mock, create_autospec
 
 from equiny.core.matching.domain.errors import MatchNotFoundError
 from equiny.core.matching.interfaces import MatchesRepository
-from equiny.core.matching.use_cases.dismatch_horse_use_case import DismatchHorseUseCase
+from equiny.core.matching.use_cases.dismatch_horse_use_case import (
+    DismatchHorseUseCase,
+)
 from tests.fakers.matching.structures.match_faker import MatchFaker
 from tests.fakers.shared.structures.id_faker import IdFaker
 
