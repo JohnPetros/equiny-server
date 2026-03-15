@@ -1,15 +1,15 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from equiny.core.matching.domain.errors.swipe_already_registered_error import (
+from src.equiny.core.matching.domain.errors.swipe_already_registered_error import (
     SwipeAlreadyRegisteredError,
 )
-from equiny.core.matching.domain.events.match_created_event import MatchCreatedEvent
-from equiny.core.matching.domain.structures.swipe_decision import SwipeDecisionValue
-from equiny.core.matching.interfaces import SwipesRepository, MatchesRepository
-from equiny.core.matching.use_cases.swipe_horse_use_case import SwipeHorseUseCase
-from equiny.core.profiling.interfaces.repositories import HorsesRepository
-from equiny.core.shared.interfaces.broker import Broker
+from src.equiny.core.matching.domain.events.match_created_event import MatchCreatedEvent
+from src.equiny.core.matching.domain.structures.swipe_decision import SwipeDecisionValue
+from src.equiny.core.matching.interfaces import SwipesRepository, MatchesRepository
+from src.equiny.core.matching.use_cases.swipe_horse_use_case import SwipeHorseUseCase
+from src.equiny.core.profiling.interfaces.repositories import HorsesRepository
+from src.equiny.core.shared.interfaces.broker import Broker
 from tests.fakers.matching.structures.swipe_faker import SwipeFaker
 from tests.fakers.shared.structures.id_faker import IdFaker
 

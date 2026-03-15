@@ -3,15 +3,17 @@ from unittest.mock import Mock, create_autospec
 
 import pytest
 
-from equiny.core.auth.domain.entities.account import Account
-from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
-from equiny.core.auth.domain.structures.dtos.jwt_dto import JwtDto
-from equiny.core.auth.domain.structures.dtos.social_account_dto import SocialAccountDto
-from equiny.core.auth.interfaces.providers import GoogleAuthProvider, JwtProvider
-from equiny.core.auth.interfaces.repositories import AccountsRepository
-from equiny.core.auth.use_cases import SignUpWithGoogleUseCase
-from equiny.core.shared.domain.structures.email import Email
-from equiny.core.shared.interfaces import Broker
+from src.equiny.core.auth.domain.entities.account import Account
+from src.equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from src.equiny.core.auth.domain.structures.dtos.jwt_dto import JwtDto
+from src.equiny.core.auth.domain.structures.dtos.social_account_dto import (
+    SocialAccountDto,
+)
+from src.equiny.core.auth.interfaces.providers import GoogleAuthProvider, JwtProvider
+from src.equiny.core.auth.interfaces.repositories import AccountsRepository
+from src.equiny.core.auth.use_cases import SignUpWithGoogleUseCase
+from src.equiny.core.shared.domain.structures.email import Email
+from src.equiny.core.shared.interfaces.broker import Broker
 
 
 class TestSignUpWithGoogleUseCase:

@@ -1,13 +1,13 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from equiny.core.profiling.domain.errors import HorseNotFoundError
-from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
-from equiny.core.profiling.interfaces.repositories import (
+from src.equiny.core.profiling.domain.errors import HorseNotFoundError
+from src.equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
+from src.equiny.core.profiling.interfaces.repositories import (
     HorsesRepository,
     OwnersRepository,
 )
-from equiny.core.profiling.use_cases.create_horse_gallery_use_case import (
+from src.equiny.core.profiling.use_cases.create_horse_gallery_use_case import (
     CreateHorseGalleryUseCase,
 )
 from tests.fakers.profiling.entities.horses_faker import HorsesFaker

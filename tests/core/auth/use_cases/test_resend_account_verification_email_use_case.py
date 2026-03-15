@@ -1,24 +1,26 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from equiny.core.auth.domain.entities.account import Account
-from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
-from equiny.core.auth.domain.errors.account_not_found_error import AccountNotFoundError
-from equiny.core.auth.domain.errors.account_already_verified_error import (
+from src.equiny.core.auth.domain.entities.account import Account
+from src.equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from src.equiny.core.auth.domain.errors.account_not_found_error import (
+    AccountNotFoundError,
+)
+from src.equiny.core.auth.domain.errors.account_already_verified_error import (
     AccountAlreadyVerifiedError,
 )
-from equiny.core.auth.interfaces.providers.email_verification_provider import (
+from src.equiny.core.auth.interfaces.providers.email_verification_provider import (
     EmailVerificationProvider,
 )
-from equiny.core.auth.interfaces.repositories.accounts_repository import (
+from src.equiny.core.auth.interfaces.repositories.accounts_repository import (
     AccountsRepository,
 )
-from equiny.core.auth.use_cases.resend_account_verification_email_use_case import (
+from src.equiny.core.auth.use_cases.resend_account_verification_email_use_case import (
     ResendAccountVerificationEmailUseCase,
 )
-from equiny.core.shared.domain.structures.email import Email
-from equiny.core.shared.domain.structures.text import Text
-from equiny.core.shared.interfaces.broker import Broker
+from src.equiny.core.shared.domain.structures.email import Email
+from src.equiny.core.shared.domain.structures.text import Text
+from src.equiny.core.shared.interfaces.broker import Broker
 
 
 class TestResendAccountVerificationEmailUseCase:

@@ -2,19 +2,19 @@ from unittest.mock import Mock, create_autospec
 
 import pytest
 
-from equiny.core.auth.domain.errors import GalleryNotFoundError
-from equiny.core.profiling.domain.errors import HorseNotFoundError
-from equiny.core.profiling.domain.events.image_files_removed_event import (
+from src.equiny.core.auth.domain.errors import GalleryNotFoundError
+from src.equiny.core.profiling.domain.errors import HorseNotFoundError
+from src.equiny.core.profiling.domain.events.image_files_removed_event import (
     ImagesFilesRemovedEvent,
 )
-from equiny.core.profiling.domain.structures.dtos.gallery_dto import GalleryDto
-from equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
-from equiny.core.profiling.domain.structures.gallery import Gallery
-from equiny.core.profiling.interfaces.repositories import HorsesRepository
-from equiny.core.profiling.use_cases.update_horse_gallery_use_case import (
+from src.equiny.core.profiling.domain.structures.dtos.gallery_dto import GalleryDto
+from src.equiny.core.shared.domain.structures.dtos.image_dto import ImageDto
+from src.equiny.core.profiling.domain.structures.gallery import Gallery
+from src.equiny.core.profiling.interfaces.repositories import HorsesRepository
+from src.equiny.core.profiling.use_cases.update_horse_gallery_use_case import (
     UpdateHorseGalleryUseCase,
 )
-from equiny.core.shared.interfaces.broker import Broker
+from src.equiny.core.shared.interfaces.broker import Broker
 from tests.fakers.profiling.entities.horses_faker import HorsesFaker
 from tests.fakers.shared.structures.id_faker import IdFaker
 

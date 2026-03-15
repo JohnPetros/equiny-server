@@ -1,15 +1,15 @@
 import pytest
 from unittest.mock import MagicMock, create_autospec
 
-from equiny.core.conversation.domain.entities.chat import Chat
-from equiny.core.conversation.domain.entities.dtos.chat_dto import ChatDto
-from equiny.core.conversation.domain.entities.dtos.recipient_dto import RecipientDto
-from equiny.core.conversation.domain.errors.chat_not_found_error import (
+from src.equiny.core.conversation.domain.entities.chat import Chat
+from src.equiny.core.conversation.domain.entities.dtos.chat_dto import ChatDto
+from src.equiny.core.conversation.domain.entities.dtos.recipient_dto import RecipientDto
+from src.equiny.core.conversation.domain.errors.chat_not_found_error import (
     ChatNotFoundError,
 )
-from equiny.core.conversation.interfaces.chats_repository import ChatsRepository
-from equiny.core.conversation.use_cases.get_chat_use_case import GetChatUseCase
-from equiny.core.shared.domain.structures.id import Id
+from src.equiny.core.conversation.interfaces.chats_repository import ChatsRepository
+from src.equiny.core.conversation.use_cases.get_chat_use_case import GetChatUseCase
+from src.equiny.core.shared.domain.structures.id import Id
 from tests.fakers.shared.structures.id_faker import IdFaker
 
 

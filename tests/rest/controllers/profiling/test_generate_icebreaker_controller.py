@@ -6,16 +6,16 @@ from fastapi.testclient import TestClient
 from pwdlib import PasswordHash
 from sqlalchemy.orm import Session
 
-from equiny.core.auth.domain.entities.account import Account
-from equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
-from equiny.core.profiling.domain.entities.dtos.owner_dto import OwnerDto
-from equiny.core.profiling.domain.entities.owner import Owner
-from equiny.pipes.ai_pipe import AiPipe
-from equiny.providers.jwt import JoseJwtProvider
-from equiny.database.sqlalchemy.repositories.auth.sqlalchemy_accounts_repository import (
+from src.equiny.core.auth.domain.entities.account import Account
+from src.equiny.core.auth.domain.entities.dtos.account_dto import AccountDto
+from src.equiny.core.profiling.domain.entities.dtos.owner_dto import OwnerDto
+from src.equiny.core.profiling.domain.entities.owner import Owner
+from src.equiny.pipes.ai_pipe import AiPipe
+from src.equiny.providers.jwt import JoseJwtProvider
+from src.equiny.database.sqlalchemy.repositories.auth.sqlalchemy_accounts_repository import (
     SqlalchemyAccountsRepository,
 )
-from equiny.database.sqlalchemy.repositories.profiling.sqlalchemy_owners_repository import (
+from src.equiny.database.sqlalchemy.repositories.profiling.sqlalchemy_owners_repository import (
     SqlalchemyOwnersRepository,
 )
 from tests.fakers.shared.structures.id_faker import IdFaker

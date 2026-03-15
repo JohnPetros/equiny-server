@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from equiny.core.profiling.domain.errors import HorseNotFoundError
-from equiny.core.profiling.interfaces.repositories import HorsesRepository
-from equiny.core.profiling.use_cases.get_horse_use_case import GetHorseUseCase
+from src.equiny.core.profiling.domain.errors import HorseNotFoundError
+from src.equiny.core.profiling.interfaces.repositories import HorsesRepository
+from src.equiny.core.profiling.use_cases.get_horse_use_case import GetHorseUseCase
 from tests.fakers.profiling.entities.horses_faker import HorsesFaker
 from tests.fakers.shared.structures.id_faker import IdFaker
 

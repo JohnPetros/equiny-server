@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import Mock, create_autospec
 
-from equiny.core.profiling.domain.structures.dtos.age_range_dto import AgeRangeDto
-from equiny.core.profiling.interfaces.repositories import HorsesRepository
-from equiny.core.profiling.use_cases.get_horse_feed_use_case import GetHorseFeedUseCase
-from equiny.core.shared.responses.pagination_response import PaginationResponse
+from src.equiny.core.profiling.domain.structures.dtos.age_range_dto import AgeRangeDto
+from src.equiny.core.profiling.interfaces.repositories import HorsesRepository
+from src.equiny.core.profiling.use_cases.get_horse_feed_use_case import GetHorseFeedUseCase
+from src.equiny.core.shared.responses.pagination_response import PaginationResponse
 from tests.fakers.profiling.structures.feed_horse_faker import FeedHorseFaker
 from tests.fakers.shared.structures.id_faker import IdFaker
 
