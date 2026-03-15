@@ -7,7 +7,7 @@ class Payload:
     owner_name: str
     account_id: str
     account_email: str
-    account_email_verification_token: str
+    account_email_verification_token: str | None
 
 
 class AccountCreatedEvent(Event[Payload]):
@@ -18,7 +18,7 @@ class AccountCreatedEvent(Event[Payload]):
         account_id: str,
         account_email: str,
         owner_name: str,
-        account_email_verification_token: str,
+        account_email_verification_token: str | None,
     ) -> None:
         payload = Payload(
             account_id=account_id,
