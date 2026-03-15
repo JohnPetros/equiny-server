@@ -1,12 +1,16 @@
 from equiny.core.auth.interfaces.providers.email_verification_provider import (
     EmailVerificationProvider,
 )
+from equiny.core.auth.interfaces.providers.google_auth_provider import (
+    GoogleAuthProvider,
+)
 from equiny.core.auth.interfaces.providers.hash_provider import HashProvider
 from equiny.core.notification.interfaces.email_sender_provider import (
     EmailProvider,
 )
 from equiny.core.shared.interfaces.cache_provider import CacheProvider
 from equiny.core.storage.interfaces.file_storage_provider import FileStorageProvider
+from equiny.providers.auth.google import GoogleOauthProvider
 from equiny.providers.auth.itsdangerous import ItsdangerousEmailVerificationProvider
 from equiny.providers.hash import PwdlibHashProvider
 from equiny.providers.jwt import JoseJwtProvider
@@ -35,6 +39,10 @@ class ProvidersPipe:
     @staticmethod
     def get_email_verification_provider() -> EmailVerificationProvider:
         return ItsdangerousEmailVerificationProvider()
+
+    @staticmethod
+    def get_google_auth_provider() -> GoogleAuthProvider:
+        return GoogleOauthProvider()
 
     @staticmethod
     def get_email_provider() -> EmailProvider:

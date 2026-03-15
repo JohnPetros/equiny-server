@@ -18,6 +18,7 @@ os.environ.setdefault('EMAIL_VERIFICATION_SECRET', 'test-email-verification-secr
 os.environ.setdefault('EQUINY_SERVER_URL', 'http://localhost:8080')
 os.environ.setdefault('RESEND_API_KEY', 'test-resend-api-key')
 os.environ.setdefault('RESEND_SENDER_EMAIL', 'noreply@example.com')
+os.environ.setdefault('GOOGLE_OAUTH_CLIENT_ID', 'test-google-client-id')
 
 from equiny.app import FastAPIApp
 from equiny.pubsub.inngest.inngest_pubsub import InngestPubSub
