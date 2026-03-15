@@ -5,6 +5,9 @@ from equiny.core.auth.interfaces.repositories.accounts_repository import (
 from equiny.database.sqlalchemy.mappers.auth.accounts_mapper import (
     AccountsMapper,
 )
+from equiny.database.sqlalchemy.mappers.auth.social_accounts_mapper import (
+    SocialAccountsMapper,
+)
 from equiny.database.sqlalchemy.models.auth.account_model import AccountModel
 from equiny.database.sqlalchemy.repositories.sqlalchemy_repository import (
     SqlalchemyRepository,
@@ -50,4 +53,11 @@ class SqlalchemyAccountsRepository(SqlalchemyRepository, AccountsRepository):
         )
         if account_model is None:
             return
+        account_model.password = (
+            account.password.value if account.password is not None else None
+        )
         account_model.is_verified = account.is_verified.value
+        account_model.social_accounts = [
+            SocialAccountsMapper.to_model(social_account, account.id.value)
+            for social_account in account.social_accounts
+        ]
